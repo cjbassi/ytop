@@ -1,0 +1,23 @@
+[package]
+name = "rtop"
+version = "0.1.0"
+authors = ["Caleb Bassi <calebjbassi@gmail.com>"]
+license = "MIT"
+description = "A TUI system monitor written in Rust"
+edition = "2018"
+
+[dependencies]
+chrono = "0.4.7"
+crossbeam-channel = "0.3"
+crossterm = "0.9.6"
+fern = "0.5.8"
+log = "0.4.7"
+num_cpus = "1.10.1"
+platform-dirs = "0.2.0"
+# psutil = { path = "../../other-projects/rust-psutil" }
+psutil = "1.6.0"
+size = "0.1.2"
+structopt = "0.2.18"
+tui = { version = "0.6.2", features = ["crossterm"] }
+serde_json = "1.0.40"
+serde = { version = "1.0.97", features = ["derive"] }

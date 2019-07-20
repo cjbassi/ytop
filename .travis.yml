@@ -1,0 +1,29 @@
+language: rust
+
+cache: cargo
+
+git:
+  depth: 1
+
+matrix:
+  include:
+    - env: TARGET=x86_64-unknown-linux-gnu
+      os: linux
+
+install: true
+script: ./ci/script.sh
+
+deploy:
+  provider: releases
+  api_key: $GITHUB_TOKEN
+  file_glob: true
+  file: "./*.tar.gz"
+  skip_cleanup: true
+  on:
+    tags: true
+
+if: tag IS present
+
+notifications:
+  email:
+    on_success: never
