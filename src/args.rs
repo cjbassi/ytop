@@ -1,4 +1,5 @@
 use std::str::FromStr;
+
 use structopt::StructOpt;
 
 pub enum Colorscheme {
