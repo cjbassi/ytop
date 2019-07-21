@@ -203,8 +203,6 @@ fn main() {
     update_widgets(&mut widgets, ticks);
     draw(&mut terminal, &mut widgets).unwrap(); // TODO: unwrap
 
-    info!("hello");
-
     loop {
         select! {
             recv(ticker) -> _ => {
@@ -218,7 +216,7 @@ fn main() {
                         match key_event {
                             KeyEvent::Char(c) => match c {
                                 'q' => break,
-                                _ => { info!("hello");}
+                                _ => {}
                             },
                             KeyEvent::Ctrl(c) => match c {
                                 'c' => break,

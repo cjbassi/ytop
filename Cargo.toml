@@ -11,11 +11,10 @@ chrono = "0.4.7"
 crossbeam-channel = "0.3"
 crossterm = "0.9.6"
 fern = "0.5.8"
+heim = "0.0.4"
 log = "0.4.7"
 num_cpus = "1.10.1"
 platform-dirs = "0.2.0"
-# psutil = { path = "../../other-projects/rust-psutil" }
-psutil = "1.6.0"
 size = "0.1.2"
 structopt = "0.2.18"
 tui = { version = "0.6.2", features = ["crossterm"] }
