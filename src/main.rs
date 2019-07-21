@@ -57,6 +57,7 @@ fn setup_ui_events() -> Receiver<InputEvent> {
 }
 
 fn setup_logfile(logfile_path: &Path) {
+    fs::create_dir_all(logfile_path.parent().unwrap()).unwrap(); // TODO: unwrap
     let logfile = fs::OpenOptions::new()
         .write(true)
         .create(true)
