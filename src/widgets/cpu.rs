@@ -50,7 +50,7 @@ impl CpuWidget {
         cpu_widget
     }
 
-    pub fn update(&mut self) {
+    pub async fn update(&mut self) {
         if self.show_average_cpu_load {}
         if self.show_per_cpu_load {}
         // let procs = sys.get_processor_list();

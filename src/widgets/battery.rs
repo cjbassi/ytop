@@ -18,6 +18,7 @@ impl BatteryWidget {
             update_interval: Duration::from_secs(60),
         }
     }
+    pub async fn update(&mut self) {}
 }
 
 impl Widget for BatteryWidget {

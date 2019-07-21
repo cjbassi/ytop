@@ -18,6 +18,7 @@ impl TempWidget {
             update_interval: Duration::from_secs(5),
         }
     }
+    pub async fn update(&mut self) {}
 }
 
 impl Widget for TempWidget {

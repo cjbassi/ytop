@@ -18,6 +18,7 @@ impl MemWidget {
             update_interval,
         }
     }
+    pub async fn update(&mut self) {}
 }
 
 impl Widget for MemWidget {

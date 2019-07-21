@@ -1,3 +1,5 @@
+#![feature(async_await)]
+
 mod args;
 mod colorscheme;
 mod utils;
@@ -11,7 +13,7 @@ use std::time::Duration;
 
 use crossbeam_channel::{select, tick, unbounded, Receiver};
 use crossterm::{AlternateScreen, InputEvent, KeyEvent, MouseEvent};
-use log::info;
+use futures::future::join_all;
 use platform_dirs::{AppDirs, AppUI};
 use structopt::StructOpt;
 use tui::backend::{Backend, CrosstermBackend};
@@ -127,10 +129,19 @@ fn setup_widgets(args: &Args, colorscheme: &colorscheme::Colorscheme) -> Widgets
     }
 }
 
-fn update_widgets(widgets: &mut Widgets, ticks: i64) {
+async fn update_widgets(widgets: &mut Widgets, ticks: i64) {
     // if ticks % widgets.cpu_widget.update_interval == 0 {
     //     widgets.cpu_widget.update();
     // }
+    // widgets.battery_widget.update();
+    // join_all(vec![widgets.cpu_widget.update(),
+    // widgets.disk_widget.update();
+    // widgets.help_menu.update();
+    // widgets.mem_widget.update(),
+    // widgets.net_widget.update();
+    // join_all(vec![widgets.proc_widget.update(),
+    widgets.mem_widget.update().await;
+    // widgets.temp_widget.update();
 }
 
 fn draw<B: Backend>(terminal: &mut Terminal<B>, widgets: &mut Widgets) -> io::Result<()> {
@@ -183,7 +194,8 @@ fn draw<B: Backend>(terminal: &mut Terminal<B>, widgets: &mut Widgets) -> io::Re
     })
 }
 
-fn main() {
+#[tokio::main]
+async fn main() {
     let args = Args::from_args();
 
     let program_name = env!("CARGO_PKG_NAME");
@@ -196,18 +208,18 @@ fn main() {
     setup_logfile(&logfile_path);
     let mut terminal = setup_terminal().unwrap(); // TODO: unwrap
 
+    let mut ticks = 0;
     let ticker = tick(Duration::from_secs(1));
     let ui_events_receiver = setup_ui_events();
 
-    let mut ticks = 0;
-    update_widgets(&mut widgets, ticks);
+    update_widgets(&mut widgets, ticks).await;
     draw(&mut terminal, &mut widgets).unwrap(); // TODO: unwrap
 
     loop {
         select! {
             recv(ticker) -> _ => {
                 ticks = (ticks + 1) % 60;
-                update_widgets(&mut widgets, ticks);
+                update_widgets(&mut widgets, ticks).await;
                 draw(&mut terminal, &mut widgets).unwrap(); // TODO: unwrap
             }
             recv(ui_events_receiver) -> message => {
