@@ -97,7 +97,7 @@ impl Widget for CpuWidget {
 
         Chart::<String, String>::default()
             .block(block::new().title(&self.title))
-            .x_axis(Axis::default().bounds([0.0, 100.0]))
+            .x_axis(Axis::default().bounds([self.update_count - 100.0, self.update_count + 1.0]))
             .y_axis(Axis::default().bounds([0.0, 100.0]))
             .datasets(&datasets)
             .draw(area, buf);
