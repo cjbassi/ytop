@@ -131,20 +131,10 @@ fn setup_widgets(args: &Args, colorscheme: &colorscheme::Colorscheme) -> Widgets
 }
 
 async fn update_widgets(widgets: &mut Widgets, ticks: i64) {
-    // if ticks % widgets.cpu_widget.update_interval == 0 {
-    //     widgets.cpu_widget.update();
-    // }
-    // widgets.battery_widget.update();
-    // join_all(vec![widgets.cpu_widget.update(),
-    // widgets.disk_widget.update();
-    // widgets.help_menu.update();
-    // widgets.mem_widget.update(),
-    // widgets.net_widget.update();
-    let a = widgets.cpu_widget.update();
-    let b = widgets.mem_widget.update();
-    let c = widgets.proc_widget.update();
-    join!(a, b, c);
-    // widgets.temp_widget.update();
+    let cpu = widgets.cpu_widget.update();
+    let mem = widgets.mem_widget.update();
+    let proc = widgets.proc_widget.update();
+    join!(cpu, mem, proc);
 }
 
 fn draw<B: Backend>(terminal: &mut Terminal<B>, widgets: &mut Widgets) -> io::Result<()> {
