@@ -14,6 +14,7 @@ use std::time::Duration;
 use crossbeam_channel::{select, tick, unbounded, Receiver};
 use crossterm::{AlternateScreen, InputEvent, KeyEvent, MouseEvent};
 use futures::future::join_all;
+use futures::join;
 use platform_dirs::{AppDirs, AppUI};
 use structopt::StructOpt;
 use tui::backend::{Backend, CrosstermBackend};
@@ -139,8 +140,10 @@ async fn update_widgets(widgets: &mut Widgets, ticks: i64) {
     // widgets.help_menu.update();
     // widgets.mem_widget.update(),
     // widgets.net_widget.update();
-    // join_all(vec![widgets.proc_widget.update(),
-    widgets.mem_widget.update().await;
+    let a = widgets.cpu_widget.update();
+    let b = widgets.mem_widget.update();
+    let c = widgets.proc_widget.update();
+    join!(a, b, c);
     // widgets.temp_widget.update();
 }
 

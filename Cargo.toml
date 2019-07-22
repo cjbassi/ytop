@@ -11,8 +11,7 @@ chrono = "0.4.7"
 crossbeam-channel = "0.3"
 crossterm = "0.9.6"
 fern = "0.5.8"
-# futures-preview = { version = "0.3.0-alpha.17", features = ["async-await", "nightly"] }
-futures-preview = "0.3.0-alpha.17"
+futures-preview = { version = "=0.3.0-alpha.17", features = ["async-await", "nightly"] }
 heim = "0.0.4"
 log = "0.4.7"
 num_cpus = "1.10.1"
