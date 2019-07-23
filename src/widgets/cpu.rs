@@ -10,13 +10,13 @@ use crate::widgets::block;
 pub struct CpuWidget {
     title: String,
     update_interval: Duration,
+    update_count: f64,
+    horizontal_scale: i64,
 
     cpu_count: usize,
 
     show_average_cpu: bool,
     show_per_cpu: bool,
-
-    update_count: f64,
 
     average_cpu_data: (String, Vec<(f64, f64)>),
     per_cpu_data: Vec<(String, Vec<(f64, f64)>)>,
@@ -27,13 +27,13 @@ impl CpuWidget {
         let mut cpu_widget = CpuWidget {
             title: " CPU Usage ".to_string(),
             update_interval,
+            update_count: 0.0,
+            horizontal_scale: 100,
 
             cpu_count: num_cpus::get(),
 
             show_average_cpu,
             show_per_cpu,
-
-            update_count: 0.0,
 
             average_cpu_data: ("AVRG".to_string(), Vec::new()),
             per_cpu_data: Vec::new(),

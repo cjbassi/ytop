@@ -9,6 +9,7 @@ use crate::widgets::block;
 pub struct MemWidget {
     title: String,
     update_interval: Duration,
+    update_count: f64,
 }
 
 impl MemWidget {
@@ -16,9 +17,13 @@ impl MemWidget {
         MemWidget {
             title: " Memory Usage ".to_string(),
             update_interval,
+            update_count: 0.0,
         }
     }
-    pub async fn update(&mut self) {}
+
+    pub async fn update(&mut self) {
+        self.update_count += 1.0;
+    }
 }
 
 impl Widget for MemWidget {

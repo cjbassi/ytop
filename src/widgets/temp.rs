@@ -9,6 +9,9 @@ use crate::widgets::block;
 pub struct TempWidget {
     title: String,
     update_interval: Duration,
+    update_count: f64,
+
+    temp_data: Vec<(String, Vec<(f64, f64)>)>,
 }
 
 impl TempWidget {
@@ -16,9 +19,15 @@ impl TempWidget {
         TempWidget {
             title: " Temperatures ".to_string(),
             update_interval: Duration::from_secs(5),
+            update_count: 0.0,
+
+            temp_data: Vec::new(),
         }
     }
-    pub async fn update(&mut self) {}
+
+    pub async fn update(&mut self) {
+        self.update_count += 1.0;
+    }
 }
 
 impl Widget for TempWidget {

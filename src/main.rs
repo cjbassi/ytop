@@ -108,7 +108,8 @@ fn read_colorscheme(
 
 fn setup_widgets(args: &Args, colorscheme: &colorscheme::Colorscheme) -> Widgets {
     let battery_widget = Some(widgets::BatteryWidget::new());
-    let cpu_widget = widgets::CpuWidget::new(Duration::from_secs(1), true, true);
+    let cpu_widget =
+        widgets::CpuWidget::new(Duration::from_secs(1), args.average_cpu, args.per_cpu);
     let disk_widget = Some(widgets::DiskWidget::new());
     let help_menu = widgets::HelpMenu::new();
     let mem_widget = widgets::MemWidget::new(Duration::from_secs(1));
@@ -134,7 +135,23 @@ async fn update_widgets(widgets: &mut Widgets, ticks: i64) {
     let cpu = widgets.cpu_widget.update();
     let mem = widgets.mem_widget.update();
     let proc = widgets.proc_widget.update();
-    join!(cpu, mem, proc);
+    if let (Some(disk_widget), Some(net_widget), Some(temp_widget)) = (
+        widgets.disk_widget.as_mut(),
+        widgets.net_widget.as_mut(),
+        widgets.temp_widget.as_mut(),
+    ) {
+        let disk = disk_widget.update();
+        let net = net_widget.update();
+        let temp = temp_widget.update();
+        if let Some(battery_widget) = widgets.battery_widget.as_mut() {
+            let battery = battery_widget.update();
+            join!(cpu, mem, proc, disk, net, temp, battery);
+        } else {
+            join!(cpu, mem, proc, disk, net, temp);
+        }
+    } else {
+        join!(cpu, mem, proc);
+    }
 }
 
 fn draw<B: Backend>(terminal: &mut Terminal<B>, widgets: &mut Widgets) -> io::Result<()> {
