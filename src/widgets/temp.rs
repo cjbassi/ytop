@@ -10,16 +10,18 @@ pub struct TempWidget {
 	pub update_interval: Ratio<u64>,
 	update_count: f64,
 
+	fahrenheit: bool,
 	temp_data: Vec<(String, Vec<(f64, f64)>)>,
 }
 
 impl TempWidget {
-	pub fn new() -> TempWidget {
+	pub fn new(fahrenheit: bool) -> TempWidget {
 		TempWidget {
 			title: " Temperatures ".to_string(),
 			update_interval: Ratio::from_integer(5),
 			update_count: 0.0,
 
+			fahrenheit,
 			temp_data: Vec::new(),
 		}
 	}

@@ -1,5 +1,3 @@
-use std::time::Duration;
-
 use tui::buffer::Buffer;
 use tui::layout::Rect;
 use tui::widgets::Widget;

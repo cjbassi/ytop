@@ -1,30 +1,6 @@
-use std::str::FromStr;
-
 use structopt::StructOpt;
 
-pub enum Colorscheme {
-	Default,
-	DefaultDark,
-	Monokai,
-	SolarizedDark,
-	Vice,
-	Custom(String),
-}
-
-impl FromStr for Colorscheme {
-	type Err = std::io::Error;
-
-	fn from_str(s: &str) -> Result<Self, Self::Err> {
-		Ok(match s {
-			"default" => Colorscheme::Default,
-			"default-dark" => Colorscheme::DefaultDark,
-			"monokai" => Colorscheme::Monokai,
-			"solarized-dark" => Colorscheme::SolarizedDark,
-			"vice" => Colorscheme::Vice,
-			_ => Colorscheme::Custom(s.to_string()),
-		})
-	}
-}
+use crate::colorscheme::Colorschemes;
 
 #[derive(StructOpt)]
 pub struct Args {
@@ -49,7 +25,7 @@ pub struct Args {
     - vice
 "
 	)]
-	pub colorscheme: Colorscheme,
+	pub colorscheme: Colorschemes,
 
 	/// Show temperatures in fahrenheit.
 	#[structopt(short = "f", long = "fahrenheit")]

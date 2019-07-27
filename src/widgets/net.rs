@@ -8,13 +8,17 @@ use crate::widgets::block;
 pub struct NetWidget {
 	title: String,
 	pub update_interval: Ratio<u64>,
+
+	interfaces: String,
 }
 
 impl NetWidget {
-	pub fn new() -> NetWidget {
+	pub fn new(interfaces: String) -> NetWidget {
 		NetWidget {
 			title: " Network Usage ".to_string(),
 			update_interval: Ratio::from_integer(1),
+
+			interfaces,
 		}
 	}
 
