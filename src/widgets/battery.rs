@@ -1,6 +1,6 @@
 use std::collections::HashMap;
-use std::time::Duration;
 
+use num_rational::Ratio;
 use tui::buffer::Buffer;
 use tui::layout::Rect;
 use tui::widgets::Widget;
@@ -9,7 +9,7 @@ use crate::widgets::block;
 
 pub struct BatteryWidget {
 	title: String,
-	update_interval: Duration,
+	pub update_interval: Ratio<u64>,
 	update_count: f64,
 
 	battery_data: HashMap<String, Vec<(f64, f64)>>,
@@ -19,7 +19,7 @@ impl BatteryWidget {
 	pub fn new() -> BatteryWidget {
 		BatteryWidget {
 			title: " Batteries ".to_string(),
-			update_interval: Duration::from_secs(60),
+			update_interval: Ratio::from_integer(60),
 			update_count: 0.0,
 
 			battery_data: HashMap::new(),

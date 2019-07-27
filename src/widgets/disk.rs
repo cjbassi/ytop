@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 use std::path::PathBuf;
-use std::time::Duration;
 
+use num_rational::Ratio;
 use tui::buffer::Buffer;
 use tui::layout::Rect;
 use tui::widgets::Widget;
@@ -21,7 +21,7 @@ struct Partition {
 
 pub struct DiskWidget {
 	title: String,
-	update_interval: Duration,
+	pub update_interval: Ratio<u64>,
 
 	partitions: HashMap<String, Partition>,
 }
@@ -30,7 +30,7 @@ impl DiskWidget {
 	pub fn new() -> DiskWidget {
 		DiskWidget {
 			title: " Disk Usage ".to_string(),
-			update_interval: Duration::from_secs(1),
+			update_interval: Ratio::from_integer(1),
 
 			partitions: HashMap::new(),
 		}

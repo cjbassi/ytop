@@ -1,5 +1,4 @@
-use std::time::Duration;
-
+use num_rational::Ratio;
 use tui::buffer::Buffer;
 use tui::layout::Rect;
 use tui::style::{Color, Style};
@@ -9,7 +8,7 @@ use crate::widgets::block;
 
 pub struct CpuWidget {
 	title: String,
-	update_interval: Duration,
+	pub update_interval: Ratio<u64>,
 	update_count: f64,
 	horizontal_scale: i64,
 
@@ -23,7 +22,11 @@ pub struct CpuWidget {
 }
 
 impl CpuWidget {
-	pub fn new(update_interval: Duration, show_average_cpu: bool, show_per_cpu: bool) -> CpuWidget {
+	pub fn new(
+		update_interval: Ratio<u64>,
+		show_average_cpu: bool,
+		show_per_cpu: bool,
+	) -> CpuWidget {
 		let mut cpu_widget = CpuWidget {
 			title: " CPU Usage ".to_string(),
 			update_interval,

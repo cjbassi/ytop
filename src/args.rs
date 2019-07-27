@@ -69,7 +69,7 @@ pub struct Args {
 
 	/// Number of times per second to update the CPU and Mem widgets.
 	#[structopt(short = "r", long = "rate", default_value = "1")]
-	pub rate: f64,
+	pub rate: u64,
 
 	/// Show a statusbar with the time.
 	#[structopt(short = "s", long = "statusbar")]

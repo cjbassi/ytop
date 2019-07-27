@@ -14,8 +14,8 @@ use std::time::Duration;
 
 use crossbeam_channel::{select, tick, unbounded, Receiver};
 use crossterm::{AlternateScreen, InputEvent, KeyEvent, MouseEvent};
-use futures::future::join_all;
-use futures::join;
+use futures::future::{join_all, FutureExt};
+use num_rational::Ratio;
 use platform_dirs::{AppDirs, AppUI};
 use structopt::StructOpt;
 use tui::backend::{Backend, CrosstermBackend};
@@ -118,12 +118,16 @@ fn read_colorscheme(
 	}
 }
 
-fn setup_widgets(args: &Args, colorscheme: &colorscheme::Colorscheme) -> Widgets {
+fn setup_widgets(
+	args: &Args,
+	update_ratio: Ratio<u64>,
+	colorscheme: &colorscheme::Colorscheme,
+) -> Widgets {
 	let battery_widget = Some(BatteryWidget::new());
-	let cpu_widget = CpuWidget::new(Duration::from_secs(1), args.average_cpu, args.per_cpu);
+	let cpu_widget = CpuWidget::new(update_ratio, args.average_cpu, args.per_cpu);
 	let disk_widget = Some(DiskWidget::new());
 	let help_menu = HelpMenu::new();
-	let mem_widget = MemWidget::new(Duration::from_secs(1));
+	let mem_widget = MemWidget::new(update_ratio);
 	let net_widget = Some(NetWidget::new());
 	let proc_widget = ProcWidget::new();
 	let statusbar = Some(Statusbar::new());
@@ -142,27 +146,41 @@ fn setup_widgets(args: &Args, colorscheme: &colorscheme::Colorscheme) -> Widgets
 	}
 }
 
-async fn update_widgets(widgets: &mut Widgets, ticks: i64) {
-	let cpu = widgets.cpu_widget.update();
-	let mem = widgets.mem_widget.update();
-	let proc = widgets.proc_widget.update();
+async fn update_widgets(widgets: &mut Widgets, seconds: Ratio<u64>) {
+	let zero = Ratio::from_integer(0);
+
+	let mut futures = vec![
+		widgets.cpu_widget.update().boxed(),
+		widgets.mem_widget.update().boxed(),
+	];
+
+	if seconds % widgets.proc_widget.update_interval == zero {
+		futures.push(widgets.proc_widget.update().boxed());
+	}
+
 	if let (Some(disk_widget), Some(net_widget), Some(temp_widget)) = (
 		widgets.disk_widget.as_mut(),
 		widgets.net_widget.as_mut(),
 		widgets.temp_widget.as_mut(),
 	) {
-		let disk = disk_widget.update();
-		let net = net_widget.update();
-		let temp = temp_widget.update();
-		if let Some(battery_widget) = widgets.battery_widget.as_mut() {
-			let battery = battery_widget.update();
-			join!(cpu, mem, proc, disk, net, temp, battery);
-		} else {
-			join!(cpu, mem, proc, disk, net, temp);
+		if seconds % disk_widget.update_interval == zero {
+			futures.push(disk_widget.update().boxed());
 		}
-	} else {
-		join!(cpu, mem, proc);
+		if seconds % net_widget.update_interval == zero {
+			futures.push(net_widget.update().boxed());
+		}
+		if seconds % temp_widget.update_interval == zero {
+			futures.push(temp_widget.update().boxed());
+		}
+
+		if let Some(battery_widget) = widgets.battery_widget.as_mut() {
+			if seconds % battery_widget.update_interval == zero {
+				futures.push(battery_widget.update().boxed());
+			}
+		}
 	}
+
+	join_all(futures).await;
 }
 
 fn draw_widgets<B: Backend>(terminal: &mut Terminal<B>, widgets: &mut Widgets) -> io::Result<()> {
@@ -225,6 +243,7 @@ fn draw_help_menu<B: Backend>(
 #[tokio::main]
 async fn main() {
 	let args = Args::from_args();
+	let update_ratio = Ratio::new(1, args.rate);
 	let mut show_help_menu = false;
 
 	let program_name = env!("CARGO_PKG_NAME");
@@ -232,17 +251,19 @@ async fn main() {
 	let logfile_path = app_dirs.state_dir.join("errors.log");
 
 	let colorscheme = read_colorscheme(&app_dirs.config_dir, &args.colorscheme).unwrap();
-	let mut widgets = setup_widgets(&args, &colorscheme);
+	let mut widgets = setup_widgets(&args, update_ratio, &colorscheme);
 
 	setup_logfile(&logfile_path);
 	let mut terminal = setup_terminal().unwrap();
 
-	let mut ticks = 0;
-	let ticker = tick(Duration::from_secs(1));
+	let mut update_seconds = Ratio::from_integer(0);
+	let ticker = tick(Duration::from_nanos(
+		Duration::from_secs(1).as_nanos() as u64 / args.rate,
+	));
 	let ui_events_receiver = setup_ui_events();
 	let ctrl_c_events = setup_ctrl_c().unwrap();
 
-	update_widgets(&mut widgets, ticks).await;
+	update_widgets(&mut widgets, update_seconds).await;
 	draw_widgets(&mut terminal, &mut widgets).unwrap();
 
 	loop {
@@ -251,8 +272,8 @@ async fn main() {
 				break;
 			}
 			recv(ticker) -> _ => {
-				ticks = (ticks + 1) % 60;
-				update_widgets(&mut widgets, ticks).await;
+				update_seconds = (update_seconds + update_ratio) % Ratio::from_integer(60);
+				update_widgets(&mut widgets, update_seconds).await;
 				if !show_help_menu {
 					draw_widgets(&mut terminal, &mut widgets).unwrap();
 				}

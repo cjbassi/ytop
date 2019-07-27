@@ -1,5 +1,4 @@
-use std::time::Duration;
-
+use num_rational::Ratio;
 use tui::buffer::Buffer;
 use tui::layout::Rect;
 use tui::widgets::Widget;
@@ -8,14 +7,14 @@ use crate::widgets::block;
 
 pub struct NetWidget {
 	title: String,
-	update_interval: Duration,
+	pub update_interval: Ratio<u64>,
 }
 
 impl NetWidget {
 	pub fn new() -> NetWidget {
 		NetWidget {
 			title: " Network Usage ".to_string(),
-			update_interval: Duration::from_secs(1),
+			update_interval: Ratio::from_integer(1),
 		}
 	}
 

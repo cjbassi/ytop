@@ -1,5 +1,4 @@
-use std::time::Duration;
-
+use num_rational::Ratio;
 use tui::buffer::Buffer;
 use tui::layout::Rect;
 use tui::widgets::Widget;
@@ -8,7 +7,7 @@ use crate::widgets::block;
 
 pub struct TempWidget {
 	title: String,
-	update_interval: Duration,
+	pub update_interval: Ratio<u64>,
 	update_count: f64,
 
 	temp_data: Vec<(String, Vec<(f64, f64)>)>,
@@ -18,7 +17,7 @@ impl TempWidget {
 	pub fn new() -> TempWidget {
 		TempWidget {
 			title: " Temperatures ".to_string(),
-			update_interval: Duration::from_secs(5),
+			update_interval: Ratio::from_integer(5),
 			update_count: 0.0,
 
 			temp_data: Vec::new(),

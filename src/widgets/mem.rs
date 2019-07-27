@@ -1,5 +1,4 @@
-use std::time::Duration;
-
+use num_rational::Ratio;
 use tui::buffer::Buffer;
 use tui::layout::Rect;
 use tui::widgets::Widget;
@@ -8,12 +7,12 @@ use crate::widgets::block;
 
 pub struct MemWidget {
 	title: String,
-	update_interval: Duration,
+	pub update_interval: Ratio<u64>,
 	update_count: f64,
 }
 
 impl MemWidget {
-	pub fn new(update_interval: Duration) -> MemWidget {
+	pub fn new(update_interval: Ratio<u64>) -> MemWidget {
 		MemWidget {
 			title: " Memory Usage ".to_string(),
 			update_interval,

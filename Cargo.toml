@@ -16,6 +16,7 @@ futures-preview = { version = "=0.3.0-alpha.17", features = ["async-await", "nig
 heim = "0.0.4"
 log = "0.4.7"
 num_cpus = "1.10.1"
+num-rational = "0.2.2"
 platform-dirs = "0.2.0"
 tokio = { git = "https://github.com/tokio-rs/tokio" }
 serde = { version = "1.0.97", features = ["derive"] }
