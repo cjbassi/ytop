@@ -2,7 +2,7 @@ use std::io;
 
 use tui::backend::Backend;
 use tui::layout::{Constraint, Direction, Layout};
-use tui::widgets::Widget;
+use tui::widgets::Widget as _;
 use tui::Terminal;
 
 use crate::Widgets;

@@ -9,11 +9,11 @@ mod proc;
 mod statusbar;
 mod temp;
 
-use futures::future::{join_all, FutureExt};
+use futures::future::{join_all, FutureExt as _};
 use num_rational::Ratio;
 
-use crate::args::Args;
-use crate::colorscheme::Colorscheme;
+use crate::Args;
+use crate::Colorscheme;
 
 use self::battery::BatteryWidget;
 use self::cpu::CpuWidget;

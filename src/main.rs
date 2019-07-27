@@ -20,7 +20,7 @@ use structopt::StructOpt;
 use tui::backend::CrosstermBackend;
 use tui::Terminal;
 
-use args::Args;
+use args::*;
 use colorscheme::*;
 use draw::*;
 use widgets::*;
