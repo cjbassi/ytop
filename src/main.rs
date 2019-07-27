@@ -154,7 +154,7 @@ async fn update_widgets(widgets: &mut Widgets, ticks: i64) {
     }
 }
 
-fn draw_all<B: Backend>(terminal: &mut Terminal<B>, widgets: &mut Widgets) -> io::Result<()> {
+fn draw_widgets<B: Backend>(terminal: &mut Terminal<B>, widgets: &mut Widgets) -> io::Result<()> {
     terminal.draw(|mut frame| {
         let vertical_chunks = Layout::default()
             .direction(Direction::Vertical)
@@ -231,7 +231,7 @@ async fn main() {
     let ui_events_receiver = setup_ui_events();
 
     update_widgets(&mut widgets, ticks).await;
-    draw_all(&mut terminal, &mut widgets).unwrap(); // TODO: unwrap
+    draw_widgets(&mut terminal, &mut widgets).unwrap(); // TODO: unwrap
 
     loop {
         select! {
@@ -239,7 +239,7 @@ async fn main() {
                 ticks = (ticks + 1) % 60;
                 update_widgets(&mut widgets, ticks).await;
                 if !show_help_menu {
-                    draw_all(&mut terminal, &mut widgets).unwrap(); // TODO: unwrap
+                    draw_widgets(&mut terminal, &mut widgets).unwrap(); // TODO: unwrap
                 }
             }
             recv(ui_events_receiver) -> message => {
@@ -253,7 +253,7 @@ async fn main() {
                                     if show_help_menu {
                                         draw_help_menu(&mut terminal, &mut widgets.help_menu).unwrap(); // TODO: unwrap
                                     } else {
-                                        draw_all(&mut terminal, &mut widgets).unwrap(); // TODO: unwrap
+                                        draw_widgets(&mut terminal, &mut widgets).unwrap(); // TODO: unwrap
                                     }
                                 },
                                 _ => {}
@@ -262,6 +262,12 @@ async fn main() {
                                 'c' => break,
                                 _ => {},
                             },
+                            KeyEvent::Esc => {
+                                if show_help_menu {
+                                    show_help_menu = false;
+                                    draw_widgets(&mut terminal, &mut widgets).unwrap(); // TODO: unwrap
+                                }
+                            }
                             _ => {}
                         }
                     }
