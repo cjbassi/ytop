@@ -8,6 +8,7 @@ mod widgets;
 use std::fs;
 use std::io;
 use std::path::Path;
+use std::process::exit;
 use std::thread;
 use std::time::Duration;
 
@@ -49,25 +50,34 @@ fn setup_terminal() -> io::Result<Terminal<CrosstermBackend>> {
 fn setup_ui_events() -> Receiver<InputEvent> {
     let (ui_events_sender, ui_events_receiver) = unbounded();
     thread::spawn(move || {
-        let _screen = crossterm::RawScreen::into_raw_mode().unwrap(); // TODO: unwrap
+        let _screen = crossterm::RawScreen::into_raw_mode().unwrap();
         let input = crossterm::input();
-        input.enable_mouse_mode().unwrap(); // TODO: unwrap
+        input.enable_mouse_mode().unwrap();
         let mut reader = input.read_sync();
         loop {
-            ui_events_sender.send(reader.next().unwrap()).unwrap(); // TODO: unwraps
+            ui_events_sender.send(reader.next().unwrap()).unwrap();
         }
     });
     ui_events_receiver
 }
 
+fn setup_ctrl_c() -> Result<Receiver<()>, ctrlc::Error> {
+    let (sender, receiver) = unbounded();
+    ctrlc::set_handler(move || {
+        sender.send(()).unwrap();
+    })?;
+
+    Ok(receiver)
+}
+
 fn setup_logfile(logfile_path: &Path) {
-    fs::create_dir_all(logfile_path.parent().unwrap()).unwrap(); // TODO: unwrap
+    fs::create_dir_all(logfile_path.parent().unwrap()).unwrap();
     let logfile = fs::OpenOptions::new()
         .write(true)
         .create(true)
         .truncate(true)
         .open(logfile_path)
-        .unwrap(); // TODO: unwrap
+        .unwrap();
     fern::Dispatch::new()
         .format(|out, message, record| {
             out.finish(format_args!(
@@ -80,7 +90,7 @@ fn setup_logfile(logfile_path: &Path) {
         })
         .chain(logfile)
         .apply()
-        .unwrap(); // TODO: unwrap
+        .unwrap();
 }
 
 fn read_colorscheme(
@@ -89,7 +99,7 @@ fn read_colorscheme(
 ) -> serde_json::Result<colorscheme::Colorscheme> {
     match colorscheme {
         args::Colorscheme::Custom(name) => serde_json::from_str(
-            &fs::read_to_string(config_folder.join(name).with_extension("json")).unwrap(), // TODO: unwrap
+            &fs::read_to_string(config_folder.join(name).with_extension("json")).unwrap(),
         ),
         _ => {
             let json_string = match colorscheme {
@@ -102,7 +112,8 @@ fn read_colorscheme(
                 args::Colorscheme::Vice => include_str!("../colorschemes/vice.json"),
                 _ => unreachable!(),
             };
-            Ok(serde_json::from_str(json_string).unwrap())
+            Ok(serde_json::from_str(json_string)
+                .expect("statically defined and verified json colorschemes"))
         }
     }
 }
@@ -182,12 +193,12 @@ fn draw_widgets<B: Backend>(terminal: &mut Terminal<B>, widgets: &mut Widgets) -
         widgets
             .disk_widget
             .as_mut()
-            .unwrap() // TODO: unwrap
+            .unwrap()
             .render(&mut frame, middle_left_vertical_chunks[0]);
         widgets
             .temp_widget
             .as_mut()
-            .unwrap() // TODO: unwrap
+            .unwrap()
             .render(&mut frame, middle_left_vertical_chunks[1]);
         let bottom_horizontal_chunks = Layout::default()
             .direction(Direction::Horizontal)
@@ -196,7 +207,7 @@ fn draw_widgets<B: Backend>(terminal: &mut Terminal<B>, widgets: &mut Widgets) -
         widgets
             .net_widget
             .as_mut()
-            .unwrap() // TODO: unwrap
+            .unwrap()
             .render(&mut frame, bottom_horizontal_chunks[0]);
         widgets
             .proc_widget
@@ -217,33 +228,37 @@ async fn main() {
     let mut show_help_menu = false;
 
     let program_name = env!("CARGO_PKG_NAME");
-    let app_dirs = AppDirs::new(Some(program_name), AppUI::CommandLine).unwrap(); // TODO: unwrap
+    let app_dirs = AppDirs::new(Some(program_name), AppUI::CommandLine).unwrap();
     let logfile_path = app_dirs.state_dir.join("errors.log");
 
-    let colorscheme = read_colorscheme(&app_dirs.config_dir, &args.colorscheme).unwrap(); // TODO: unwrap
+    let colorscheme = read_colorscheme(&app_dirs.config_dir, &args.colorscheme).unwrap();
     let mut widgets = setup_widgets(&args, &colorscheme);
 
     setup_logfile(&logfile_path);
-    let mut terminal = setup_terminal().unwrap(); // TODO: unwrap
+    let mut terminal = setup_terminal().unwrap();
 
     let mut ticks = 0;
     let ticker = tick(Duration::from_secs(1));
     let ui_events_receiver = setup_ui_events();
+    let ctrl_c_events = setup_ctrl_c().unwrap();
 
     update_widgets(&mut widgets, ticks).await;
-    draw_widgets(&mut terminal, &mut widgets).unwrap(); // TODO: unwrap
+    draw_widgets(&mut terminal, &mut widgets).unwrap();
 
     loop {
         select! {
+            recv(ctrl_c_events) -> _ => {
+                break;
+            }
             recv(ticker) -> _ => {
                 ticks = (ticks + 1) % 60;
                 update_widgets(&mut widgets, ticks).await;
                 if !show_help_menu {
-                    draw_widgets(&mut terminal, &mut widgets).unwrap(); // TODO: unwrap
+                    draw_widgets(&mut terminal, &mut widgets).unwrap();
                 }
             }
             recv(ui_events_receiver) -> message => {
-                match message.unwrap() { // TODO: unwrap
+                match message.unwrap() {
                     InputEvent::Keyboard(key_event) => {
                         match key_event {
                             KeyEvent::Char(c) => match c {
@@ -251,9 +266,9 @@ async fn main() {
                                 '?' => {
                                     show_help_menu = !show_help_menu;
                                     if show_help_menu {
-                                        draw_help_menu(&mut terminal, &mut widgets.help_menu).unwrap(); // TODO: unwrap
+                                        draw_help_menu(&mut terminal, &mut widgets.help_menu).unwrap();
                                     } else {
-                                        draw_widgets(&mut terminal, &mut widgets).unwrap(); // TODO: unwrap
+                                        draw_widgets(&mut terminal, &mut widgets).unwrap();
                                     }
                                 },
                                 _ => {}
@@ -265,7 +280,7 @@ async fn main() {
                             KeyEvent::Esc => {
                                 if show_help_menu {
                                     show_help_menu = false;
-                                    draw_widgets(&mut terminal, &mut widgets).unwrap(); // TODO: unwrap
+                                    draw_widgets(&mut terminal, &mut widgets).unwrap();
                                 }
                             }
                             _ => {}
