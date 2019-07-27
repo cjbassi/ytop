@@ -9,13 +9,13 @@ const TITLE: &str = " Help Menu ";
 pub struct HelpMenu {}
 
 impl HelpMenu {
-    pub fn new() -> HelpMenu {
-        HelpMenu {}
-    }
+	pub fn new() -> HelpMenu {
+		HelpMenu {}
+	}
 }
 
 impl Widget for HelpMenu {
-    fn draw(&mut self, area: Rect, buf: &mut Buffer) {
-        block::new().title(TITLE).draw(area, buf);
-    }
+	fn draw(&mut self, area: Rect, buf: &mut Buffer) {
+		block::new().title(TITLE).draw(area, buf);
+	}
 }

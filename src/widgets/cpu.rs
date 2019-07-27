@@ -8,98 +8,98 @@ use tui::widgets::{Axis, Chart, Dataset, Marker, Widget};
 use crate::widgets::block;
 
 pub struct CpuWidget {
-    title: String,
-    update_interval: Duration,
-    update_count: f64,
-    horizontal_scale: i64,
+	title: String,
+	update_interval: Duration,
+	update_count: f64,
+	horizontal_scale: i64,
 
-    cpu_count: usize,
+	cpu_count: usize,
 
-    show_average_cpu: bool,
-    show_per_cpu: bool,
+	show_average_cpu: bool,
+	show_per_cpu: bool,
 
-    average_cpu_data: (String, Vec<(f64, f64)>),
-    per_cpu_data: Vec<(String, Vec<(f64, f64)>)>,
+	average_cpu_data: (String, Vec<(f64, f64)>),
+	per_cpu_data: Vec<(String, Vec<(f64, f64)>)>,
 }
 
 impl CpuWidget {
-    pub fn new(update_interval: Duration, show_average_cpu: bool, show_per_cpu: bool) -> CpuWidget {
-        let mut cpu_widget = CpuWidget {
-            title: " CPU Usage ".to_string(),
-            update_interval,
-            update_count: 0.0,
-            horizontal_scale: 100,
+	pub fn new(update_interval: Duration, show_average_cpu: bool, show_per_cpu: bool) -> CpuWidget {
+		let mut cpu_widget = CpuWidget {
+			title: " CPU Usage ".to_string(),
+			update_interval,
+			update_count: 0.0,
+			horizontal_scale: 100,
 
-            cpu_count: num_cpus::get(),
+			cpu_count: num_cpus::get(),
 
-            show_average_cpu,
-            show_per_cpu,
+			show_average_cpu,
+			show_per_cpu,
 
-            average_cpu_data: ("AVRG".to_string(), Vec::new()),
-            per_cpu_data: Vec::new(),
-        };
+			average_cpu_data: ("AVRG".to_string(), Vec::new()),
+			per_cpu_data: Vec::new(),
+		};
 
-        if !(show_average_cpu || show_per_cpu) {
-            if cpu_widget.cpu_count <= 8 {
-                cpu_widget.show_per_cpu = true
-            } else {
-                cpu_widget.show_average_cpu = true
-            }
-        }
+		if !(show_average_cpu || show_per_cpu) {
+			if cpu_widget.cpu_count <= 8 {
+				cpu_widget.show_per_cpu = true
+			} else {
+				cpu_widget.show_average_cpu = true
+			}
+		}
 
-        if cpu_widget.show_per_cpu {
-            for i in 0..cpu_widget.cpu_count {
-                cpu_widget
-                    .per_cpu_data
-                    .push((format!("CPU{}", i), Vec::new()));
-            }
-        }
+		if cpu_widget.show_per_cpu {
+			for i in 0..cpu_widget.cpu_count {
+				cpu_widget
+					.per_cpu_data
+					.push((format!("CPU{}", i), Vec::new()));
+			}
+		}
 
-        cpu_widget
-    }
+		cpu_widget
+	}
 
-    pub async fn update(&mut self) {
-        self.update_count += 1.0;
-        if self.show_average_cpu {
-            self.average_cpu_data.1.push((self.update_count, 5.0));
-        }
-        if self.show_per_cpu {
-            for i in 0..self.cpu_count {
-                self.per_cpu_data[i].1.push((self.update_count, 5.0));
-            }
-        }
-    }
+	pub async fn update(&mut self) {
+		self.update_count += 1.0;
+		if self.show_average_cpu {
+			self.average_cpu_data.1.push((self.update_count, 5.0));
+		}
+		if self.show_per_cpu {
+			for i in 0..self.cpu_count {
+				self.per_cpu_data[i].1.push((self.update_count, 5.0));
+			}
+		}
+	}
 }
 
 impl Widget for CpuWidget {
-    fn draw(&mut self, area: Rect, buf: &mut Buffer) {
-        let mut datasets = Vec::new();
-        if self.show_average_cpu {
-            datasets.push(
-                Dataset::default()
-                    .name(&self.average_cpu_data.0)
-                    .marker(Marker::Braille)
-                    .style(Style::default().fg(Color::Yellow))
-                    .data(&self.average_cpu_data.1),
-            )
-        }
-        if self.show_per_cpu {
-            for per_cpu_data in self.per_cpu_data.iter() {
-                datasets.push(
-                    Dataset::default()
-                        .name(&per_cpu_data.0)
-                        .marker(Marker::Braille)
-                        .style(Style::default().fg(Color::Yellow))
-                        .data(&per_cpu_data.1),
-                )
-            }
-        }
+	fn draw(&mut self, area: Rect, buf: &mut Buffer) {
+		let mut datasets = Vec::new();
+		if self.show_average_cpu {
+			datasets.push(
+				Dataset::default()
+					.name(&self.average_cpu_data.0)
+					.marker(Marker::Braille)
+					.style(Style::default().fg(Color::Yellow))
+					.data(&self.average_cpu_data.1),
+			)
+		}
+		if self.show_per_cpu {
+			for per_cpu_data in self.per_cpu_data.iter() {
+				datasets.push(
+					Dataset::default()
+						.name(&per_cpu_data.0)
+						.marker(Marker::Braille)
+						.style(Style::default().fg(Color::Yellow))
+						.data(&per_cpu_data.1),
+				)
+			}
+		}
 
-        Chart::<String, String>::default()
-            .block(block::new().title(&self.title))
-            .x_axis(Axis::default().bounds([self.update_count - 100.0, self.update_count + 1.0]))
-            .y_axis(Axis::default().bounds([0.0, 100.0]))
-            .datasets(&datasets)
-            .draw(area, buf);
-    }
+		Chart::<String, String>::default()
+			.block(block::new().title(&self.title))
+			.x_axis(Axis::default().bounds([self.update_count - 100.0, self.update_count + 1.0]))
+			.y_axis(Axis::default().bounds([0.0, 100.0]))
+			.datasets(&datasets)
+			.draw(area, buf);
+	}
 }
