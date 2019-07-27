@@ -23,17 +23,18 @@ use tui::widgets::Widget;
 use tui::Terminal;
 
 use args::Args;
+use widgets::*;
 
 struct Widgets {
-    battery_widget: Option<widgets::BatteryWidget>,
-    cpu_widget: widgets::CpuWidget,
-    disk_widget: Option<widgets::DiskWidget>,
-    help_menu: widgets::HelpMenu,
-    mem_widget: widgets::MemWidget,
-    net_widget: Option<widgets::NetWidget>,
-    proc_widget: widgets::ProcWidget,
-    statusbar: Option<widgets::Statusbar>,
-    temp_widget: Option<widgets::TempWidget>,
+    battery_widget: Option<BatteryWidget>,
+    cpu_widget: CpuWidget,
+    disk_widget: Option<DiskWidget>,
+    help_menu: HelpMenu,
+    mem_widget: MemWidget,
+    net_widget: Option<NetWidget>,
+    proc_widget: ProcWidget,
+    statusbar: Option<Statusbar>,
+    temp_widget: Option<TempWidget>,
 }
 
 fn setup_terminal() -> io::Result<Terminal<CrosstermBackend>> {
@@ -107,16 +108,15 @@ fn read_colorscheme(
 }
 
 fn setup_widgets(args: &Args, colorscheme: &colorscheme::Colorscheme) -> Widgets {
-    let battery_widget = Some(widgets::BatteryWidget::new());
-    let cpu_widget =
-        widgets::CpuWidget::new(Duration::from_secs(1), args.average_cpu, args.per_cpu);
-    let disk_widget = Some(widgets::DiskWidget::new());
-    let help_menu = widgets::HelpMenu::new();
-    let mem_widget = widgets::MemWidget::new(Duration::from_secs(1));
-    let net_widget = Some(widgets::NetWidget::new());
-    let proc_widget = widgets::ProcWidget::new();
-    let statusbar = Some(widgets::Statusbar::new());
-    let temp_widget = Some(widgets::TempWidget::new());
+    let battery_widget = Some(BatteryWidget::new());
+    let cpu_widget = CpuWidget::new(Duration::from_secs(1), args.average_cpu, args.per_cpu);
+    let disk_widget = Some(DiskWidget::new());
+    let help_menu = HelpMenu::new();
+    let mem_widget = MemWidget::new(Duration::from_secs(1));
+    let net_widget = Some(NetWidget::new());
+    let proc_widget = ProcWidget::new();
+    let statusbar = Some(Statusbar::new());
+    let temp_widget = Some(TempWidget::new());
 
     Widgets {
         battery_widget,
@@ -154,7 +154,7 @@ async fn update_widgets(widgets: &mut Widgets, ticks: i64) {
     }
 }
 
-fn draw<B: Backend>(terminal: &mut Terminal<B>, widgets: &mut Widgets) -> io::Result<()> {
+fn draw_all<B: Backend>(terminal: &mut Terminal<B>, widgets: &mut Widgets) -> io::Result<()> {
     terminal.draw(|mut frame| {
         let vertical_chunks = Layout::default()
             .direction(Direction::Vertical)
@@ -204,9 +204,17 @@ fn draw<B: Backend>(terminal: &mut Terminal<B>, widgets: &mut Widgets) -> io::Re
     })
 }
 
+fn draw_help_menu<B: Backend>(
+    terminal: &mut Terminal<B>,
+    help_menu: &mut HelpMenu,
+) -> io::Result<()> {
+    terminal.draw(|mut frame| {})
+}
+
 #[tokio::main]
 async fn main() {
     let args = Args::from_args();
+    let mut show_help_menu = false;
 
     let program_name = env!("CARGO_PKG_NAME");
     let app_dirs = AppDirs::new(Some(program_name), AppUI::CommandLine).unwrap(); // TODO: unwrap
@@ -223,14 +231,16 @@ async fn main() {
     let ui_events_receiver = setup_ui_events();
 
     update_widgets(&mut widgets, ticks).await;
-    draw(&mut terminal, &mut widgets).unwrap(); // TODO: unwrap
+    draw_all(&mut terminal, &mut widgets).unwrap(); // TODO: unwrap
 
     loop {
         select! {
             recv(ticker) -> _ => {
                 ticks = (ticks + 1) % 60;
                 update_widgets(&mut widgets, ticks).await;
-                draw(&mut terminal, &mut widgets).unwrap(); // TODO: unwrap
+                if !show_help_menu {
+                    draw_all(&mut terminal, &mut widgets).unwrap(); // TODO: unwrap
+                }
             }
             recv(ui_events_receiver) -> message => {
                 match message.unwrap() { // TODO: unwrap
@@ -238,6 +248,14 @@ async fn main() {
                         match key_event {
                             KeyEvent::Char(c) => match c {
                                 'q' => break,
+                                '?' => {
+                                    show_help_menu = !show_help_menu;
+                                    if show_help_menu {
+                                        draw_help_menu(&mut terminal, &mut widgets.help_menu).unwrap(); // TODO: unwrap
+                                    } else {
+                                        draw_all(&mut terminal, &mut widgets).unwrap(); // TODO: unwrap
+                                    }
+                                },
                                 _ => {}
                             },
                             KeyEvent::Ctrl(c) => match c {
