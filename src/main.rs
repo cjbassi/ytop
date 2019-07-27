@@ -91,7 +91,7 @@ async fn main() {
 	let logfile_path = app_dirs.state_dir.join("errors.log");
 
 	let colorscheme = read_colorscheme(&app_dirs.config_dir, &args.colorscheme).unwrap();
-	let mut widgets = setup_widgets(&args, update_ratio, &colorscheme);
+	let mut app = setup_app(&args, update_ratio, &colorscheme);
 
 	setup_logfile(&logfile_path);
 	let mut terminal = setup_terminal().unwrap();
@@ -103,8 +103,8 @@ async fn main() {
 	let ui_events_receiver = setup_ui_events();
 	let ctrl_c_events = setup_ctrl_c().unwrap();
 
-	update_widgets(&mut widgets, update_seconds).await;
-	draw_widgets(&mut terminal, &mut widgets).unwrap();
+	update_widgets(&mut app.widgets, update_seconds).await;
+	draw(&mut terminal, &mut app).unwrap();
 
 	loop {
 		select! {
@@ -113,9 +113,9 @@ async fn main() {
 			}
 			recv(ticker) -> _ => {
 				update_seconds = (update_seconds + update_ratio) % Ratio::from_integer(60);
-				update_widgets(&mut widgets, update_seconds).await;
+				update_widgets(&mut app.widgets, update_seconds).await;
 				if !show_help_menu {
-					draw_widgets(&mut terminal, &mut widgets).unwrap();
+					draw(&mut terminal, &mut app).unwrap();
 				}
 			}
 			recv(ui_events_receiver) -> message => {
@@ -127,9 +127,9 @@ async fn main() {
 								'?' => {
 									show_help_menu = !show_help_menu;
 									if show_help_menu {
-										draw_help_menu(&mut terminal, &mut widgets).unwrap();
+										draw_help_menu(&mut terminal, &mut app).unwrap();
 									} else {
-										draw_widgets(&mut terminal, &mut widgets).unwrap();
+										draw(&mut terminal, &mut app).unwrap();
 									}
 								},
 								_ => {}
@@ -141,7 +141,7 @@ async fn main() {
 							KeyEvent::Esc => {
 								if show_help_menu {
 									show_help_menu = false;
-									draw_widgets(&mut terminal, &mut widgets).unwrap();
+									draw(&mut terminal, &mut app).unwrap();
 								}
 							}
 							_ => {}
