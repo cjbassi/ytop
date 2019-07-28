@@ -6,7 +6,7 @@ use tui::buffer::Buffer;
 use tui::layout::Rect;
 use tui::widgets::Widget;
 
-use crate::widgets::block;
+use super::block;
 
 struct Partition {
 	name: String,

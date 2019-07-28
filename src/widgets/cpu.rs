@@ -4,7 +4,7 @@ use tui::layout::Rect;
 use tui::style::{Color, Style};
 use tui::widgets::{Axis, Chart, Dataset, Marker, Widget};
 
-use crate::widgets::block;
+use super::block;
 
 pub struct CpuWidget {
 	title: String,

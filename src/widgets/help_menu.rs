@@ -3,7 +3,7 @@ use tui::buffer::Buffer;
 use tui::layout::Rect;
 use tui::widgets::{Paragraph, Text, Widget};
 
-use crate::widgets::block;
+use super::block;
 
 const TEXT: &str = r"Quit: q or <C-c>
 Process navigation:
