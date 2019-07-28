@@ -26,7 +26,7 @@ pub fn draw<B: Backend>(terminal: &mut Terminal<B>, app: &mut App) -> io::Result
 
 pub fn draw_widgets<B: Backend>(frame: &mut Frame<B>, widgets: &mut Widgets, area: Rect) {
 	if widgets.temp.is_some() {
-		let chunks = Layout::default()
+		let vertical_chunks = Layout::default()
 			.direction(Direction::Vertical)
 			.constraints(
 				[
@@ -37,16 +37,33 @@ pub fn draw_widgets<B: Backend>(frame: &mut Frame<B>, widgets: &mut Widgets, are
 				.as_ref(),
 			)
 			.split(area);
-		widgets.cpu.render(frame, chunks[0]);
-		draw_middle_row(frame, widgets, chunks[1]);
-		draw_bottom_row(frame, widgets, chunks[2]);
+		draw_top_row(frame, widgets, vertical_chunks[0]);
+		draw_middle_row(frame, widgets, vertical_chunks[1]);
+		draw_bottom_row(frame, widgets, vertical_chunks[2]);
 	} else {
-		let chunks = Layout::default()
+		let vertical_chunks = Layout::default()
 			.direction(Direction::Vertical)
 			.constraints([Constraint::Ratio(1, 2), Constraint::Ratio(1, 2)].as_ref())
 			.split(area);
-		widgets.cpu.render(frame, chunks[0]);
-		draw_bottom_row(frame, widgets, chunks[1]);
+		draw_top_row(frame, widgets, vertical_chunks[0]);
+		draw_bottom_row(frame, widgets, vertical_chunks[1]);
+	}
+}
+
+pub fn draw_top_row<B: Backend>(frame: &mut Frame<B>, widgets: &mut Widgets, area: Rect) {
+	if let Some(battery) = widgets.battery.as_mut() {
+		let horizontal_chunks = Layout::default()
+			.direction(Direction::Horizontal)
+			.constraints([Constraint::Ratio(1, 3), Constraint::Ratio(2, 3)].as_ref())
+			.split(area);
+		battery.render(frame, horizontal_chunks[0]);
+		widgets.cpu.render(frame, horizontal_chunks[1]);
+	} else {
+		let horizontal_chunks = Layout::default()
+			.direction(Direction::Horizontal)
+			.constraints([Constraint::Percentage(100)].as_ref())
+			.split(area);
+		widgets.cpu.render(frame, horizontal_chunks[0]);
 	}
 }
 
