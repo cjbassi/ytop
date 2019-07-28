@@ -22,7 +22,7 @@
 	- `G` and `<End>`: jump to bottom
 - Process actions:
 	- `<Tab>`: toggle process grouping
-	- `dd`: kill selected process or group of processes
+	- `dd`: kill selected process or process group
 - Process sorting:
 	- `c`: CPU
 	- `m`: Mem
