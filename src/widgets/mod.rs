@@ -41,7 +41,12 @@ pub struct Widgets {
 	pub temp: Option<TempWidget>,
 }
 
-pub fn setup_app(args: &Args, update_ratio: Ratio<u64>, colorscheme: &Colorscheme) -> App {
+pub fn setup_app(
+	args: &Args,
+	update_ratio: Ratio<u64>,
+	colorscheme: &Colorscheme,
+	program_name: &str,
+) -> App {
 	let cpu = CpuWidget::new(update_ratio, args.average_cpu, args.per_cpu);
 	let mem = MemWidget::new(update_ratio);
 	let proc = ProcWidget::new();
@@ -63,7 +68,7 @@ pub fn setup_app(args: &Args, update_ratio: Ratio<u64>, colorscheme: &Colorschem
 	};
 
 	let statusbar = if args.statusbar {
-		Some(Statusbar::new())
+		Some(Statusbar::new(program_name))
 	} else {
 		None
 	};

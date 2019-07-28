@@ -91,7 +91,7 @@ async fn main() {
 	let logfile_path = app_dirs.state_dir.join("errors.log");
 
 	let colorscheme = read_colorscheme(&app_dirs.config_dir, &args.colorscheme).unwrap();
-	let mut app = setup_app(&args, update_ratio, &colorscheme);
+	let mut app = setup_app(&args, update_ratio, &colorscheme, program_name);
 
 	setup_logfile(&logfile_path);
 	let mut terminal = setup_terminal().unwrap();
