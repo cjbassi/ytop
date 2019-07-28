@@ -31,6 +31,9 @@ CPU and Mem graph scaling:
   - h: scale in
   - l: scale out";
 
+const TEXT_WIDTH: u16 = 48;
+const TEXT_HEIGHT: u16 = 27;
+
 lazy_static! {
 	static ref TEXT_VEC: Vec<Text<'static>> = TEXT
 		.lines()
@@ -40,25 +43,21 @@ lazy_static! {
 
 pub struct HelpMenu {
 	title: String,
-	width: u16,
-	height: u16,
 }
 
 impl HelpMenu {
 	pub fn new() -> HelpMenu {
 		HelpMenu {
 			title: " Help Menu ".to_string(),
-			width: 48,
-			height: 27,
 		}
 	}
 
 	pub fn get_rect(&self, area: &Rect) -> Rect {
 		Rect {
-			x: (area.width - self.width) / 2,
-			y: (area.height - self.height) / 2,
-			width: self.width,
-			height: self.height,
+			x: (area.width - TEXT_WIDTH) / 2,
+			y: (area.height - TEXT_HEIGHT) / 2,
+			width: TEXT_WIDTH,
+			height: TEXT_HEIGHT,
 		}
 	}
 }
