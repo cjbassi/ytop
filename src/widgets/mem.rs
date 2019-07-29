@@ -1,6 +1,7 @@
 use futures::try_join;
 use heim::memory;
 use num_rational::Ratio;
+use size::{Base, Size};
 use tui::buffer::Buffer;
 use tui::layout::Rect;
 use tui::style::{Color, Style};
@@ -26,13 +27,18 @@ pub struct MemWidget {
 
 impl MemWidget {
 	pub fn new(update_interval: Ratio<u64>) -> MemWidget {
+		let mut main = MemData::default();
+		let mut swap = MemData::default();
+		main.percents.push((1.0, 0.0));
+		swap.percents.push((1.0, 0.0));
+
 		MemWidget {
 			title: " Memory Usage ".to_string(),
 			update_interval,
-			update_count: 0.0,
+			update_count: 1.0,
 
-			main: MemData::default(),
-			swap: MemData::default(),
+			main,
+			swap,
 		}
 	}
 
@@ -47,14 +53,14 @@ impl MemWidget {
 		self.main.used = self.main.total - main.available().get();
 		self.main.percents.push((
 			self.update_count,
-			self.main.used as f64 / self.main.total as f64,
+			(self.main.used * 100 / self.main.total) as f64,
 		));
 
 		self.swap.total = swap.total().get();
 		self.swap.used = swap.used().get();
 		self.swap.percents.push((
 			self.update_count,
-			self.swap.used as f64 / self.swap.total as f64,
+			(self.swap.used * 100 / self.swap.total) as f64,
 		));
 	}
 }
@@ -67,16 +73,38 @@ impl Widget for MemWidget {
 			.y_axis(Axis::default().bounds([0.0, 100.0]))
 			.datasets(&[
 				Dataset::default()
-					.name("Main")
 					.marker(Marker::Braille)
 					.style(Style::default().fg(Color::Yellow))
 					.data(&self.main.percents),
 				Dataset::default()
-					.name("Swap")
 					.marker(Marker::Braille)
 					.style(Style::default().fg(Color::Blue))
 					.data(&self.swap.percents),
 			])
 			.draw(area, buf);
+
+		buf.set_string(
+			area.x + 3,
+			area.y + 2,
+			format!(
+				"Main {:3.0}% {}/{}",
+				self.main.percents.last().unwrap().1,
+				Size::Bytes(self.main.used),
+				Size::Bytes(self.main.total),
+			),
+			Style::default().fg(Color::Yellow),
+		);
+
+		buf.set_string(
+			area.x + 3,
+			area.y + 3,
+			format!(
+				"Swap {:3.0}% {}/{}",
+				self.swap.percents.last().unwrap().1,
+				Size::Bytes(self.swap.used),
+				Size::Bytes(self.swap.total),
+			),
+			Style::default().fg(Color::Blue),
+		);
 	}
 }
