@@ -5,7 +5,7 @@ use tui::buffer::Buffer;
 use tui::layout::Rect;
 use tui::widgets::Widget;
 
-use super::block;
+use super::{block, WidgetUpdate};
 
 pub struct BatteryWidget {
 	title: String,
@@ -25,9 +25,15 @@ impl BatteryWidget {
 			battery_data: HashMap::new(),
 		}
 	}
+}
 
-	pub async fn update(&mut self) {
+impl WidgetUpdate for BatteryWidget {
+	fn update(&mut self) {
 		self.update_count += 1.0;
+	}
+
+	fn get_update_interval(&self) -> Ratio<u64> {
+		self.update_interval
 	}
 }
 

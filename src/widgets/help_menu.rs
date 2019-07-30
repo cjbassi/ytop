@@ -52,7 +52,7 @@ impl HelpMenu {
 		}
 	}
 
-	pub fn get_rect(&self, area: &Rect) -> Rect {
+	pub fn get_rect(&self, area: Rect) -> Rect {
 		Rect {
 			x: (area.width - TEXT_WIDTH) / 2,
 			y: (area.height - TEXT_HEIGHT) / 2,

@@ -1,10 +1,8 @@
 use chrono::prelude::*;
 use tui::buffer::Buffer;
 use tui::layout::Rect;
-use tui::style::{Color, Style};
+use tui::style::Style;
 use tui::widgets::Widget;
-
-use super::block;
 
 pub struct Statusbar {
 	hostname: String,

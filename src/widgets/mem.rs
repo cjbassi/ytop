@@ -1,13 +1,12 @@
-use futures::try_join;
-use heim::memory;
 use num_rational::Ratio;
-use size::{Base, Size};
+use psutil::memory;
+use size::Size;
 use tui::buffer::Buffer;
 use tui::layout::Rect;
 use tui::style::{Color, Style};
 use tui::widgets::{Axis, Chart, Dataset, Marker, Widget};
 
-use super::block;
+use super::{block, WidgetUpdate};
 
 #[derive(Default)]
 struct MemData {
@@ -41,27 +40,30 @@ impl MemWidget {
 			swap,
 		}
 	}
+}
 
-	pub async fn update(&mut self) {
+impl WidgetUpdate for MemWidget {
+	fn update(&mut self) {
 		self.update_count += 1.0;
 
-		let main = memory::memory();
-		let swap = memory::swap();
-		let (main, swap) = try_join!(main, swap).unwrap();
+		let main = memory::virtual_memory().unwrap();
+		let swap = memory::swap_memory().unwrap();
 
-		self.main.total = main.total().get();
-		self.main.used = self.main.total - main.available().get();
-		self.main.percents.push((
-			self.update_count,
-			(self.main.used * 100 / self.main.total) as f64,
-		));
+		self.main.total = main.total;
+		self.main.used = main.used;
+		self.main
+			.percents
+			.push((self.update_count, f64::from(main.percent)));
 
-		self.swap.total = swap.total().get();
-		self.swap.used = swap.used().get();
-		self.swap.percents.push((
-			self.update_count,
-			(self.swap.used * 100 / self.swap.total) as f64,
-		));
+		self.swap.total = swap.total;
+		self.swap.used = swap.used;
+		self.swap
+			.percents
+			.push((self.update_count, f64::from(swap.percent)));
+	}
+
+	fn get_update_interval(&self) -> Ratio<u64> {
+		self.update_interval
 	}
 }
 

@@ -4,7 +4,7 @@ use tui::layout::Rect;
 use tui::style::{Color, Style};
 use tui::widgets::{Axis, Chart, Dataset, Marker, Widget};
 
-use super::block;
+use super::{block, WidgetUpdate};
 
 pub struct CpuWidget {
 	title: String,
@@ -60,8 +60,10 @@ impl CpuWidget {
 
 		cpu_widget
 	}
+}
 
-	pub async fn update(&mut self) {
+impl WidgetUpdate for CpuWidget {
+	fn update(&mut self) {
 		self.update_count += 1.0;
 		if self.show_average_cpu {
 			self.average_cpu_data.1.push((self.update_count, 5.0));
@@ -71,6 +73,10 @@ impl CpuWidget {
 				self.per_cpu_data[i].1.push((self.update_count, 5.0));
 			}
 		}
+	}
+
+	fn get_update_interval(&self) -> Ratio<u64> {
+		self.update_interval
 	}
 }
 

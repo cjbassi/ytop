@@ -9,7 +9,7 @@ mod proc;
 mod statusbar;
 mod temp;
 
-use futures::future::{join_all, FutureExt as _};
+use crossbeam_utils::thread;
 use num_rational::Ratio;
 
 use crate::Args;
@@ -24,6 +24,11 @@ use self::net::NetWidget;
 use self::proc::ProcWidget;
 use self::statusbar::Statusbar;
 use self::temp::TempWidget;
+
+trait WidgetUpdate {
+	fn update(&mut self);
+	fn get_update_interval(&self) -> Ratio<u64>;
+}
 
 pub struct App {
 	pub help_menu: HelpMenu,
@@ -88,36 +93,33 @@ pub fn setup_app(
 	}
 }
 
-pub async fn update_widgets(widgets: &mut Widgets, seconds: Ratio<u64>) {
+pub fn update_widgets(widgets: &mut Widgets, seconds: Ratio<u64>) {
 	let zero = Ratio::from_integer(0);
 
-	let mut futures = vec![widgets.cpu.update().boxed(), widgets.mem.update().boxed()];
-
-	if seconds % widgets.proc.update_interval == zero {
-		futures.push(widgets.proc.update().boxed());
-	}
+	let mut widgets_update: Vec<&mut (dyn WidgetUpdate + Send)> =
+		vec![&mut widgets.cpu, &mut widgets.mem, &mut widgets.proc];
 
 	if let (Some(disk), Some(net), Some(temp)) = (
 		widgets.disk.as_mut(),
 		widgets.net.as_mut(),
 		widgets.temp.as_mut(),
 	) {
-		if seconds % disk.update_interval == zero {
-			futures.push(disk.update().boxed());
-		}
-		if seconds % net.update_interval == zero {
-			futures.push(net.update().boxed());
-		}
-		if seconds % temp.update_interval == zero {
-			futures.push(temp.update().boxed());
-		}
-
+		widgets_update.push(disk);
+		widgets_update.push(net);
+		widgets_update.push(temp);
 		if let Some(battery) = widgets.battery.as_mut() {
-			if seconds % battery.update_interval == zero {
-				futures.push(battery.update().boxed());
-			}
+			widgets_update.push(battery);
 		}
 	}
 
-	join_all(futures).await;
+	thread::scope(|scope| {
+		for widget in widgets_update {
+			if seconds % widget.get_update_interval() == zero {
+				scope.spawn(move |_| {
+					widget.update();
+				});
+			}
+		}
+	})
+	.unwrap();
 }

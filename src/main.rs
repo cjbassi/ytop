@@ -1,5 +1,3 @@
-#![feature(async_await)]
-
 mod args;
 mod colorscheme;
 mod draw;
@@ -80,8 +78,7 @@ fn setup_logfile(logfile_path: &Path) {
 		.unwrap();
 }
 
-#[tokio::main]
-async fn main() {
+fn main() {
 	let args = Args::from_args();
 	let update_ratio = Ratio::new(1, args.rate);
 	let mut show_help_menu = false;
@@ -103,7 +100,7 @@ async fn main() {
 	let ui_events_receiver = setup_ui_events();
 	let ctrl_c_events = setup_ctrl_c().unwrap();
 
-	update_widgets(&mut app.widgets, update_seconds).await;
+	update_widgets(&mut app.widgets, update_seconds);
 	draw(&mut terminal, &mut app).unwrap();
 
 	loop {
@@ -113,7 +110,7 @@ async fn main() {
 			}
 			recv(ticker) -> _ => {
 				update_seconds = (update_seconds + update_ratio) % Ratio::from_integer(60);
-				update_widgets(&mut app.widgets, update_seconds).await;
+				update_widgets(&mut app.widgets, update_seconds);
 				if !show_help_menu {
 					draw(&mut terminal, &mut app).unwrap();
 				}

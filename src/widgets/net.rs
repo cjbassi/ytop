@@ -3,7 +3,7 @@ use tui::buffer::Buffer;
 use tui::layout::Rect;
 use tui::widgets::Widget;
 
-use super::block;
+use super::{block, WidgetUpdate};
 
 pub struct NetWidget {
 	title: String,
@@ -21,8 +21,14 @@ impl NetWidget {
 			interfaces,
 		}
 	}
+}
 
-	pub async fn update(&mut self) {}
+impl WidgetUpdate for NetWidget {
+	fn update(&mut self) {}
+
+	fn get_update_interval(&self) -> Ratio<u64> {
+		self.update_interval
+	}
 }
 
 impl Widget for NetWidget {

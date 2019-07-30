@@ -104,7 +104,7 @@ pub fn draw_bottom_row<B: Backend>(frame: &mut Frame<B>, widgets: &mut Widgets, 
 
 pub fn draw_help_menu<B: Backend>(terminal: &mut Terminal<B>, app: &mut App) -> io::Result<()> {
 	terminal.draw(|mut frame| {
-		let rect = app.help_menu.get_rect(&frame.size());
+		let rect = app.help_menu.get_rect(frame.size());
 		app.help_menu.render(&mut frame, rect);
 	})
 }
