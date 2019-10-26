@@ -10,6 +10,7 @@ use std::path::Path;
 use std::thread;
 use std::time::Duration;
 
+use anyhow::Result;
 use crossbeam_channel::{select, tick, unbounded, Receiver};
 use crossterm::{AlternateScreen, InputEvent, KeyEvent, MouseEvent};
 use num_rational::Ratio;
@@ -23,9 +24,9 @@ use colorscheme::*;
 use draw::*;
 use widgets::*;
 
-fn setup_terminal() -> io::Result<Terminal<CrosstermBackend>> {
+fn setup_terminal() -> Result<Terminal<CrosstermBackend<io::Stdout>>> {
 	let screen = AlternateScreen::to_alternate(true)?;
-	let backend = CrosstermBackend::with_alternate_screen(screen)?;
+	let backend = CrosstermBackend::with_alternate_screen(io::stdout(), screen)?;
 	let mut terminal = Terminal::new(backend)?;
 	terminal.hide_cursor()?;
 	terminal.clear()?;
