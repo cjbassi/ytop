@@ -4,29 +4,39 @@ on: release
 
 env:
   NAME: rtop
-  TARGET: x86_64-unknown-linux-gnu
-  FILE: ${{ NAME }}-${{ GITHUB_REF }}-${{ TARGET }}.tar.gz
 
 jobs:
   deploy:
     name: Deploy
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        target:
+          - x86_64-unknown-linux-gnu
     steps:
       - name: Checkout sources
         uses: actions/checkout@v1
 
+      - name: Install toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          target: ${{ matrix.target }}
+          override: true
+
       - name: Build
         uses: actions-rs/cargo@v1
         with:
+          use-cross: true
           command: build
-          args: --release
-          
+          args: --release --target=${{ matrix.target }}
+
       - name: Compress
-        run: tar -czf ${{ FILE }} -C ./target/${{ TARGET }}/release/ ${{ NAME }}
+        run: tar -czf ${{ NAME }}-${{ GITHUB_REF }}-${{ matrix.target }}.tar.gz -C ./target/${{ matrix.target }}/release/ ${{ NAME }}
 
       - name: Upload to release
         uses: JasonEtco/upload-to-release@master
         with:
-          args: ${{ FILE }}
+          args: ${{ NAME }}-${{ GITHUB_REF }}-${{ matrix.target }}.tar.gz
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
