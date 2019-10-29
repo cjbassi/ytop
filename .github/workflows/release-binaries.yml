@@ -1,4 +1,4 @@
-name: Deploy
+name: Release Binaries
 
 on: release
 
@@ -7,7 +7,6 @@ env:
 
 jobs:
   deploy:
-    name: Deploy
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -17,24 +16,24 @@ jobs:
       - name: Checkout sources
         uses: actions/checkout@v1
 
-      - name: Install toolchain
+      - name: Install stable toolchain
         uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
           target: ${{ matrix.target }}
           override: true
 
-      - name: Build
+      - name: Build release binary
         uses: actions-rs/cargo@v1
         with:
           use-cross: true
           command: build
           args: --release --target=${{ matrix.target }}
 
-      - name: Compress
+      - name: Archive and compress binary
         run: tar -czf ${{ NAME }}-${{ GITHUB_REF }}-${{ matrix.target }}.tar.gz -C ./target/${{ matrix.target }}/release/ ${{ NAME }}
 
-      - name: Upload to release
+      - name: Upload archive to GitHub releases
         uses: JasonEtco/upload-to-release@master
         with:
           args: ${{ NAME }}-${{ GITHUB_REF }}-${{ matrix.target }}.tar.gz

@@ -1,12 +1,11 @@
 # Based on https://github.com/actions-rs/meta/blob/master/recipes/quickstart.md
 
-on: [push, pull_request]
+name: Rust-CI
 
-name: Rust
+on: [push, pull_request]
 
 jobs:
   check:
-    name: Check
     runs-on: ubuntu-latest
     steps:
       - name: Checkout sources
@@ -25,7 +24,6 @@ jobs:
           command: check
 
   test:
-    name: Test Suite
     runs-on: ubuntu-latest
     steps:
       - name: Checkout sources
@@ -43,8 +41,7 @@ jobs:
         with:
           command: test
 
-  lints:
-    name: Lints
+  rustfmt:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout sources
@@ -56,13 +53,27 @@ jobs:
           profile: minimal
           toolchain: stable
           override: true
-          components: rustfmt, clippy
+          components: rustfmt
 
       - name: Run cargo fmt
         uses: actions-rs/cargo@v1
         with:
           command: fmt
           args: --all -- --check
+
+  clippy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v1
+
+      - name: Install stable toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          override: true
+          components: clippy
 
       - name: Run cargo clippy
         uses: actions-rs/cargo@v1
