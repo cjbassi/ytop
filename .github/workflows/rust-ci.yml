@@ -41,7 +41,7 @@ jobs:
         with:
           command: test
 
-  rustfmt:
+  format:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout sources
@@ -61,7 +61,7 @@ jobs:
           command: fmt
           args: --all -- --check
 
-  clippy:
+  lint:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout sources
