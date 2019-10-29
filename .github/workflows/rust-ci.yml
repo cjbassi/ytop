@@ -1,6 +1,6 @@
 # Based on https://github.com/actions-rs/meta/blob/master/recipes/quickstart.md
 
-name: Rust-CI
+name: Rust CI
 
 on: [push, pull_request]
 
