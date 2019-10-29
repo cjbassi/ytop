@@ -1,0 +1,32 @@
+name: Deploy
+
+on: release
+
+env:
+  NAME: rtop
+  TARGET: x86_64-unknown-linux-gnu
+  FILE: ${{ NAME }}-${{ GITHUB_REF }}-${{ TARGET }}.tar.gz
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v1
+
+      - name: Build
+      - uses: actions-rs/cargo@v1
+        with:
+          command: build
+          args: --release
+          
+      - name: Compress
+          run: tar -czf ${{ FILE }} -C ./target/${{ TARGET }}/release/ ${{ NAME }}
+
+      - name: Upload to release
+        uses: JasonEtco/upload-to-release@master
+        with:
+          args: ${{ FILE }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
