@@ -6,7 +6,12 @@ on: [push, pull_request]
 
 jobs:
   check:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os:
+          - ubuntu-latest
+          - macOS-latest
     steps:
       - name: Checkout sources
         uses: actions/checkout@v1

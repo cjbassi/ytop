@@ -7,11 +7,20 @@ env:
 
 jobs:
   publish:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
+        os:
+          - ubuntu-latest
+          - macOS-latest
         target:
           - x86_64-unknown-linux-gnu
+          - x86_64-apple-darwin
+    exclude:
+      - os: macOS-latest
+        target: x86_64-unknown-linux-gnu
+      - os: ubuntu-latest
+        target: x86_64-apple-darwin
     steps:
       - name: Checkout sources
         uses: actions/checkout@v1
