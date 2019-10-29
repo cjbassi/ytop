@@ -7,6 +7,8 @@ env:
 
 jobs:
   publish:
+    env:
+      FILE: ${{ NAME }}-${{ GITHUB_REF }}-${{ matrix.target }}.tar.gz
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -40,11 +42,11 @@ jobs:
           args: --release --target=${{ matrix.target }}
 
       - name: Archive and compress binary
-        run: tar -czf ${{ NAME }}-${{ GITHUB_REF }}-${{ matrix.target }}.tar.gz -C ./target/${{ matrix.target }}/release/ ${{ NAME }}
+        run: tar -czf ${{ FILE }} -C ./target/${{ matrix.target }}/release/ ${{ NAME }}
 
       - name: Upload archive to GitHub releases
         uses: JasonEtco/upload-to-release@master
         with:
-          args: ${{ NAME }}-${{ GITHUB_REF }}-${{ matrix.target }}.tar.gz
+          args: ${{ FILE }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
