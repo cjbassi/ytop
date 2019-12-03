@@ -12,7 +12,7 @@ use std::time::Duration;
 
 use anyhow::Result;
 use crossbeam_channel::{select, tick, unbounded, Receiver};
-use crossterm::{AlternateScreen, InputEvent, KeyEvent, MouseEvent};
+use crossterm::{AlternateScreen, InputEvent, KeyEvent};
 use num_rational::Ratio;
 use platform_dirs::{AppDirs, AppUI};
 use structopt::StructOpt;
