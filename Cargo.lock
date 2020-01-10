@@ -530,7 +530,7 @@ dependencies = [
 [[package]]
 name = "psutil"
 version = "1.7.0"
-source = "git+https://github.com/cjbassi/rust-psutil?branch=restructure#f7f0ea3f8135657fb6dcde773a27adc5a81714f3"
+source = "git+https://github.com/cjbassi/rust-psutil?branch=restructure#8024fdbeb2076d8f1191a56dca6006857da595a7"
 dependencies = [
  "libc 0.2.66 (registry+https://github.com/rust-lang/crates.io-index)",
  "num_cpus 1.11.1 (registry+https://github.com/rust-lang/crates.io-index)",
