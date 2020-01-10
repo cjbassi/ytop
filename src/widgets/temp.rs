@@ -3,11 +3,12 @@ use tui::buffer::Buffer;
 use tui::layout::Rect;
 use tui::widgets::Widget;
 
-use super::{block, WidgetUpdate};
+use crate::update::UpdatableWidget;
+use crate::widgets::block;
 
 pub struct TempWidget {
 	title: String,
-	pub update_interval: Ratio<u64>,
+	update_interval: Ratio<u64>,
 	update_count: f64,
 
 	fahrenheit: bool,
@@ -27,7 +28,7 @@ impl TempWidget {
 	}
 }
 
-impl WidgetUpdate for TempWidget {
+impl UpdatableWidget for TempWidget {
 	fn update(&mut self) {
 		self.update_count += 1.0;
 	}

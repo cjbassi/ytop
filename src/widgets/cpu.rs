@@ -5,11 +5,12 @@ use tui::layout::Rect;
 use tui::style::{Color, Style};
 use tui::widgets::{Axis, Chart, Dataset, Marker, Widget};
 
-use super::{block, WidgetUpdate};
+use crate::update::UpdatableWidget;
+use crate::widgets::block;
 
 pub struct CpuWidget {
 	title: String,
-	pub update_interval: Ratio<u64>,
+	update_interval: Ratio<u64>,
 	update_count: f64,
 	horizontal_scale: i64,
 
@@ -63,7 +64,7 @@ impl CpuWidget {
 	}
 }
 
-impl WidgetUpdate for CpuWidget {
+impl UpdatableWidget for CpuWidget {
 	fn update(&mut self) {
 		self.update_count += 1.0;
 		if self.show_average_cpu {

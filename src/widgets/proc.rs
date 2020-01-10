@@ -3,11 +3,12 @@ use tui::buffer::Buffer;
 use tui::layout::Rect;
 use tui::widgets::Widget;
 
-use super::{block, WidgetUpdate};
+use crate::update::UpdatableWidget;
+use crate::widgets::block;
 
 pub struct ProcWidget {
 	title: String,
-	pub update_interval: Ratio<u64>,
+	update_interval: Ratio<u64>,
 }
 
 impl ProcWidget {
@@ -19,7 +20,7 @@ impl ProcWidget {
 	}
 }
 
-impl WidgetUpdate for ProcWidget {
+impl UpdatableWidget for ProcWidget {
 	fn update(&mut self) {}
 
 	fn get_update_interval(&self) -> Ratio<u64> {

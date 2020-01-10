@@ -1,6 +1,6 @@
 use structopt::StructOpt;
 
-use crate::Colorschemes;
+use crate::colorscheme::Colorschemes;
 
 #[derive(StructOpt)]
 pub struct Args {

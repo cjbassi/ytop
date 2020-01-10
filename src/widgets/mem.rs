@@ -6,7 +6,8 @@ use tui::layout::Rect;
 use tui::style::{Color, Style};
 use tui::widgets::{Axis, Chart, Dataset, Marker, Widget};
 
-use super::{block, WidgetUpdate};
+use crate::update::UpdatableWidget;
+use crate::widgets::block;
 
 #[derive(Default)]
 struct MemData {
@@ -17,7 +18,7 @@ struct MemData {
 
 pub struct MemWidget {
 	title: String,
-	pub update_interval: Ratio<u64>,
+	update_interval: Ratio<u64>,
 	update_count: f64,
 
 	main: MemData,
@@ -42,7 +43,7 @@ impl MemWidget {
 	}
 }
 
-impl WidgetUpdate for MemWidget {
+impl UpdatableWidget for MemWidget {
 	fn update(&mut self) {
 		self.update_count += 1.0;
 

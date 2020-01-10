@@ -1,6 +1,8 @@
+mod app;
 mod args;
 mod colorscheme;
 mod draw;
+mod update;
 mod utils;
 mod widgets;
 
@@ -21,10 +23,11 @@ use structopt::StructOpt;
 use tui::backend::CrosstermBackend;
 use tui::Terminal;
 
+use app::*;
 use args::*;
 use colorscheme::*;
 use draw::*;
-use widgets::*;
+use update::*;
 
 fn setup_terminal() -> Result<Terminal<CrosstermBackend<io::Stdout>>> {
 	let mut stdout = io::stdout();

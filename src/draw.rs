@@ -5,7 +5,7 @@ use tui::layout::{Constraint, Direction, Layout, Rect};
 use tui::widgets::Widget as _;
 use tui::{Frame, Terminal};
 
-use crate::{App, Widgets};
+use crate::app::{App, Widgets};
 
 pub fn draw<B: Backend>(terminal: &mut Terminal<B>, app: &mut App) -> io::Result<()> {
 	terminal.draw(|mut frame| {

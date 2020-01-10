@@ -6,7 +6,8 @@ use tui::buffer::Buffer;
 use tui::layout::Rect;
 use tui::widgets::Widget;
 
-use super::{block, WidgetUpdate};
+use crate::update::UpdatableWidget;
+use crate::widgets::block;
 
 struct Partition {
 	name: String,
@@ -21,7 +22,7 @@ struct Partition {
 
 pub struct DiskWidget {
 	title: String,
-	pub update_interval: Ratio<u64>,
+	update_interval: Ratio<u64>,
 
 	partitions: HashMap<String, Partition>,
 }
@@ -37,7 +38,7 @@ impl DiskWidget {
 	}
 }
 
-impl WidgetUpdate for DiskWidget {
+impl UpdatableWidget for DiskWidget {
 	fn update(&mut self) {}
 
 	fn get_update_interval(&self) -> Ratio<u64> {
