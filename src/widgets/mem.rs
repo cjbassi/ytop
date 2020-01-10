@@ -49,17 +49,17 @@ impl WidgetUpdate for MemWidget {
 		let main = memory::virtual_memory().unwrap();
 		let swap = memory::swap_memory().unwrap();
 
-		self.main.total = main.total;
-		self.main.used = main.used;
+		self.main.total = main.total();
+		self.main.used = main.used();
 		self.main
 			.percents
-			.push((self.update_count, f64::from(main.percent)));
+			.push((self.update_count, main.percent() as f64));
 
-		self.swap.total = swap.total;
-		self.swap.used = swap.used;
+		self.swap.total = swap.total();
+		self.swap.used = swap.used();
 		self.swap
 			.percents
-			.push((self.update_count, f64::from(swap.percent)));
+			.push((self.update_count, swap.percent() as f64));
 	}
 
 	fn get_update_interval(&self) -> Ratio<u64> {

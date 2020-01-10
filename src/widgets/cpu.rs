@@ -1,4 +1,5 @@
 use num_rational::Ratio;
+use psutil::cpu;
 use tui::buffer::Buffer;
 use tui::layout::Rect;
 use tui::style::{Color, Style};
@@ -33,7 +34,7 @@ impl CpuWidget {
 			update_count: 0.0,
 			horizontal_scale: 100,
 
-			cpu_count: num_cpus::get(),
+			cpu_count: cpu::cpu_count() as usize,
 
 			show_average_cpu,
 			show_per_cpu,

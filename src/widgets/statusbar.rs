@@ -1,4 +1,5 @@
 use chrono::prelude::*;
+use psutil::host;
 use tui::buffer::Buffer;
 use tui::layout::Rect;
 use tui::style::Style;
@@ -13,7 +14,7 @@ pub struct Statusbar {
 impl Statusbar {
 	pub fn new(program_name: &str) -> Statusbar {
 		Statusbar {
-			hostname: hostname::get_hostname().unwrap(),
+			hostname: host::info().unwrap().hostname().to_owned(),
 			program_name: program_name.to_string(),
 			program_name_len: program_name.len() as u16,
 		}
