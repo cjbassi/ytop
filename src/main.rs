@@ -8,11 +8,13 @@ mod widgets;
 
 use std::fs;
 use std::io::{self, Write};
+use std::panic;
 use std::path::Path;
 use std::thread;
-use std::time::Duration;
+use std::time::{Duration, Instant};
 
 use anyhow::Result;
+use backtrace::Backtrace;
 use crossbeam_channel::{select, tick, unbounded, Receiver};
 use crossterm::event::{self, Event, KeyCode, KeyModifiers};
 use crossterm::execute;
@@ -90,6 +92,20 @@ fn setup_logfile(logfile_path: &Path) {
 		.unwrap();
 }
 
+fn setup_panic_hook() {
+	panic::set_hook(Box::new(|panic_info| {
+		cleanup_terminal().unwrap();
+		println!("{:?}", panic_info);
+		print!("{:?}", Backtrace::new());
+	}));
+}
+
+fn setup_ticker(rate: u64) -> Receiver<Instant> {
+	tick(Duration::from_nanos(
+		Duration::from_secs(1).as_nanos() as u64 / rate,
+	))
+}
+
 fn main() {
 	let args = Args::from_args();
 	let update_ratio = Ratio::new(1, args.rate);
@@ -101,14 +117,13 @@ fn main() {
 
 	let colorscheme = read_colorscheme(&app_dirs.config_dir, &args.colorscheme).unwrap();
 	let mut app = setup_app(&args, update_ratio, &colorscheme, program_name);
-
 	setup_logfile(&logfile_path);
 	let mut terminal = setup_terminal().unwrap();
 
+	setup_panic_hook();
+
 	let mut update_seconds = Ratio::from_integer(0);
-	let ticker = tick(Duration::from_nanos(
-		Duration::from_secs(1).as_nanos() as u64 / args.rate,
-	));
+	let ticker = setup_ticker(args.rate);
 	let ui_events_receiver = setup_ui_events();
 	let ctrl_c_events = setup_ctrl_c().unwrap();
 
