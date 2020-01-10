@@ -38,7 +38,6 @@ fn setup_terminal() -> Result<Terminal<CrosstermBackend<io::Stdout>>> {
 	let backend = CrosstermBackend::new(stdout);
 	let mut terminal = Terminal::new(backend)?;
 	terminal.hide_cursor()?;
-	// terminal.clear()?;
 
 	Ok(terminal)
 }
@@ -192,7 +191,12 @@ fn main() {
 						_ => {
 						}
 					}
-					Event::Resize(width, height) => {
+					Event::Resize(_width, _height) => {
+						if show_help_menu {
+							draw_help_menu(&mut terminal, &mut app).unwrap();
+						} else {
+							draw(&mut terminal, &mut app).unwrap();
+						}
 					}
 				}
 			}
