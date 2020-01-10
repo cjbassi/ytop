@@ -11,7 +11,7 @@ use crate::widgets::block;
 pub struct CpuWidget {
 	title: String,
 	update_interval: Ratio<u64>,
-	update_count: f64,
+	update_count: u64,
 	horizontal_scale: i64,
 
 	cpu_count: usize,
@@ -22,11 +22,7 @@ pub struct CpuWidget {
 	average_data: Vec<(f64, f64)>,
 	percpu_data: Vec<Vec<(f64, f64)>>,
 
-	average_label: String,
-	percpu_labels: Vec<String>,
-
-	average_collector: cpu::CpuPercentCollector,
-	percpu_collector: cpu::CpuPercentCollector,
+	collector: cpu::CpuPercentCollector,
 }
 
 impl CpuWidget {
@@ -34,7 +30,7 @@ impl CpuWidget {
 		let mut cpu_widget = CpuWidget {
 			title: " CPU Usage ".to_string(),
 			update_interval,
-			update_count: 0.0,
+			update_count: 0,
 			horizontal_scale: 100,
 
 			cpu_count: cpu::cpu_count() as usize,
@@ -45,11 +41,7 @@ impl CpuWidget {
 			average_data: Vec::new(),
 			percpu_data: Vec::new(),
 
-			average_label: "AVRG".to_string(),
-			percpu_labels: Vec::new(),
-
-			average_collector: cpu::CpuPercentCollector::new().unwrap(),
-			percpu_collector: cpu::CpuPercentCollector::new().unwrap(),
+			collector: cpu::CpuPercentCollector::new().unwrap(),
 		};
 
 		if !(show_average || show_percpu) {
@@ -62,7 +54,6 @@ impl CpuWidget {
 
 		if cpu_widget.show_percpu {
 			for i in 0..cpu_widget.cpu_count {
-				cpu_widget.percpu_labels.push(format!("CPU{}", i));
 				cpu_widget.percpu_data.push(Vec::new());
 			}
 		}
@@ -73,16 +64,16 @@ impl CpuWidget {
 
 impl UpdatableWidget for CpuWidget {
 	fn update(&mut self) {
-		self.update_count += 1.0;
+		self.update_count += 1;
 		if self.show_average {
-			let average_percent = self.average_collector.cpu_percent().unwrap();
+			let average_percent = self.collector.cpu_percent().unwrap();
 			self.average_data
-				.push((self.update_count, average_percent.into()));
+				.push((self.update_count as f64, average_percent.into()));
 		}
 		if self.show_percpu {
-			let percpu_percents = self.percpu_collector.cpu_percent_percpu().unwrap();
+			let percpu_percents = self.collector.cpu_percent_percpu().unwrap();
 			for i in 0..self.cpu_count {
-				self.percpu_data[i].push((self.update_count, percpu_percents[i].into()));
+				self.percpu_data[i].push((self.update_count as f64, percpu_percents[i].into()));
 			}
 		}
 	}
@@ -98,7 +89,6 @@ impl Widget for CpuWidget {
 		if self.show_average {
 			datasets.push(
 				Dataset::default()
-					.name(&self.average_label)
 					.marker(Marker::Braille)
 					.style(Style::default().fg(Color::Yellow))
 					.data(&self.average_data),
@@ -108,7 +98,6 @@ impl Widget for CpuWidget {
 			for i in 0..self.cpu_count {
 				datasets.push(
 					Dataset::default()
-						.name(&self.percpu_labels[i])
 						.marker(Marker::Braille)
 						.style(Style::default().fg(Color::Yellow))
 						.data(&self.percpu_data[i]),
@@ -118,7 +107,10 @@ impl Widget for CpuWidget {
 
 		Chart::<String, String>::default()
 			.block(block::new().title(&self.title))
-			.x_axis(Axis::default().bounds([self.update_count - 100.0, self.update_count + 1.0]))
+			.x_axis(Axis::default().bounds([
+				self.update_count as f64 - 100.0,
+				self.update_count as f64 + 1.0,
+			]))
 			.y_axis(Axis::default().bounds([0.0, 100.0]))
 			.datasets(&datasets)
 			.draw(area, buf);

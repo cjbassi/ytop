@@ -19,7 +19,7 @@ struct MemData {
 pub struct MemWidget {
 	title: String,
 	update_interval: Ratio<u64>,
-	update_count: f64,
+	update_count: u64,
 
 	main: MemData,
 	swap: MemData,
@@ -27,15 +27,18 @@ pub struct MemWidget {
 
 impl MemWidget {
 	pub fn new(update_interval: Ratio<u64>) -> MemWidget {
+		let update_count = 1;
+
 		let mut main = MemData::default();
 		let mut swap = MemData::default();
-		main.percents.push((1.0, 0.0));
-		swap.percents.push((1.0, 0.0));
+
+		main.percents.push((update_count as f64, 0.0));
+		swap.percents.push((update_count as f64, 0.0));
 
 		MemWidget {
 			title: " Memory Usage ".to_string(),
 			update_interval,
-			update_count: 1.0,
+			update_count,
 
 			main,
 			swap,
@@ -45,7 +48,7 @@ impl MemWidget {
 
 impl UpdatableWidget for MemWidget {
 	fn update(&mut self) {
-		self.update_count += 1.0;
+		self.update_count += 1;
 
 		let main = memory::virtual_memory().unwrap();
 		let swap = memory::swap_memory().unwrap();
@@ -54,13 +57,13 @@ impl UpdatableWidget for MemWidget {
 		self.main.used = main.used();
 		self.main
 			.percents
-			.push((self.update_count, main.percent() as f64));
+			.push((self.update_count as f64, main.percent().into()));
 
 		self.swap.total = swap.total();
 		self.swap.used = swap.used();
 		self.swap
 			.percents
-			.push((self.update_count, swap.percent() as f64));
+			.push((self.update_count as f64, swap.percent().into()));
 	}
 
 	fn get_update_interval(&self) -> Ratio<u64> {
@@ -72,7 +75,10 @@ impl Widget for MemWidget {
 	fn draw(&mut self, area: Rect, buf: &mut Buffer) {
 		Chart::<String, String>::default()
 			.block(block::new().title(&self.title))
-			.x_axis(Axis::default().bounds([self.update_count - 100.0, self.update_count + 1.0]))
+			.x_axis(Axis::default().bounds([
+				self.update_count as f64 - 100.0,
+				self.update_count as f64 + 1.0,
+			]))
 			.y_axis(Axis::default().bounds([0.0, 100.0]))
 			.datasets(&[
 				Dataset::default()

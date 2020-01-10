@@ -9,7 +9,7 @@ use crate::widgets::block;
 pub struct TempWidget {
 	title: String,
 	update_interval: Ratio<u64>,
-	update_count: f64,
+	update_count: u64,
 
 	fahrenheit: bool,
 	temp_data: Vec<(String, Vec<(f64, f64)>)>,
@@ -20,7 +20,7 @@ impl TempWidget {
 		TempWidget {
 			title: " Temperatures ".to_string(),
 			update_interval: Ratio::from_integer(5),
-			update_count: 0.0,
+			update_count: 0,
 
 			fahrenheit,
 			temp_data: Vec::new(),
@@ -30,7 +30,7 @@ impl TempWidget {
 
 impl UpdatableWidget for TempWidget {
 	fn update(&mut self) {
-		self.update_count += 1.0;
+		self.update_count += 1;
 	}
 
 	fn get_update_interval(&self) -> Ratio<u64> {

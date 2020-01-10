@@ -11,7 +11,7 @@ use crate::widgets::block;
 pub struct BatteryWidget {
 	title: String,
 	update_interval: Ratio<u64>,
-	update_count: f64,
+	update_count: u64,
 
 	battery_data: HashMap<String, Vec<(f64, f64)>>,
 }
@@ -21,7 +21,7 @@ impl BatteryWidget {
 		BatteryWidget {
 			title: " Batteries ".to_string(),
 			update_interval: Ratio::from_integer(60),
-			update_count: 0.0,
+			update_count: 0,
 
 			battery_data: HashMap::new(),
 		}
@@ -30,7 +30,7 @@ impl BatteryWidget {
 
 impl UpdatableWidget for BatteryWidget {
 	fn update(&mut self) {
-		self.update_count += 1.0;
+		self.update_count += 1;
 	}
 
 	fn get_update_interval(&self) -> Ratio<u64> {
