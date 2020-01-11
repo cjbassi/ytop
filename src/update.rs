@@ -1,4 +1,3 @@
-use crossbeam_utils::thread;
 use num_rational::Ratio;
 
 use crate::app::Widgets;
@@ -9,7 +8,7 @@ pub trait UpdatableWidget {
 }
 
 pub fn update_widgets(widgets: &mut Widgets, seconds: Ratio<u64>) {
-	let mut widgets_to_update: Vec<&mut (dyn UpdatableWidget + Send)> =
+	let mut widgets_to_update: Vec<&mut (dyn UpdatableWidget)> =
 		vec![&mut widgets.cpu, &mut widgets.mem, &mut widgets.proc];
 
 	if let (Some(disk), Some(net), Some(temp)) = (
@@ -26,14 +25,9 @@ pub fn update_widgets(widgets: &mut Widgets, seconds: Ratio<u64>) {
 		widgets_to_update.push(battery);
 	}
 
-	thread::scope(|scope| {
-		for widget in widgets_to_update {
-			if seconds % widget.get_update_interval() == Ratio::from_integer(0) {
-				scope.spawn(move |_| {
-					widget.update();
-				});
-			}
+	for widget in widgets_to_update {
+		if seconds % widget.get_update_interval() == Ratio::from_integer(0) {
+			widget.update();
 		}
-	})
-	.unwrap();
+	}
 }
