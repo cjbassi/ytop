@@ -125,10 +125,7 @@ impl Widget for CpuWidget {
 			buf.set_string(
 				area.x + 3,
 				area.y + 2,
-				format!(
-					"AVRG {:3.0}%",
-					self.average_data[self.update_count as usize - 1].1
-				),
+				format!("AVRG {:3.0}%", self.average_data.last().unwrap().1),
 				Style::default().fg(Color::Yellow),
 			);
 		}
@@ -139,11 +136,7 @@ impl Widget for CpuWidget {
 				buf.set_string(
 					area.x + 3,
 					area.y + 2 + offset + i as u16,
-					format!(
-						"CPU{} {:3.0}%",
-						i,
-						self.percpu_data[i][self.update_count as usize - 1].1
-					),
+					format!("CPU{} {:3.0}%", i, self.percpu_data[i].last().unwrap().1),
 					Style::default().fg(Color::Yellow),
 				);
 			}
