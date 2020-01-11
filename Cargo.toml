@@ -26,3 +26,4 @@ structopt = "0.3.7"
 # tui = { version = "0.8.0", features = ["crossterm"] }
 tui = { git = "https://github.com/cjbassi/tui-rs", branch = "linechart", features = ["crossterm"] }
 backtrace = "0.3.40"
+battery = "0.7.5"
