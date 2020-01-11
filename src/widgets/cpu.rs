@@ -3,7 +3,7 @@ use psutil::cpu;
 use tui::buffer::Buffer;
 use tui::layout::Rect;
 use tui::style::{Color, Style};
-use tui::widgets::{Axis, Chart, Dataset, Marker, Widget};
+use tui::widgets::{Axis, Chart, Dataset, GraphType, Marker, Widget};
 
 use crate::update::UpdatableWidget;
 use crate::widgets::block;
@@ -27,10 +27,12 @@ pub struct CpuWidget {
 
 impl CpuWidget {
 	pub fn new(update_interval: Ratio<u64>, show_average: bool, show_percpu: bool) -> CpuWidget {
+		let update_count = 0;
+
 		let mut cpu_widget = CpuWidget {
 			title: " CPU Usage ".to_string(),
 			update_interval,
-			update_count: 0,
+			update_count,
 			horizontal_scale: 100,
 
 			cpu_count: cpu::cpu_count() as usize,
@@ -38,7 +40,7 @@ impl CpuWidget {
 			show_average,
 			show_percpu,
 
-			average_data: Vec::new(),
+			average_data: vec![(update_count as f64, 0.0)],
 			percpu_data: Vec::new(),
 
 			collector: cpu::CpuPercentCollector::new().unwrap(),
@@ -53,8 +55,10 @@ impl CpuWidget {
 		}
 
 		if cpu_widget.show_percpu {
-			for i in 0..cpu_widget.cpu_count {
-				cpu_widget.percpu_data.push(Vec::new());
+			for _i in 0..cpu_widget.cpu_count {
+				cpu_widget
+					.percpu_data
+					.push(vec![(update_count as f64, 0.0)]);
 			}
 		}
 
@@ -91,6 +95,7 @@ impl Widget for CpuWidget {
 				Dataset::default()
 					.marker(Marker::Braille)
 					.style(Style::default().fg(Color::Yellow))
+					.graph_type(GraphType::Line)
 					.data(&self.average_data),
 			)
 		}
@@ -99,6 +104,7 @@ impl Widget for CpuWidget {
 				datasets.push(
 					Dataset::default()
 						.marker(Marker::Braille)
+						.graph_type(GraphType::Line)
 						.style(Style::default().fg(Color::Yellow))
 						.data(&self.percpu_data[i]),
 				)

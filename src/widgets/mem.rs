@@ -4,7 +4,7 @@ use size::Size;
 use tui::buffer::Buffer;
 use tui::layout::Rect;
 use tui::style::{Color, Style};
-use tui::widgets::{Axis, Chart, Dataset, Marker, Widget};
+use tui::widgets::{Axis, Chart, Dataset, GraphType, Marker, Widget};
 
 use crate::update::UpdatableWidget;
 use crate::widgets::block;
@@ -27,7 +27,7 @@ pub struct MemWidget {
 
 impl MemWidget {
 	pub fn new(update_interval: Ratio<u64>) -> MemWidget {
-		let update_count = 1;
+		let update_count = 0;
 
 		let mut main = MemData::default();
 		let mut swap = MemData::default();
@@ -83,10 +83,12 @@ impl Widget for MemWidget {
 			.datasets(&[
 				Dataset::default()
 					.marker(Marker::Braille)
+					.graph_type(GraphType::Line)
 					.style(Style::default().fg(Color::Yellow))
 					.data(&self.main.percents),
 				Dataset::default()
 					.marker(Marker::Braille)
+					.graph_type(GraphType::Line)
 					.style(Style::default().fg(Color::Blue))
 					.data(&self.swap.percents),
 			])
