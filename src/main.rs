@@ -3,7 +3,6 @@ mod args;
 mod colorscheme;
 mod draw;
 mod update;
-mod utils;
 mod widgets;
 
 use std::fs;
