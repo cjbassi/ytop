@@ -89,14 +89,30 @@ impl Widget for NetWidget {
 		};
 
 		Sparkline::default()
-			.data(&self.bytes_recv)
+			.data(
+				&self
+					.bytes_recv
+					.iter()
+					.cloned()
+					.rev()
+					.collect::<Vec<u64>>()
+					.as_slice(),
+			)
 			.direction(RenderDirection::RTL)
 			.max(*self.bytes_recv.iter().max().unwrap())
 			.style(Style::default().fg(Color::Red))
 			.draw(top_half, buf);
 
 		Sparkline::default()
-			.data(&self.bytes_sent)
+			.data(
+				&self
+					.bytes_sent
+					.iter()
+					.cloned()
+					.rev()
+					.collect::<Vec<u64>>()
+					.as_slice(),
+			)
 			.direction(RenderDirection::RTL)
 			.max(*self.bytes_sent.iter().max().unwrap())
 			.style(Style::default().fg(Color::Red))
