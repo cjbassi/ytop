@@ -24,6 +24,6 @@ serde_json = "1.0.44"
 size = "0.1.2"
 structopt = "0.3.7"
 # tui = { version = "0.8.0", features = ["crossterm"] }
-tui = { git = "https://github.com/cjbassi/tui-rs", branch = "linechart", features = ["crossterm"] }
+tui = { git = "https://github.com/cjbassi/tui-rs", branch = "master", features = ["crossterm"] }
 backtrace = "0.3.40"
 battery = "0.7.5"

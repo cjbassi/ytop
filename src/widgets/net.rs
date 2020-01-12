@@ -3,7 +3,7 @@ use psutil::network;
 use tui::buffer::Buffer;
 use tui::layout::Rect;
 use tui::style::{Color, Style};
-use tui::widgets::{Sparkline, Widget};
+use tui::widgets::{RenderDirection, Sparkline, Widget};
 
 use crate::update::UpdatableWidget;
 use crate::widgets::block;
@@ -90,12 +90,14 @@ impl Widget for NetWidget {
 
 		Sparkline::default()
 			.data(&self.bytes_recv)
+			.direction(RenderDirection::RTL)
 			.max(*self.bytes_recv.iter().max().unwrap())
 			.style(Style::default().fg(Color::Red))
 			.draw(top_half, buf);
 
 		Sparkline::default()
 			.data(&self.bytes_sent)
+			.direction(RenderDirection::RTL)
 			.max(*self.bytes_sent.iter().max().unwrap())
 			.style(Style::default().fg(Color::Red))
 			.draw(bottom_half, buf);
