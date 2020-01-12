@@ -8,6 +8,7 @@ use tui::layout::{Constraint, Rect};
 use tui::style::{Color, Modifier, Style};
 use tui::widgets::{Row, Table, Widget};
 
+use crate::colorscheme::Colorscheme;
 use crate::update::UpdatableWidget;
 use crate::widgets::block;
 
@@ -23,20 +24,22 @@ struct Partition {
 	bytes_free: u64,
 }
 
-pub struct DiskWidget {
+pub struct DiskWidget<'a> {
 	title: String,
 	update_interval: Ratio<u64>,
+	colorscheme: &'a Colorscheme,
 
 	partitions: HashMap<String, Partition>,
 
 	collector: disk::DiskIoCountersCollector,
 }
 
-impl DiskWidget {
-	pub fn new() -> DiskWidget {
+impl DiskWidget<'_> {
+	pub fn new(colorscheme: &Colorscheme) -> DiskWidget {
 		DiskWidget {
 			title: " Disk Usage ".to_string(),
 			update_interval: Ratio::from_integer(1),
+			colorscheme,
 
 			partitions: HashMap::new(),
 
@@ -45,7 +48,7 @@ impl DiskWidget {
 	}
 }
 
-impl UpdatableWidget for DiskWidget {
+impl UpdatableWidget for DiskWidget<'_> {
 	fn update(&mut self) {
 		let io_counters = self.collector.disk_io_counters_perdisk().unwrap();
 		self.partitions = disk::partitions_physical()
@@ -102,7 +105,7 @@ impl UpdatableWidget for DiskWidget {
 	}
 }
 
-impl Widget for DiskWidget {
+impl Widget for DiskWidget<'_> {
 	fn draw(&mut self, area: Rect, buf: &mut Buffer) {
 		let row_style = Style::default().fg(Color::White);
 
@@ -127,7 +130,7 @@ impl Widget for DiskWidget {
 				)
 			}),
 		)
-		.block(block::new().title(&self.title))
+		.block(block::new(self.colorscheme, &self.title))
 		.header_style(Style::default().fg(Color::Yellow).modifier(Modifier::BOLD))
 		.widths(&[
 			Constraint::Length(20),

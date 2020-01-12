@@ -7,34 +7,35 @@ use tui::layout::Rect;
 use tui::style::{Color, Style};
 use tui::widgets::{Axis, Chart, Dataset, GraphType, Marker, Widget};
 
+use crate::colorscheme::Colorscheme;
 use crate::update::UpdatableWidget;
 use crate::widgets::block;
 
-pub struct BatteryWidget {
+pub struct BatteryWidget<'a> {
 	title: String,
 	update_interval: Ratio<u64>,
+	colorscheme: &'a Colorscheme,
+
 	update_count: u64,
-
 	battery_data: HashMap<String, Vec<(f64, f64)>>,
-
 	manager: Manager,
 }
 
-impl BatteryWidget {
-	pub fn new() -> BatteryWidget {
+impl BatteryWidget<'_> {
+	pub fn new(colorscheme: &Colorscheme) -> BatteryWidget {
 		BatteryWidget {
 			title: " Batteries ".to_string(),
 			update_interval: Ratio::from_integer(60),
+			colorscheme,
+
 			update_count: 0,
-
 			battery_data: HashMap::new(),
-
 			manager: Manager::new().unwrap(),
 		}
 	}
 }
 
-impl UpdatableWidget for BatteryWidget {
+impl UpdatableWidget for BatteryWidget<'_> {
 	fn update(&mut self) {
 		self.update_count += 1;
 		let mut current_batteries = Vec::new();
@@ -65,7 +66,7 @@ impl UpdatableWidget for BatteryWidget {
 	}
 }
 
-impl Widget for BatteryWidget {
+impl Widget for BatteryWidget<'_> {
 	fn draw(&mut self, area: Rect, buf: &mut Buffer) {
 		let datasets: Vec<Dataset> = self
 			.battery_data
@@ -80,7 +81,7 @@ impl Widget for BatteryWidget {
 			.collect();
 
 		Chart::<String, String>::default()
-			.block(block::new().title(&self.title))
+			.block(block::new(self.colorscheme, &self.title))
 			.x_axis(Axis::default().bounds([
 				self.update_count as f64 - 100.0,
 				self.update_count as f64 + 1.0,

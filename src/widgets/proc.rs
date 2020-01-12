@@ -5,6 +5,7 @@ use tui::layout::{Constraint, Rect};
 use tui::style::{Color, Modifier, Style};
 use tui::widgets::{Row, Table, Widget};
 
+use crate::colorscheme::Colorscheme;
 use crate::update::UpdatableWidget;
 use crate::widgets::block;
 
@@ -16,25 +17,27 @@ struct Proc {
 	mem: f32,
 }
 
-pub struct ProcWidget {
+pub struct ProcWidget<'a> {
 	title: String,
 	update_interval: Ratio<u64>,
+	colorscheme: &'a Colorscheme,
 
 	procs: Vec<Proc>,
 }
 
-impl ProcWidget {
-	pub fn new() -> ProcWidget {
+impl ProcWidget<'_> {
+	pub fn new(colorscheme: &Colorscheme) -> ProcWidget {
 		ProcWidget {
 			title: " Processes ".to_string(),
 			update_interval: Ratio::from_integer(1),
+			colorscheme,
 
 			procs: Vec::new(),
 		}
 	}
 }
 
-impl UpdatableWidget for ProcWidget {
+impl UpdatableWidget for ProcWidget<'_> {
 	fn update(&mut self) {
 		self.procs = process::processes()
 			.unwrap()
@@ -61,7 +64,7 @@ impl UpdatableWidget for ProcWidget {
 	}
 }
 
-impl Widget for ProcWidget {
+impl Widget for ProcWidget<'_> {
 	fn draw(&mut self, area: Rect, buf: &mut Buffer) {
 		let row_style = Style::default().fg(Color::White);
 
@@ -80,7 +83,7 @@ impl Widget for ProcWidget {
 				)
 			}),
 		)
-		.block(block::new().title(&self.title))
+		.block(block::new(self.colorscheme, &self.title))
 		.header_style(Style::default().fg(Color::Yellow).modifier(Modifier::BOLD))
 		.widths(&[
 			Constraint::Length(20),

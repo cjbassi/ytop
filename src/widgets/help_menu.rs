@@ -3,7 +3,8 @@ use tui::buffer::Buffer;
 use tui::layout::Rect;
 use tui::widgets::{Paragraph, Text, Widget};
 
-use super::block;
+use crate::colorscheme::Colorscheme;
+use crate::widgets::block;
 
 const TEXT: &str = r"Quit: q or <C-c>
 Process navigation:
@@ -41,14 +42,16 @@ lazy_static! {
 		.collect();
 }
 
-pub struct HelpMenu {
+pub struct HelpMenu<'a> {
 	title: String,
+	colorscheme: &'a Colorscheme,
 }
 
-impl HelpMenu {
-	pub fn new() -> HelpMenu {
+impl HelpMenu<'_> {
+	pub fn new(colorscheme: &Colorscheme) -> HelpMenu {
 		HelpMenu {
 			title: " Help Menu ".to_string(),
+			colorscheme,
 		}
 	}
 
@@ -62,10 +65,10 @@ impl HelpMenu {
 	}
 }
 
-impl Widget for HelpMenu {
+impl Widget for HelpMenu<'_> {
 	fn draw(&mut self, area: Rect, buf: &mut Buffer) {
 		Paragraph::new(TEXT_VEC.iter())
-			.block(block::new().title(&self.title))
+			.block(block::new(self.colorscheme, &self.title))
 			.draw(area, buf);
 	}
 }

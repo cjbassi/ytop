@@ -5,12 +5,15 @@ use tui::layout::Rect;
 use tui::style::{Color, Style};
 use tui::widgets::{Axis, Chart, Dataset, GraphType, Marker, Widget};
 
+use crate::colorscheme::Colorscheme;
 use crate::update::UpdatableWidget;
 use crate::widgets::block;
 
-pub struct CpuWidget {
+pub struct CpuWidget<'a> {
 	title: String,
 	update_interval: Ratio<u64>,
+	colorscheme: &'a Colorscheme,
+
 	update_count: u64,
 	horizontal_scale: i64,
 
@@ -25,13 +28,20 @@ pub struct CpuWidget {
 	collector: cpu::CpuPercentCollector,
 }
 
-impl CpuWidget {
-	pub fn new(update_interval: Ratio<u64>, show_average: bool, show_percpu: bool) -> CpuWidget {
+impl CpuWidget<'_> {
+	pub fn new(
+		colorscheme: &Colorscheme,
+		update_interval: Ratio<u64>,
+		show_average: bool,
+		show_percpu: bool,
+	) -> CpuWidget {
 		let update_count = 0;
 
 		let mut cpu_widget = CpuWidget {
 			title: " CPU Usage ".to_string(),
 			update_interval,
+			colorscheme,
+
 			update_count,
 			horizontal_scale: 100,
 
@@ -66,7 +76,7 @@ impl CpuWidget {
 	}
 }
 
-impl UpdatableWidget for CpuWidget {
+impl UpdatableWidget for CpuWidget<'_> {
 	fn update(&mut self) {
 		self.update_count += 1;
 		if self.show_average {
@@ -87,7 +97,7 @@ impl UpdatableWidget for CpuWidget {
 	}
 }
 
-impl Widget for CpuWidget {
+impl Widget for CpuWidget<'_> {
 	fn draw(&mut self, area: Rect, buf: &mut Buffer) {
 		let mut datasets = Vec::new();
 		if self.show_average {
@@ -112,7 +122,7 @@ impl Widget for CpuWidget {
 		}
 
 		Chart::<String, String>::default()
-			.block(block::new().title(&self.title))
+			.block(block::new(self.colorscheme, &self.title))
 			.x_axis(Axis::default().bounds([
 				self.update_count as f64 - 100.0,
 				self.update_count as f64 + 1.0,

@@ -4,45 +4,45 @@ use crate::args::Args;
 use crate::colorscheme::Colorscheme;
 use crate::widgets::*;
 
-pub struct App {
-	pub help_menu: HelpMenu,
+pub struct App<'a, 'b> {
+	pub help_menu: HelpMenu<'a>,
 	pub statusbar: Option<Statusbar>,
-	pub widgets: Widgets,
+	pub widgets: Widgets<'a, 'b>,
 }
 
-pub struct Widgets {
-	pub battery: Option<BatteryWidget>,
-	pub cpu: CpuWidget,
-	pub disk: Option<DiskWidget>,
-	pub mem: MemWidget,
-	pub net: Option<NetWidget>,
-	pub proc: ProcWidget,
-	pub temp: Option<TempWidget>,
+pub struct Widgets<'a, 'b> {
+	pub battery: Option<BatteryWidget<'a>>,
+	pub cpu: CpuWidget<'a>,
+	pub disk: Option<DiskWidget<'a>>,
+	pub mem: MemWidget<'a>,
+	pub net: Option<NetWidget<'a, 'b>>,
+	pub proc: ProcWidget<'a>,
+	pub temp: Option<TempWidget<'a>>,
 }
 
-pub fn setup_app(
-	args: &Args,
+pub fn setup_app<'a, 'b>(
+	args: &'b Args,
 	update_ratio: Ratio<u64>,
-	colorscheme: &Colorscheme,
+	colorscheme: &'a Colorscheme,
 	program_name: &str,
-) -> App {
-	let cpu = CpuWidget::new(update_ratio, args.average_cpu, args.per_cpu);
-	let mem = MemWidget::new(update_ratio);
-	let proc = ProcWidget::new();
-	let help_menu = HelpMenu::new();
+) -> App<'a, 'b> {
+	let cpu = CpuWidget::new(colorscheme, update_ratio, args.average_cpu, args.per_cpu);
+	let mem = MemWidget::new(colorscheme, update_ratio);
+	let proc = ProcWidget::new(colorscheme);
+	let help_menu = HelpMenu::new(colorscheme);
 
 	let (battery, disk, net, temp) = if args.minimal {
 		(None, None, None, None)
 	} else {
 		(
 			if args.battery {
-				Some(BatteryWidget::new())
+				Some(BatteryWidget::new(colorscheme))
 			} else {
 				None
 			},
-			Some(DiskWidget::new()),
-			Some(NetWidget::new(args.interfaces.clone())),
-			Some(TempWidget::new(args.fahrenheit)),
+			Some(DiskWidget::new(colorscheme)),
+			Some(NetWidget::new(colorscheme, &args.interfaces)),
+			Some(TempWidget::new(colorscheme, args.fahrenheit)),
 		)
 	};
 

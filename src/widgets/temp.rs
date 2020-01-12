@@ -5,22 +5,25 @@ use tui::layout::Rect;
 use tui::style::{Color, Style};
 use tui::widgets::{List, Text, Widget};
 
+use crate::colorscheme::Colorscheme;
 use crate::update::UpdatableWidget;
 use crate::widgets::block;
 
-pub struct TempWidget {
+pub struct TempWidget<'a> {
 	title: String,
 	update_interval: Ratio<u64>,
+	colorscheme: &'a Colorscheme,
 
 	fahrenheit: bool,
 	temp_data: Vec<(String, f64)>,
 }
 
-impl TempWidget {
-	pub fn new(fahrenheit: bool) -> TempWidget {
+impl TempWidget<'_> {
+	pub fn new(colorscheme: &Colorscheme, fahrenheit: bool) -> TempWidget {
 		TempWidget {
 			title: " Temperatures ".to_string(),
 			update_interval: Ratio::from_integer(5),
+			colorscheme,
 
 			fahrenheit,
 			temp_data: Vec::new(),
@@ -28,7 +31,7 @@ impl TempWidget {
 	}
 }
 
-impl UpdatableWidget for TempWidget {
+impl UpdatableWidget for TempWidget<'_> {
 	fn update(&mut self) {
 		self.temp_data = sensors::temperatures()
 			.into_iter()
@@ -52,7 +55,7 @@ impl UpdatableWidget for TempWidget {
 	}
 }
 
-impl Widget for TempWidget {
+impl Widget for TempWidget<'_> {
 	fn draw(&mut self, area: Rect, buf: &mut Buffer) {
 		List::new(self.temp_data.iter().map(|item| {
 			Text::Raw(std::borrow::Cow::from(format!(
@@ -63,7 +66,7 @@ impl Widget for TempWidget {
 				width = area.width as usize - 6
 			)))
 		}))
-		.block(block::new().title(&self.title))
+		.block(block::new(self.colorscheme, &self.title))
 		.style(Style::default().fg(Color::White))
 		.draw(area, buf);
 	}

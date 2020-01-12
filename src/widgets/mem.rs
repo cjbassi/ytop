@@ -6,6 +6,7 @@ use tui::layout::Rect;
 use tui::style::{Color, Style};
 use tui::widgets::{Axis, Chart, Dataset, GraphType, Marker, Widget};
 
+use crate::colorscheme::Colorscheme;
 use crate::update::UpdatableWidget;
 use crate::widgets::block;
 
@@ -16,17 +17,19 @@ struct MemData {
 	percents: Vec<(f64, f64)>,
 }
 
-pub struct MemWidget {
+pub struct MemWidget<'a> {
 	title: String,
 	update_interval: Ratio<u64>,
+	colorscheme: &'a Colorscheme,
+
 	update_count: u64,
 
 	main: MemData,
 	swap: MemData,
 }
 
-impl MemWidget {
-	pub fn new(update_interval: Ratio<u64>) -> MemWidget {
+impl MemWidget<'_> {
+	pub fn new(colorscheme: &Colorscheme, update_interval: Ratio<u64>) -> MemWidget {
 		let update_count = 0;
 
 		let mut main = MemData::default();
@@ -38,6 +41,8 @@ impl MemWidget {
 		MemWidget {
 			title: " Memory Usage ".to_string(),
 			update_interval,
+			colorscheme,
+
 			update_count,
 
 			main,
@@ -46,7 +51,7 @@ impl MemWidget {
 	}
 }
 
-impl UpdatableWidget for MemWidget {
+impl UpdatableWidget for MemWidget<'_> {
 	fn update(&mut self) {
 		self.update_count += 1;
 
@@ -71,10 +76,10 @@ impl UpdatableWidget for MemWidget {
 	}
 }
 
-impl Widget for MemWidget {
+impl Widget for MemWidget<'_> {
 	fn draw(&mut self, area: Rect, buf: &mut Buffer) {
 		Chart::<String, String>::default()
-			.block(block::new().title(&self.title))
+			.block(block::new(self.colorscheme, &self.title))
 			.x_axis(Axis::default().bounds([
 				self.update_count as f64 - 100.0,
 				self.update_count as f64 + 1.0,

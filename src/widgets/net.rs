@@ -5,14 +5,16 @@ use tui::layout::Rect;
 use tui::style::{Color, Style};
 use tui::widgets::{RenderDirection, Sparkline, Widget};
 
+use crate::colorscheme::Colorscheme;
 use crate::update::UpdatableWidget;
 use crate::widgets::block;
 
-pub struct NetWidget {
+pub struct NetWidget<'a, 'b> {
 	title: String,
 	update_interval: Ratio<u64>,
+	colorscheme: &'a Colorscheme,
 
-	interfaces: String,
+	interfaces: &'b str,
 
 	bytes_recv: Vec<u64>,
 	bytes_sent: Vec<u64>,
@@ -23,11 +25,12 @@ pub struct NetWidget {
 	collector: network::NetIoCountersCollector,
 }
 
-impl NetWidget {
-	pub fn new(interfaces: String) -> NetWidget {
+impl NetWidget<'_, '_> {
+	pub fn new<'a, 'b>(colorscheme: &'a Colorscheme, interfaces: &'b str) -> NetWidget<'a, 'b> {
 		NetWidget {
 			title: " Network Usage ".to_string(),
 			update_interval: Ratio::from_integer(1),
+			colorscheme,
 
 			interfaces,
 
@@ -42,7 +45,7 @@ impl NetWidget {
 	}
 }
 
-impl UpdatableWidget for NetWidget {
+impl UpdatableWidget for NetWidget<'_, '_> {
 	fn update(&mut self) {
 		let io_counters = self.collector.net_io_counters().unwrap();
 
@@ -65,9 +68,9 @@ impl UpdatableWidget for NetWidget {
 	}
 }
 
-impl Widget for NetWidget {
+impl Widget for NetWidget<'_, '_> {
 	fn draw(&mut self, area: Rect, buf: &mut Buffer) {
-		block::new().title(&self.title).draw(area, buf);
+		block::new(self.colorscheme, &self.title).draw(area, buf);
 
 		let inner = Rect {
 			x: area.x + 1,
