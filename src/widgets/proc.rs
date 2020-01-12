@@ -45,7 +45,10 @@ impl UpdatableWidget for ProcWidget {
 				Proc {
 					pid: process.pid(),
 					name: name.to_string(),
-					commandline: process.cmdline().unwrap().unwrap_or(name),
+					commandline: process
+						.cmdline()
+						.unwrap()
+						.unwrap_or_else(|| format!("[{}]", name)),
 					cpu: 0.0,
 					mem: 0.0,
 				}
