@@ -87,6 +87,7 @@ impl Widget for ProcWidget {
 		])
 		.style(Style::default().fg(Color::White))
 		.column_spacing(1)
+		.header_gap(0)
 		.draw(area, buf);
 	}
 }
