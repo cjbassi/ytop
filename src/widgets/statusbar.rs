@@ -14,7 +14,7 @@ pub struct Statusbar {
 impl Statusbar {
 	pub fn new(program_name: &str) -> Statusbar {
 		Statusbar {
-			hostname: host::info().unwrap().hostname().to_owned(),
+			hostname: host::info().hostname().to_owned(),
 			program_name: program_name.to_string(),
 			program_name_len: program_name.len() as u16,
 		}

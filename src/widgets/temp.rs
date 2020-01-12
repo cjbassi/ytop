@@ -1,7 +1,9 @@
 use num_rational::Ratio;
+use psutil::sensors;
 use tui::buffer::Buffer;
 use tui::layout::Rect;
-use tui::widgets::Widget;
+use tui::style::{Color, Style};
+use tui::widgets::{List, Text, Widget};
 
 use crate::update::UpdatableWidget;
 use crate::widgets::block;
@@ -9,10 +11,9 @@ use crate::widgets::block;
 pub struct TempWidget {
 	title: String,
 	update_interval: Ratio<u64>,
-	update_count: u64,
 
 	fahrenheit: bool,
-	temp_data: Vec<(String, Vec<(f64, f64)>)>,
+	temp_data: Vec<(String, f64)>,
 }
 
 impl TempWidget {
@@ -20,7 +21,6 @@ impl TempWidget {
 		TempWidget {
 			title: " Temperatures ".to_string(),
 			update_interval: Ratio::from_integer(5),
-			update_count: 0,
 
 			fahrenheit,
 			temp_data: Vec::new(),
@@ -30,7 +30,12 @@ impl TempWidget {
 
 impl UpdatableWidget for TempWidget {
 	fn update(&mut self) {
-		self.update_count += 1;
+		self.temp_data = sensors::temperatures()
+			.into_iter()
+			.filter_map(|sensor| sensor.ok())
+			.map(|sensor| (sensor.unit().to_string(), sensor.current().celcius()))
+			.filter(|data| data.1 > 0.0)
+			.collect()
 	}
 
 	fn get_update_interval(&self) -> Ratio<u64> {
@@ -40,6 +45,15 @@ impl UpdatableWidget for TempWidget {
 
 impl Widget for TempWidget {
 	fn draw(&mut self, area: Rect, buf: &mut Buffer) {
-		block::new().title(&self.title).draw(area, buf);
+		List::new(self.temp_data.iter().map(|item| {
+			Text::Raw(std::borrow::Cow::from(format!(
+				"{} {}",
+				item.0.to_string(),
+				item.1.to_string()
+			)))
+		}))
+		.block(block::new().title(&self.title))
+		.style(Style::default().fg(Color::White))
+		.draw(area, buf);
 	}
 }
