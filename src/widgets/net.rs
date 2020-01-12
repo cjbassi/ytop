@@ -69,24 +69,54 @@ impl Widget for NetWidget {
 	fn draw(&mut self, area: Rect, buf: &mut Buffer) {
 		block::new().title(&self.title).draw(area, buf);
 
-		let x = area.x + 1;
-		let y = area.y + 1;
-		let height = area.height - 2;
-		let width = area.width - 2;
+		let inner = Rect {
+			x: area.x + 1,
+			y: area.y + 1,
+			width: area.width - 2,
+			height: area.height - 2,
+		};
 
 		let top_half = Rect {
-			x,
-			y,
-			width,
-			height: height / 2,
+			x: inner.x,
+			y: inner.y,
+			width: inner.width,
+			height: (inner.height / 2),
+		};
+
+		let top_sparkline = Rect {
+			x: inner.x,
+			y: inner.y + 3,
+			width: inner.width,
+			height: (inner.height / 2) - 3,
 		};
 
 		let bottom_half = Rect {
-			x,
-			y: y + 1 + (height / 2),
-			width,
-			height: height / 2,
+			x: inner.x,
+			y: inner.y + (inner.height / 2),
+			width: inner.width,
+			height: (inner.height / 2),
 		};
+
+		let bottom_sparkline = Rect {
+			x: inner.x,
+			y: inner.y + (inner.height / 2) + 4,
+			width: inner.width,
+			height: (inner.height / 2) - 3,
+		};
+
+		buf.set_string(
+			top_half.x + 1,
+			top_half.y + 1,
+			format!("Total Rx: {:>3.1} {:>2}", 0.0, ""),
+			Style::default().fg(Color::Yellow),
+		);
+
+		buf.set_string(
+			top_half.x + 1,
+			top_half.y + 2,
+			format!("Rx/s:     {:>3.1} {:>2}/s", 0.0, ""),
+			Style::default().fg(Color::Yellow),
+		);
 
 		Sparkline::default()
 			.data(
@@ -101,7 +131,21 @@ impl Widget for NetWidget {
 			.direction(RenderDirection::RTL)
 			.max(*self.bytes_recv.iter().max().unwrap())
 			.style(Style::default().fg(Color::Red))
-			.draw(top_half, buf);
+			.draw(top_sparkline, buf);
+
+		buf.set_string(
+			bottom_half.x + 1,
+			bottom_half.y + 1,
+			format!("Total Tx: {:>3.1} {:>2}", 0.0, ""),
+			Style::default().fg(Color::Yellow),
+		);
+
+		buf.set_string(
+			bottom_half.x + 1,
+			bottom_half.y + 2,
+			format!("Tx/s:     {:>3.1} {:>2}/s", 0.0, ""),
+			Style::default().fg(Color::Yellow),
+		);
 
 		Sparkline::default()
 			.data(
@@ -116,6 +160,6 @@ impl Widget for NetWidget {
 			.direction(RenderDirection::RTL)
 			.max(*self.bytes_sent.iter().max().unwrap())
 			.style(Style::default().fg(Color::Red))
-			.draw(bottom_half, buf);
+			.draw(bottom_sparkline, buf);
 	}
 }
