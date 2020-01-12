@@ -33,7 +33,16 @@ impl UpdatableWidget for TempWidget {
 		self.temp_data = sensors::temperatures()
 			.into_iter()
 			.filter_map(|sensor| sensor.ok())
-			.map(|sensor| (sensor.unit().to_string(), sensor.current().celcius()))
+			.map(|sensor| {
+				(
+					sensor.unit().to_string(),
+					if self.fahrenheit {
+						sensor.current().fahrenheit()
+					} else {
+						sensor.current().celcius()
+					},
+				)
+			})
 			.filter(|data| data.1 > 0.0)
 			.collect()
 	}
@@ -47,9 +56,11 @@ impl Widget for TempWidget {
 	fn draw(&mut self, area: Rect, buf: &mut Buffer) {
 		List::new(self.temp_data.iter().map(|item| {
 			Text::Raw(std::borrow::Cow::from(format!(
-				"{} {}",
+				"{:width$} {:2.0}{}",
 				item.0.to_string(),
-				item.1.to_string()
+				item.1,
+				if self.fahrenheit { "F" } else { "C" },
+				width = area.width as usize - 6
 			)))
 		}))
 		.block(block::new().title(&self.title))
