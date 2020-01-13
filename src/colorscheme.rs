@@ -30,7 +30,7 @@ impl FromStr for Colorschemes {
 }
 
 #[derive(Deserialize)]
-pub struct ColorschemeRaw {
+struct ColorschemeRaw {
 	pub fg: i64,
 	pub bg: i64,
 
@@ -118,7 +118,7 @@ fn convert_color(raw: i64) -> Color {
 	}
 }
 
-pub fn parse_colorscheme(
+fn parse_colorscheme(
 	config_folder: &Path,
 	colorscheme: &Colorschemes,
 ) -> serde_json::Result<ColorschemeRaw> {
