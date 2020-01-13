@@ -9,6 +9,7 @@ use crate::colorscheme::Colorscheme;
 use crate::update::UpdatableWidget;
 use crate::widgets::block;
 
+#[derive(Clone)]
 struct Proc {
 	pid: u32,
 	name: String,
@@ -66,15 +67,18 @@ impl UpdatableWidget for ProcWidget<'_> {
 
 impl Widget for ProcWidget<'_> {
 	fn draw(&mut self, area: Rect, buf: &mut Buffer) {
+		let mut procs = self.procs.clone();
+		procs.sort_by(|a, b| a.cpu.partial_cmp(&b.cpu).unwrap());
+
 		Table::new(
-			["Count", "Command", "CPU%", "Mem%"].iter(),
-			self.procs.iter().map(|proc| {
+			["PID", "Command", "CPU%", "Mem%"].iter(),
+			procs.iter().map(|proc| {
 				Row::StyledData(
 					vec![
 						proc.pid.to_string(),
 						proc.commandline.to_string(),
-						proc.cpu.to_string(),
-						proc.mem.to_string(),
+						format!("{:2.1}", proc.cpu),
+						format!("{:2.1}", proc.mem),
 					]
 					.into_iter(),
 					self.colorscheme.text,
@@ -84,10 +88,10 @@ impl Widget for ProcWidget<'_> {
 		.block(block::new(self.colorscheme, &self.title))
 		.header_style(self.colorscheme.text.modifier(Modifier::BOLD))
 		.widths(&[
-			Constraint::Length(20),
-			Constraint::Length(20),
-			Constraint::Length(10),
-			Constraint::Length(10),
+			Constraint::Length(5),
+			Constraint::Min(5),
+			Constraint::Length(5),
+			Constraint::Length(5),
 		])
 		.column_spacing(1)
 		.header_gap(0)
