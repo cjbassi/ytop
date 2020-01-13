@@ -15,6 +15,41 @@
 - Most keybinds aren't implemented
 - Mouse usage isn't implemented
 
+## Installation
+
+Currently only working on Linux with support planned for all major platforms.
+
+### Prebuilt binaries:
+
+Note: (currently only a binary for Linux-x86_64 is available)
+
+Run the following to run [this](https://github.com/japaric/trust/blob/gh-pages/install.sh) script to download the correct binary for your system from the releases tab into `~/.cargo/bin`, courtesy of [japaric/trust](https://github.com/japaric/trust):
+
+```bash
+bash <(curl -LSfs https://japaric.github.io/trust/install.sh) \
+  -f --git cjbassi/ytop
+```
+
+Specify `--to` to change the download location.
+
+### From source:
+
+Latest release:
+
+```bash
+cargo install -f --git https://github.com/cjbassi/ytop --tag 0.1.0
+```
+
+Latest commit:
+
+```bash
+cargo install -f --git https://github.com/cjbassi/ytop
+```
+
+### Arch Linux
+
+Install `ytop`, `ytop-bin`, or `ytop-git` from the AUR.
+
 ## Usage
 
 ### Keybinds
