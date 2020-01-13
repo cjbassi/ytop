@@ -1,7 +1,9 @@
 use num_rational::Ratio;
 use psutil::network;
+use size::Size;
 use tui::buffer::Buffer;
 use tui::layout::Rect;
+use tui::style::Modifier;
 use tui::widgets::{RenderDirection, Sparkline, Widget};
 
 use crate::colorscheme::Colorscheme;
@@ -109,15 +111,18 @@ impl Widget for NetWidget<'_, '_> {
 		buf.set_string(
 			top_half.x + 1,
 			top_half.y + 1,
-			format!("Total Rx: {:>3.1} {:>2}", 0.0, ""),
-			self.colorscheme.text,
+			format!("Total Rx: {}", Size::Bytes(self.total_bytes_recv)),
+			self.colorscheme.text.modifier(Modifier::BOLD),
 		);
 
 		buf.set_string(
 			top_half.x + 1,
 			top_half.y + 2,
-			format!("Rx/s:     {:>3.1} {:>2}/s", 0.0, ""),
-			self.colorscheme.text,
+			format!(
+				"Rx/s:     {}/s",
+				Size::Bytes(self.bytes_recv.last().unwrap().to_owned())
+			),
+			self.colorscheme.text.modifier(Modifier::BOLD),
 		);
 
 		Sparkline::default()
@@ -138,15 +143,18 @@ impl Widget for NetWidget<'_, '_> {
 		buf.set_string(
 			bottom_half.x + 1,
 			bottom_half.y + 1,
-			format!("Total Tx: {:>3.1} {:>2}", 0.0, ""),
-			self.colorscheme.text,
+			format!("Total Tx: {}", Size::Bytes(self.total_bytes_sent)),
+			self.colorscheme.text.modifier(Modifier::BOLD),
 		);
 
 		buf.set_string(
 			bottom_half.x + 1,
 			bottom_half.y + 2,
-			format!("Tx/s:     {:>3.1} {:>2}/s", 0.0, ""),
-			self.colorscheme.text,
+			format!(
+				"Tx/s:     {}/s",
+				Size::Bytes(self.bytes_sent.last().unwrap().to_owned())
+			),
+			self.colorscheme.text.modifier(Modifier::BOLD),
 		);
 
 		Sparkline::default()
