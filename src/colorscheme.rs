@@ -31,26 +31,26 @@ impl FromStr for Colorschemes {
 
 #[derive(Deserialize)]
 struct ColorschemeRaw {
-	pub fg: i64,
-	pub bg: i64,
+	fg: i64,
+	bg: i64,
 
-	pub titles: i64,
-	pub borders: i64,
+	titles: i64,
+	borders: i64,
 
-	pub battery_lines: Vec<i64>,
+	battery_lines: Vec<i64>,
 
 	// need at least 8 entries
-	pub cpu_lines: Vec<i64>,
+	cpu_lines: Vec<i64>,
 
-	pub mem_main: i64,
-	pub mem_swap: i64,
+	mem_main: i64,
+	mem_swap: i64,
 
-	pub net_bars: i64,
+	net_bars: i64,
 
-	pub proc_cursor: i64,
+	proc_cursor: i64,
 
-	pub temp_low: i64,
-	pub temp_high: i64,
+	temp_low: i64,
+	temp_high: i64,
 }
 
 pub struct Colorscheme {
