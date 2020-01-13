@@ -14,3 +14,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 > - **Security**: in case of vulnerabilities.
 
 ## [Unreleased]
+
+## 0.1.0 - 2020-01-13
+
+Initial release!
+
+[Unreleased]: https://github.com/cjbassi/ytop/compare/0.1.0...HEAD
