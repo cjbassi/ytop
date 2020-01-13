@@ -91,7 +91,7 @@ impl Widget for NetWidget<'_, '_> {
 			x: inner.x,
 			y: inner.y + 3,
 			width: inner.width,
-			height: (inner.height / 2) - 3,
+			height: i16::max((inner.height as i16 / 2) - 3, 0) as u16,
 		};
 
 		let bottom_half = Rect {
@@ -103,9 +103,9 @@ impl Widget for NetWidget<'_, '_> {
 
 		let bottom_sparkline = Rect {
 			x: inner.x,
-			y: inner.y + (inner.height / 2) + 4,
+			y: inner.y + (inner.height / 2) + 3,
 			width: inner.width,
-			height: (inner.height / 2) - 3,
+			height: i16::max((inner.height as i16 / 2) - 3, 0) as u16,
 		};
 
 		buf.set_string(
