@@ -3,7 +3,7 @@ name: Publish Binaries
 on: release
 
 env:
-  NAME: rtop
+  NAME: ytop
 
 jobs:
   publish:
