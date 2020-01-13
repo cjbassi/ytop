@@ -3,6 +3,7 @@ use std::path::PathBuf;
 
 use num_rational::Ratio;
 use psutil::disk;
+use size::Size;
 use tui::buffer::Buffer;
 use tui::layout::{Constraint, Rect};
 use tui::style::Modifier;
@@ -112,12 +113,15 @@ impl Widget for DiskWidget<'_> {
 
 		Table::new(
 			["Disk", "Mount", "Used", "Free", "R/s", "W/s"].iter(),
-			partitions.iter().map(|partition| {
+			partitions.into_iter().map(|partition| {
 				Row::StyledData(
 					vec![
-						partition.name.to_string(),
+						partition.name,
 						format!("{}", partition.mountpoint.display()),
 						format!("{:3.0}%", partition.used_percent),
+						format!("{}", Size::Bytes(partition.bytes_free)),
+						format!("{}", Size::Bytes(partition.bytes_read_recently)),
+						format!("{}", Size::Bytes(partition.bytes_written_recently)),
 					]
 					.into_iter(),
 					self.colorscheme.text,
@@ -127,14 +131,15 @@ impl Widget for DiskWidget<'_> {
 		.block(block::new(self.colorscheme, &self.title))
 		.header_style(self.colorscheme.text.modifier(Modifier::BOLD))
 		.widths(&[
-			Constraint::Length(20),
-			Constraint::Length(20),
-			Constraint::Length(10),
-			Constraint::Length(10),
-			Constraint::Length(10),
-			Constraint::Length(10),
+			Constraint::Min(5),
+			Constraint::Min(5),
+			Constraint::Length(5),
+			Constraint::Length(8),
+			Constraint::Length(8),
+			Constraint::Length(8),
 		])
 		.column_spacing(1)
+		.header_gap(0)
 		.draw(area, buf);
 	}
 }

@@ -101,11 +101,11 @@ impl Widget for ProcWidget<'_> {
 
 		Table::new(
 			["PID", "Command", "CPU%", "Mem%"].iter(),
-			procs.iter().map(|proc| {
+			procs.into_iter().map(|proc| {
 				Row::StyledData(
 					vec![
 						proc.pid.to_string(),
-						proc.commandline.to_string(),
+						proc.commandline,
 						format!("{:2.1}", proc.cpu),
 						format!("{:2.1}", proc.mem),
 					]
