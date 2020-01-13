@@ -130,14 +130,20 @@ impl Widget for DiskWidget<'_> {
 		)
 		.block(block::new(self.colorscheme, &self.title))
 		.header_style(self.colorscheme.text.modifier(Modifier::BOLD))
-		.widths(&[
-			Constraint::Min(5),
-			Constraint::Min(5),
-			Constraint::Length(5),
-			Constraint::Length(8),
-			Constraint::Length(8),
-			Constraint::Length(8),
-		])
+		.widths(&if area.width > 55 {
+			vec![
+				// Constraint::Min(5),
+				// Constraint::Min(5),
+				Constraint::Length(u16::max((area.width as i16 - 2 - 50) as u16, 5)),
+				Constraint::Length(u16::max((area.width as i16 - 2 - 50) as u16, 5)),
+				Constraint::Length(5),
+				Constraint::Length(8),
+				Constraint::Length(8),
+				Constraint::Length(8),
+			]
+		} else {
+			vec![Constraint::Length(5), Constraint::Length(5)]
+		})
 		.column_spacing(1)
 		.header_gap(0)
 		.draw(area, buf);

@@ -118,7 +118,8 @@ impl Widget for ProcWidget<'_> {
 		.header_style(self.colorscheme.text.modifier(Modifier::BOLD))
 		.widths(&[
 			Constraint::Length(5),
-			Constraint::Min(5),
+			// Constraint::Min(5),
+			Constraint::Length(u16::max((area.width as i16 - 2 - 18) as u16, 5)),
 			Constraint::Length(5),
 			Constraint::Length(5),
 		])
