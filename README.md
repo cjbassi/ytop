@@ -9,6 +9,12 @@
 
 </div>
 
+## Missing features
+
+- Only works on Linux
+- Most keybinds aren't implemented
+- Mouse usage isn't implemented
+
 ## Usage
 
 ### Keybinds
