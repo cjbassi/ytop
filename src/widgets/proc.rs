@@ -53,7 +53,11 @@ impl UpdatableWidget for ProcWidget<'_> {
 			.into_iter()
 			.filter_map(|process| process.ok())
 			.for_each(|process| {
-				self.processes.insert(process.pid(), process);
+				if !self.processes.contains_key(&process.pid())
+					|| self.processes[&process.pid()] != process
+				{
+					self.processes.insert(process.pid(), process);
+				}
 			});
 
 		let mut to_remove = Vec::new();
