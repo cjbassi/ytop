@@ -6,7 +6,7 @@ use crate::widgets::*;
 
 pub struct App<'a, 'b> {
 	pub help_menu: HelpMenu<'a>,
-	pub statusbar: Option<Statusbar>,
+	pub statusbar: Option<Statusbar<'a>>,
 	pub widgets: Widgets<'a, 'b>,
 }
 
@@ -47,7 +47,7 @@ pub fn setup_app<'a, 'b>(
 	};
 
 	let statusbar = if args.statusbar {
-		Some(Statusbar::new(program_name))
+		Some(Statusbar::new(colorscheme, program_name))
 	} else {
 		None
 	};

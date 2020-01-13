@@ -5,7 +5,7 @@ use num_rational::Ratio;
 use psutil::disk;
 use tui::buffer::Buffer;
 use tui::layout::{Constraint, Rect};
-use tui::style::{Color, Modifier, Style};
+use tui::style::Modifier;
 use tui::widgets::{Row, Table, Widget};
 
 use crate::colorscheme::Colorscheme;
@@ -107,8 +107,6 @@ impl UpdatableWidget for DiskWidget<'_> {
 
 impl Widget for DiskWidget<'_> {
 	fn draw(&mut self, area: Rect, buf: &mut Buffer) {
-		let row_style = Style::default().fg(Color::White);
-
 		let mut partitions: Vec<Partition> = self
 			.partitions
 			.iter()
@@ -126,12 +124,12 @@ impl Widget for DiskWidget<'_> {
 						format!("{:3.0}%", partition.used_percent),
 					]
 					.into_iter(),
-					row_style,
+					self.colorscheme.text,
 				)
 			}),
 		)
 		.block(block::new(self.colorscheme, &self.title))
-		.header_style(Style::default().fg(Color::Yellow).modifier(Modifier::BOLD))
+		.header_style(self.colorscheme.text.modifier(Modifier::BOLD))
 		.widths(&[
 			Constraint::Length(20),
 			Constraint::Length(20),
@@ -140,7 +138,6 @@ impl Widget for DiskWidget<'_> {
 			Constraint::Length(10),
 			Constraint::Length(10),
 		])
-		.style(Style::default().fg(Color::White))
 		.column_spacing(1)
 		.draw(area, buf);
 	}

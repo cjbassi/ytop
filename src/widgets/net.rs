@@ -2,7 +2,6 @@ use num_rational::Ratio;
 use psutil::network;
 use tui::buffer::Buffer;
 use tui::layout::Rect;
-use tui::style::{Color, Style};
 use tui::widgets::{RenderDirection, Sparkline, Widget};
 
 use crate::colorscheme::Colorscheme;
@@ -111,14 +110,14 @@ impl Widget for NetWidget<'_, '_> {
 			top_half.x + 1,
 			top_half.y + 1,
 			format!("Total Rx: {:>3.1} {:>2}", 0.0, ""),
-			Style::default().fg(Color::Yellow),
+			self.colorscheme.text,
 		);
 
 		buf.set_string(
 			top_half.x + 1,
 			top_half.y + 2,
 			format!("Rx/s:     {:>3.1} {:>2}/s", 0.0, ""),
-			Style::default().fg(Color::Yellow),
+			self.colorscheme.text,
 		);
 
 		Sparkline::default()
@@ -133,21 +132,21 @@ impl Widget for NetWidget<'_, '_> {
 			)
 			.direction(RenderDirection::RTL)
 			.max(*self.bytes_recv.iter().max().unwrap())
-			.style(Style::default().fg(Color::Red))
+			.style(self.colorscheme.net_bars)
 			.draw(top_sparkline, buf);
 
 		buf.set_string(
 			bottom_half.x + 1,
 			bottom_half.y + 1,
 			format!("Total Tx: {:>3.1} {:>2}", 0.0, ""),
-			Style::default().fg(Color::Yellow),
+			self.colorscheme.text,
 		);
 
 		buf.set_string(
 			bottom_half.x + 1,
 			bottom_half.y + 2,
 			format!("Tx/s:     {:>3.1} {:>2}/s", 0.0, ""),
-			Style::default().fg(Color::Yellow),
+			self.colorscheme.text,
 		);
 
 		Sparkline::default()
@@ -162,7 +161,7 @@ impl Widget for NetWidget<'_, '_> {
 			)
 			.direction(RenderDirection::RTL)
 			.max(*self.bytes_sent.iter().max().unwrap())
-			.style(Style::default().fg(Color::Red))
+			.style(self.colorscheme.net_bars)
 			.draw(bottom_sparkline, buf);
 	}
 }

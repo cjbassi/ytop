@@ -2,7 +2,6 @@ use num_rational::Ratio;
 use psutil::cpu;
 use tui::buffer::Buffer;
 use tui::layout::Rect;
-use tui::style::{Color, Style};
 use tui::widgets::{Axis, Chart, Dataset, GraphType, Marker, Widget};
 
 use crate::colorscheme::Colorscheme;
@@ -104,18 +103,22 @@ impl Widget for CpuWidget<'_> {
 			datasets.push(
 				Dataset::default()
 					.marker(Marker::Braille)
-					.style(Style::default().fg(Color::Yellow))
 					.graph_type(GraphType::Line)
+					.style(self.colorscheme.cpu_lines[0])
 					.data(&self.average_data),
 			)
 		}
 		if self.show_percpu {
+			let offset = if self.show_average { 1 } else { 0 };
 			for i in 0..self.cpu_count {
 				datasets.push(
 					Dataset::default()
 						.marker(Marker::Braille)
 						.graph_type(GraphType::Line)
-						.style(Style::default().fg(Color::Yellow))
+						.style(
+							self.colorscheme.cpu_lines
+								[(i + offset as usize) % self.colorscheme.cpu_lines.len()],
+						)
 						.data(&self.percpu_data[i]),
 				)
 			}
@@ -136,7 +139,7 @@ impl Widget for CpuWidget<'_> {
 				area.x + 3,
 				area.y + 2,
 				format!("AVRG {:3.0}%", self.average_data.last().unwrap().1),
-				Style::default().fg(Color::Yellow),
+				self.colorscheme.cpu_lines[0],
 			);
 		}
 
@@ -147,7 +150,8 @@ impl Widget for CpuWidget<'_> {
 					area.x + 3,
 					area.y + 2 + offset + i as u16,
 					format!("CPU{} {:3.0}%", i, self.percpu_data[i].last().unwrap().1),
-					Style::default().fg(Color::Yellow),
+					self.colorscheme.cpu_lines
+						[(i + offset as usize) % self.colorscheme.cpu_lines.len()],
 				);
 			}
 		}

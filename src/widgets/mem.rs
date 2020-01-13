@@ -3,7 +3,6 @@ use psutil::memory;
 use size::Size;
 use tui::buffer::Buffer;
 use tui::layout::Rect;
-use tui::style::{Color, Style};
 use tui::widgets::{Axis, Chart, Dataset, GraphType, Marker, Widget};
 
 use crate::colorscheme::Colorscheme;
@@ -89,12 +88,12 @@ impl Widget for MemWidget<'_> {
 				Dataset::default()
 					.marker(Marker::Braille)
 					.graph_type(GraphType::Line)
-					.style(Style::default().fg(Color::Yellow))
+					.style(self.colorscheme.mem_main)
 					.data(&self.main.percents),
 				Dataset::default()
 					.marker(Marker::Braille)
 					.graph_type(GraphType::Line)
-					.style(Style::default().fg(Color::Blue))
+					.style(self.colorscheme.mem_swap)
 					.data(&self.swap.percents),
 			])
 			.draw(area, buf);
@@ -108,7 +107,7 @@ impl Widget for MemWidget<'_> {
 				Size::Bytes(self.main.used),
 				Size::Bytes(self.main.total),
 			),
-			Style::default().fg(Color::Yellow),
+			self.colorscheme.mem_main,
 		);
 
 		buf.set_string(
@@ -120,7 +119,7 @@ impl Widget for MemWidget<'_> {
 				Size::Bytes(self.swap.used),
 				Size::Bytes(self.swap.total),
 			),
-			Style::default().fg(Color::Blue),
+			self.colorscheme.mem_swap,
 		);
 	}
 }

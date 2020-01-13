@@ -2,40 +2,45 @@ use chrono::prelude::*;
 use psutil::host;
 use tui::buffer::Buffer;
 use tui::layout::Rect;
-use tui::style::Style;
 use tui::widgets::Widget;
 
-pub struct Statusbar {
+use crate::colorscheme::Colorscheme;
+
+pub struct Statusbar<'a> {
 	hostname: String,
 	program_name: String,
 	program_name_len: u16,
+
+	colorscheme: &'a Colorscheme,
 }
 
-impl Statusbar {
-	pub fn new(program_name: &str) -> Statusbar {
+impl Statusbar<'_> {
+	pub fn new<'a>(colorscheme: &'a Colorscheme, program_name: &str) -> Statusbar<'a> {
 		Statusbar {
 			hostname: host::info().hostname().to_owned(),
 			program_name: program_name.to_string(),
 			program_name_len: program_name.len() as u16,
+
+			colorscheme,
 		}
 	}
 }
 
-impl Widget for Statusbar {
+impl Widget for Statusbar<'_> {
 	fn draw(&mut self, area: Rect, buf: &mut Buffer) {
 		let time = Local::now().format("%H:%M:%S").to_string();
-		buf.set_string(area.x + 1, area.y, &self.hostname, Style::default());
+		buf.set_string(area.x + 1, area.y, &self.hostname, self.colorscheme.text);
 		buf.set_string(
 			(area.x + area.width - time.len() as u16) / 2,
 			area.y,
 			time,
-			Style::default(),
+			self.colorscheme.text,
 		);
 		buf.set_string(
 			area.x + area.width - self.program_name_len - 1,
 			area.y,
 			&self.program_name,
-			Style::default(),
+			self.colorscheme.text,
 		);
 	}
 }

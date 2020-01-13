@@ -4,7 +4,6 @@ use battery::Manager;
 use num_rational::Ratio;
 use tui::buffer::Buffer;
 use tui::layout::Rect;
-use tui::style::{Color, Style};
 use tui::widgets::{Axis, Chart, Dataset, GraphType, Marker, Widget};
 
 use crate::colorscheme::Colorscheme;
@@ -71,10 +70,11 @@ impl Widget for BatteryWidget<'_> {
 		let datasets: Vec<Dataset> = self
 			.battery_data
 			.values()
-			.map(|data| {
+			.enumerate()
+			.map(|(i, data)| {
 				Dataset::default()
 					.marker(Marker::Braille)
-					.style(Style::default().fg(Color::Yellow))
+					.style(self.colorscheme.battery_lines[i % self.colorscheme.battery_lines.len()])
 					.graph_type(GraphType::Line)
 					.data(&data)
 			})
@@ -95,7 +95,7 @@ impl Widget for BatteryWidget<'_> {
 				area.x + 3,
 				area.y + 2 + i as u16,
 				format!("{} {:3.0}%", data.0, data.1.last().unwrap().1),
-				Style::default().fg(Color::Yellow),
+				self.colorscheme.battery_lines[i % self.colorscheme.battery_lines.len()],
 			);
 		}
 	}

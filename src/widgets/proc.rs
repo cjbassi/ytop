@@ -2,7 +2,7 @@ use num_rational::Ratio;
 use psutil::process;
 use tui::buffer::Buffer;
 use tui::layout::{Constraint, Rect};
-use tui::style::{Color, Modifier, Style};
+use tui::style::Modifier;
 use tui::widgets::{Row, Table, Widget};
 
 use crate::colorscheme::Colorscheme;
@@ -66,8 +66,6 @@ impl UpdatableWidget for ProcWidget<'_> {
 
 impl Widget for ProcWidget<'_> {
 	fn draw(&mut self, area: Rect, buf: &mut Buffer) {
-		let row_style = Style::default().fg(Color::White);
-
 		Table::new(
 			["Count", "Command", "CPU%", "Mem%"].iter(),
 			self.procs.iter().map(|proc| {
@@ -79,19 +77,18 @@ impl Widget for ProcWidget<'_> {
 						proc.mem.to_string(),
 					]
 					.into_iter(),
-					row_style,
+					self.colorscheme.text,
 				)
 			}),
 		)
 		.block(block::new(self.colorscheme, &self.title))
-		.header_style(Style::default().fg(Color::Yellow).modifier(Modifier::BOLD))
+		.header_style(self.colorscheme.text.modifier(Modifier::BOLD))
 		.widths(&[
 			Constraint::Length(20),
 			Constraint::Length(20),
 			Constraint::Length(10),
 			Constraint::Length(10),
 		])
-		.style(Style::default().fg(Color::White))
 		.column_spacing(1)
 		.header_gap(0)
 		.draw(area, buf);

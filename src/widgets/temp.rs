@@ -2,7 +2,6 @@ use num_rational::Ratio;
 use psutil::sensors;
 use tui::buffer::Buffer;
 use tui::layout::Rect;
-use tui::style::{Color, Style};
 use tui::widgets::{List, Text, Widget};
 
 use crate::colorscheme::Colorscheme;
@@ -67,7 +66,7 @@ impl Widget for TempWidget<'_> {
 			)))
 		}))
 		.block(block::new(self.colorscheme, &self.title))
-		.style(Style::default().fg(Color::White))
+		.style(self.colorscheme.text)
 		.draw(area, buf);
 	}
 }
