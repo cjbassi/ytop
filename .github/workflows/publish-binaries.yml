@@ -2,15 +2,11 @@ name: Publish Binaries
 
 on: release
 
-env:
-  NAME: ytop
-
 jobs:
   publish:
-    env:
-      FILE: ${{ NAME }}-${{ GITHUB_REF }}-${{ matrix.target }}.tar.gz
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
         os:
           - ubuntu-latest
@@ -18,11 +14,11 @@ jobs:
         target:
           - x86_64-unknown-linux-gnu
           - x86_64-apple-darwin
-    exclude:
-      - os: macOS-latest
-        target: x86_64-unknown-linux-gnu
-      - os: ubuntu-latest
-        target: x86_64-apple-darwin
+        exclude:
+          - os: macOS-latest
+            target: x86_64-unknown-linux-gnu
+          - os: ubuntu-latest
+            target: x86_64-apple-darwin
     steps:
       - name: Checkout sources
         uses: actions/checkout@v1
@@ -42,11 +38,12 @@ jobs:
           args: --release --target=${{ matrix.target }}
 
       - name: Archive and compress binary
-        run: tar -czf ${{ FILE }} -C ./target/${{ matrix.target }}/release/ ${{ NAME }}
+        run: tar -czf ytop-${{ github.event.release.tag_name }}-${{ matrix.target }}.tar.gz -C ./target/${{ matrix.target }}/release/ ytop
 
       - name: Upload archive to GitHub releases
         uses: JasonEtco/upload-to-release@master
         with:
-          args: ${{ FILE }}
+          args: ytop-${{ github.event.release.tag_name }}-${{ matrix.target }}.tar.gz application/zip
+
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
