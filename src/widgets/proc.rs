@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use num_rational::Ratio;
 use psutil::process;
 use tui::buffer::Buffer;
@@ -23,7 +25,10 @@ pub struct ProcWidget<'a> {
 	update_interval: Ratio<u64>,
 	colorscheme: &'a Colorscheme,
 
+	selected_row: usize,
+
 	procs: Vec<Proc>,
+	processes: HashMap<u32, process::Process>,
 }
 
 impl ProcWidget<'_> {
@@ -33,31 +38,51 @@ impl ProcWidget<'_> {
 			update_interval: Ratio::from_integer(1),
 			colorscheme,
 
+			selected_row: 0,
+
 			procs: Vec::new(),
+			processes: HashMap::new(),
 		}
 	}
 }
 
 impl UpdatableWidget for ProcWidget<'_> {
 	fn update(&mut self) {
-		self.procs = process::processes()
+		process::processes()
 			.unwrap()
 			.into_iter()
+			.filter_map(|process| process.ok())
+			.for_each(|process| {
+				self.processes.insert(process.pid(), process);
+			});
+
+		let mut to_remove = Vec::new();
+
+		self.procs = self
+			.processes
+			.values_mut()
 			.map(|process| {
-				let process = process.unwrap();
-				let name = process.name().unwrap();
-				Proc {
-					pid: process.pid(),
-					name: name.to_string(),
-					commandline: process
-						.cmdline()
-						.unwrap()
-						.unwrap_or_else(|| format!("[{}]", name)),
-					cpu: 0.0,
-					mem: 0.0,
+				let result = {
+					let name = process.name()?;
+					Ok(Proc {
+						pid: process.pid(),
+						name: name.to_string(),
+						commandline: process.cmdline()?.unwrap_or_else(|| format!("[{}]", name)),
+						cpu: process.cpu_percent()?,
+						mem: process.memory_percent()?,
+					})
+				};
+				if result.is_err() {
+					to_remove.push(process.pid());
 				}
+				result
 			})
+			.filter_map(|process: process::ProcessResult<Proc>| process.ok())
 			.collect();
+
+		for id in to_remove {
+			self.processes.remove(&id);
+		}
 	}
 
 	fn get_update_interval(&self) -> Ratio<u64> {

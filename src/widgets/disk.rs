@@ -107,11 +107,7 @@ impl UpdatableWidget for DiskWidget<'_> {
 
 impl Widget for DiskWidget<'_> {
 	fn draw(&mut self, area: Rect, buf: &mut Buffer) {
-		let mut partitions: Vec<Partition> = self
-			.partitions
-			.iter()
-			.map(|(_key, val)| val.clone())
-			.collect();
+		let mut partitions: Vec<Partition> = self.partitions.values().cloned().collect();
 		partitions.sort_by(|a, b| a.name.cmp(&b.name));
 
 		Table::new(
