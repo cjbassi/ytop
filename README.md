@@ -90,7 +90,7 @@ Install `ytop`, `ytop-bin`, or `ytop-git` from the AUR.
 
 ytop ships with a few colorschemes which can be set with the `-c` flag followed by the name of one. You can find all the colorschemes in the [colorschemes folder](./colorschemes).
 
-To make a custom colorscheme, copy one of the default ones to `~/.config/ytop/<new-name>.json` and load it with `ytop -c <new-name>`. Colorschemes PRs are welcome!
+To make a custom colorscheme, copy one of the default ones to `~/.config/ytop/<new-name>.json` and load it with `ytop -c <new-name>`. Colorscheme PRs are welcome!
 
 ### CLI Options
 
