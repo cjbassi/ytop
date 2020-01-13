@@ -1,5 +1,5 @@
 [package]
-name = "rtop"
+name = "ytop"
 version = "0.1.0"
 authors = ["Caleb Bassi <calebjbassi@gmail.com>"]
 license = "MIT"
