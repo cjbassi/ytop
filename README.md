@@ -21,8 +21,6 @@ Currently only working on Linux with support planned for all major platforms.
 
 ### Prebuilt binaries:
 
-Note: (currently only a binary for Linux-x86_64 is available)
-
 Run the following to run [this](https://github.com/japaric/trust/blob/gh-pages/install.sh) script to download the correct binary for your system from the releases tab into `~/.cargo/bin`, courtesy of [japaric/trust](https://github.com/japaric/trust):
 
 ```bash
