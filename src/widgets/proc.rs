@@ -11,9 +11,16 @@ use crate::colorscheme::Colorscheme;
 use crate::update::UpdatableWidget;
 use crate::widgets::block;
 
+enum ProcSorting {
+	Cpu,
+	Mem,
+	Num,
+	Command,
+}
+
 #[derive(Clone)]
 struct Proc {
-	pid: u32,
+	num: u32,
 	name: String,
 	commandline: String,
 	cpu: f32,
@@ -25,9 +32,12 @@ pub struct ProcWidget<'a> {
 	update_interval: Ratio<u64>,
 	colorscheme: &'a Colorscheme,
 
+	grouping: bool,
 	selected_row: usize,
+	sorting: ProcSorting,
 
 	procs: Vec<Proc>,
+	grouped_procs: HashMap<String, Proc>,
 	processes: HashMap<u32, process::Process>,
 }
 
@@ -38,9 +48,12 @@ impl ProcWidget<'_> {
 			update_interval: Ratio::from_integer(1),
 			colorscheme,
 
+			grouping: true,
 			selected_row: 0,
+			sorting: ProcSorting::Cpu,
 
 			procs: Vec::new(),
+			grouped_procs: HashMap::new(),
 			processes: HashMap::new(),
 		}
 	}
@@ -69,7 +82,7 @@ impl UpdatableWidget for ProcWidget<'_> {
 				let result = {
 					let name = process.name()?;
 					Ok(Proc {
-						pid: process.pid(),
+						num: process.pid(),
 						name: name.to_string(),
 						commandline: process.cmdline()?.unwrap_or_else(|| format!("[{}]", name)),
 						cpu: process.cpu_percent()?,
@@ -84,6 +97,21 @@ impl UpdatableWidget for ProcWidget<'_> {
 			.filter_map(|process: process::ProcessResult<Proc>| process.ok())
 			.collect();
 
+		self.grouped_procs = HashMap::new();
+		for proc in self.procs.iter() {
+			self.grouped_procs
+				.entry(proc.name.clone())
+				.and_modify(|e| {
+					e.num += 1;
+					e.cpu += proc.cpu;
+					e.mem += proc.mem;
+				})
+				.or_insert_with(|| Proc {
+					num: 1,
+					..proc.clone()
+				});
+		}
+
 		for id in to_remove {
 			self.processes.remove(&id);
 		}
@@ -96,16 +124,35 @@ impl UpdatableWidget for ProcWidget<'_> {
 
 impl Widget for ProcWidget<'_> {
 	fn draw(&mut self, area: Rect, buf: &mut Buffer) {
-		let mut procs = self.procs.clone();
-		procs.sort_by(|a, b| a.cpu.partial_cmp(&b.cpu).unwrap());
+		let mut procs = if self.grouping {
+			self.grouped_procs.values().cloned().collect()
+		} else {
+			self.procs.clone()
+		};
+		procs.sort_by(|a, b| match &self.sorting {
+			ProcSorting::Cpu => a.cpu.partial_cmp(&b.cpu).unwrap(),
+			ProcSorting::Mem => a.mem.partial_cmp(&b.mem).unwrap(),
+			ProcSorting::Num => a.num.cmp(&b.num),
+			ProcSorting::Command => a.commandline.cmp(&b.commandline),
+		});
 
 		Table::new(
-			["PID", "Command", "CPU%", "Mem%"].iter(),
+			[
+				if self.grouping { "Count" } else { "PID" },
+				"Command",
+				"CPU%",
+				"Mem%",
+			]
+			.iter(),
 			procs.into_iter().map(|proc| {
 				Row::StyledData(
 					vec![
-						proc.pid.to_string(),
-						proc.commandline,
+						proc.num.to_string(),
+						if self.grouping {
+							proc.name
+						} else {
+							proc.commandline
+						},
 						format!("{:2.1}", proc.cpu),
 						format!("{:2.1}", proc.mem),
 					]
