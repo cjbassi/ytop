@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 
 use num_rational::Ratio;
+use psutil::cpu;
 use psutil::process;
 use tui::buffer::Buffer;
 use tui::layout::{Constraint, Rect};
@@ -45,6 +46,8 @@ pub struct ProcWidget<'a> {
 	sorting: ProcSorting,
 	sort_direction: SortDirection,
 
+	cpu_count: u64,
+
 	procs: Vec<Proc>,
 	grouped_procs: HashMap<String, Proc>,
 	processes: HashMap<u32, process::Process>,
@@ -61,6 +64,8 @@ impl ProcWidget<'_> {
 			selected_row: 0,
 			sorting: ProcSorting::Cpu,
 			sort_direction: SortDirection::Down,
+
+			cpu_count: cpu::cpu_count(),
 
 			procs: Vec::new(),
 			grouped_procs: HashMap::new(),
@@ -84,6 +89,7 @@ impl UpdatableWidget for ProcWidget<'_> {
 			});
 
 		let mut to_remove = Vec::new();
+		let cpu_count = self.cpu_count as f32;
 
 		self.procs = self
 			.processes
@@ -95,7 +101,7 @@ impl UpdatableWidget for ProcWidget<'_> {
 						num: process.pid(),
 						name: name.to_string(),
 						commandline: process.cmdline()?.unwrap_or_else(|| format!("[{}]", name)),
-						cpu: process.cpu_percent()?,
+						cpu: process.cpu_percent()? / cpu_count,
 						mem: process.memory_percent()?,
 					})
 				};
