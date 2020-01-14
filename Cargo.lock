@@ -886,7 +886,7 @@ dependencies = [
 [[package]]
 name = "tui"
 version = "0.8.0"
-source = "git+https://github.com/cjbassi/tui-rs#652dde97a63e240bf68a64851498aa6db119c47e"
+source = "git+https://github.com/cjbassi/tui-rs#aff0a4c40aff6e0962a2a935d4b21065298e329c"
 dependencies = [
  "bitflags 1.2.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "cassowary 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)",

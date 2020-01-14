@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Group processes by default
 - Add sorting arrow to process header
 - Show baseline spanning the bottom of the net sparklines
+- Linecharts now also draw points
 
 ## 0.1.0 - 2020-01-13
 
