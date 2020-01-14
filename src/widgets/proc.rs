@@ -27,6 +27,11 @@ enum SortDirection {
 	Down,
 }
 
+enum SelectedProc {
+	Pid(u32),
+	Name(String),
+}
+
 #[derive(Clone)]
 struct Proc {
 	num: u32,
@@ -43,6 +48,7 @@ pub struct ProcWidget<'a> {
 
 	grouping: bool,
 	selected_row: usize,
+	selected_proc: Option<SelectedProc>,
 	sorting: ProcSorting,
 	sort_direction: SortDirection,
 
@@ -62,6 +68,7 @@ impl ProcWidget<'_> {
 
 			grouping: true,
 			selected_row: 0,
+			selected_proc: None,
 			sorting: ProcSorting::Cpu,
 			sort_direction: SortDirection::Down,
 
@@ -174,6 +181,24 @@ impl Widget for ProcWidget<'_> {
 		let updated_header = format!("{}{}", header[header_index], arrow);
 		header[header_index] = &updated_header;
 
+		self.selected_row = match &self.selected_proc {
+			Some(selected_proc) => {
+				match selected_proc {
+					SelectedProc::Pid(pid) => procs.iter().position(|proc| proc.num == *pid),
+					SelectedProc::Name(name) => procs.iter().position(|proc| proc.name == *name),
+				}
+			}
+			.unwrap_or(self.selected_row),
+			None => self.selected_row,
+		};
+		self.selected_proc = if self.grouping {
+			Some(SelectedProc::Name(
+				procs[self.selected_row].name.to_string(),
+			))
+		} else {
+			Some(SelectedProc::Pid(procs[self.selected_row].num))
+		};
+
 		Table::new(
 			header.iter(),
 			procs.into_iter().map(|proc| {
@@ -205,5 +230,18 @@ impl Widget for ProcWidget<'_> {
 		.column_spacing(1)
 		.header_gap(0)
 		.draw(area, buf);
+
+		let cursor_y = area.y + 2 + self.selected_row as u16;
+		if cursor_y < area.y + area.height - 1 {
+			for i in (area.x + 1)..(area.x + area.width - 1) {
+				let cell = buf.get_mut(i, cursor_y);
+				if cell.symbol != " " {
+					cell.set_modifier(Modifier::REVERSED);
+					cell.set_fg(self.colorscheme.proc_cursor);
+				} else {
+					cell.set_bg(self.colorscheme.proc_cursor);
+				}
+			}
+		}
 	}
 }

@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Show baseline spanning the bottom of the net sparklines
 - Add sensor label to temperature identifier
 - Process cpu percents are now working
+- Draw the proc cursor
 
 ### Changed
 
