@@ -14,6 +14,8 @@ pub struct TempWidget<'a> {
 	colorscheme: &'a Colorscheme,
 
 	fahrenheit: bool,
+	temp_threshold: f64,
+
 	temp_data: Vec<(String, f64)>,
 }
 
@@ -25,6 +27,7 @@ impl TempWidget<'_> {
 			colorscheme,
 
 			fahrenheit,
+			temp_threshold: 80.0,
 			temp_data: Vec::new(),
 		}
 	}
@@ -56,17 +59,24 @@ impl UpdatableWidget for TempWidget<'_> {
 
 impl Widget for TempWidget<'_> {
 	fn draw(&mut self, area: Rect, buf: &mut Buffer) {
-		List::new(self.temp_data.iter().map(|item| {
-			Text::Raw(std::borrow::Cow::from(format!(
-				"{:width$} {:2.0}{}",
-				item.0.to_string(),
-				item.1,
-				if self.fahrenheit { "F" } else { "C" },
-				width = area.width as usize - 6
-			)))
-		}))
-		.block(block::new(self.colorscheme, &self.title))
-		.style(self.colorscheme.text)
-		.draw(area, buf);
+		block::new(self.colorscheme, &self.title).draw(area, buf);
+
+		for (i, (label, data)) in self.temp_data.iter().enumerate() {
+			if i >= area.height as usize - 2 {
+				break;
+			}
+			let y = area.y + 1 + i as u16;
+			buf.set_string(area.x + 1, y, label, self.colorscheme.text);
+			buf.set_string(
+				area.x + area.width - 4,
+				y,
+				format!("{:2.0}{}", data, if self.fahrenheit { "F" } else { "C" },),
+				if data < &self.temp_threshold {
+					self.colorscheme.temp_low
+				} else {
+					self.colorscheme.temp_high
+				},
+			);
+		}
 	}
 }
