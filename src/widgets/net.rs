@@ -136,6 +136,7 @@ impl Widget for NetWidget<'_, '_> {
 					.as_slice(),
 			)
 			.direction(RenderDirection::RTL)
+			.show_baseline(true)
 			.max(*self.bytes_recv.iter().max().unwrap())
 			.style(self.colorscheme.net_bars)
 			.draw(top_sparkline, buf);
@@ -168,6 +169,7 @@ impl Widget for NetWidget<'_, '_> {
 					.as_slice(),
 			)
 			.direction(RenderDirection::RTL)
+			.show_baseline(true)
 			.max(*self.bytes_sent.iter().max().unwrap())
 			.style(self.colorscheme.net_bars)
 			.draw(bottom_sparkline, buf);
