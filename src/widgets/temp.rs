@@ -40,7 +40,10 @@ impl UpdatableWidget for TempWidget<'_> {
 			.filter_map(|sensor| sensor.ok())
 			.map(|sensor| {
 				(
-					sensor.unit().to_string(),
+					match sensor.label() {
+						Some(label) => format!("{}-{}", sensor.unit(), label),
+						None => sensor.unit().to_string(),
+					},
 					if self.fahrenheit {
 						sensor.current().fahrenheit()
 					} else {

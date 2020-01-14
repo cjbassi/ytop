@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Color temperatures based on value
 - Add sorting arrow to process header
 - Show baseline spanning the bottom of the net sparklines
+- Add sensor label to temperature identifier
 
 ### Changed
 
