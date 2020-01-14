@@ -13,8 +13,9 @@ pub struct CpuWidget<'a> {
 	update_interval: Ratio<u64>,
 	colorscheme: &'a Colorscheme,
 
+	horizontal_scale: u64,
+
 	update_count: u64,
-	horizontal_scale: i64,
 
 	cpu_count: usize,
 
@@ -127,7 +128,7 @@ impl Widget for CpuWidget<'_> {
 		Chart::<String, String>::default()
 			.block(block::new(self.colorscheme, &self.title))
 			.x_axis(Axis::default().bounds([
-				self.update_count as f64 - 100.0,
+				self.update_count as f64 - self.horizontal_scale as f64,
 				self.update_count as f64 + 1.0,
 			]))
 			.y_axis(Axis::default().bounds([0.0, 100.0]))

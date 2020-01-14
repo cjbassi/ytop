@@ -15,6 +15,8 @@ pub struct BatteryWidget<'a> {
 	update_interval: Ratio<u64>,
 	colorscheme: &'a Colorscheme,
 
+	horizontal_scale: u64,
+
 	update_count: u64,
 	battery_data: HashMap<String, Vec<(f64, f64)>>,
 	manager: Manager,
@@ -26,6 +28,8 @@ impl BatteryWidget<'_> {
 			title: " Batteries ".to_string(),
 			update_interval: Ratio::from_integer(60),
 			colorscheme,
+
+			horizontal_scale: 50,
 
 			update_count: 0,
 			battery_data: HashMap::new(),
@@ -83,7 +87,7 @@ impl Widget for BatteryWidget<'_> {
 		Chart::<String, String>::default()
 			.block(block::new(self.colorscheme, &self.title))
 			.x_axis(Axis::default().bounds([
-				self.update_count as f64 - 100.0,
+				self.update_count as f64 - self.horizontal_scale as f64,
 				self.update_count as f64 + 1.0,
 			]))
 			.y_axis(Axis::default().bounds([0.0, 100.0]))
