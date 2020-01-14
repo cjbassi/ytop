@@ -145,7 +145,7 @@ impl Widget for ProcWidget<'_> {
 			ProcSorting::Num => a.num.cmp(&b.num),
 			ProcSorting::Command => a.commandline.cmp(&b.commandline),
 		});
-		if let SortDirection::Up = self.sort_direction {
+		if let SortDirection::Down = self.sort_direction {
 			procs.reverse();
 		}
 

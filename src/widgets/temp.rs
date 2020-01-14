@@ -2,7 +2,7 @@ use num_rational::Ratio;
 use psutil::sensors;
 use tui::buffer::Buffer;
 use tui::layout::Rect;
-use tui::widgets::{List, Text, Widget};
+use tui::widgets::Widget;
 
 use crate::colorscheme::Colorscheme;
 use crate::update::UpdatableWidget;
