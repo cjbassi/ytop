@@ -11,11 +11,19 @@ use crate::colorscheme::Colorscheme;
 use crate::update::UpdatableWidget;
 use crate::widgets::block;
 
+const UP_ARROW: &str = "▲";
+const DOWN_ARROW: &str = "▼";
+
 enum ProcSorting {
 	Cpu,
 	Mem,
 	Num,
 	Command,
+}
+
+enum SortDirection {
+	Up,
+	Down,
 }
 
 #[derive(Clone)]
@@ -35,6 +43,7 @@ pub struct ProcWidget<'a> {
 	grouping: bool,
 	selected_row: usize,
 	sorting: ProcSorting,
+	sort_direction: SortDirection,
 
 	procs: Vec<Proc>,
 	grouped_procs: HashMap<String, Proc>,
@@ -51,6 +60,7 @@ impl ProcWidget<'_> {
 			grouping: true,
 			selected_row: 0,
 			sorting: ProcSorting::Cpu,
+			sort_direction: SortDirection::Down,
 
 			procs: Vec::new(),
 			grouped_procs: HashMap::new(),
@@ -136,14 +146,27 @@ impl Widget for ProcWidget<'_> {
 			ProcSorting::Command => a.commandline.cmp(&b.commandline),
 		});
 
+		let mut header = [
+			if self.grouping { "Count" } else { "PID" },
+			"Command",
+			"CPU%",
+			"Mem%",
+		];
+		let header_index = match &self.sorting {
+			ProcSorting::Cpu => 2,
+			ProcSorting::Mem => 3,
+			ProcSorting::Num => 0,
+			ProcSorting::Command => 1,
+		};
+		let arrow = match &self.sort_direction {
+			SortDirection::Up => UP_ARROW,
+			SortDirection::Down => DOWN_ARROW,
+		};
+		let updated_header = format!("{}{}", header[header_index], arrow);
+		header[header_index] = &updated_header;
+
 		Table::new(
-			[
-				if self.grouping { "Count" } else { "PID" },
-				"Command",
-				"CPU%",
-				"Mem%",
-			]
-			.iter(),
+			header.iter(),
 			procs.into_iter().map(|proc| {
 				Row::StyledData(
 					vec![

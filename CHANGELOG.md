@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Group processes by default
+- Add sorting arrow to process header
 
 ## 0.1.0 - 2020-01-13
 
