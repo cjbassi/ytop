@@ -15,7 +15,7 @@ use std::time::{Duration, Instant};
 use anyhow::Result;
 use backtrace::Backtrace;
 use crossbeam_channel::{select, tick, unbounded, Receiver};
-use crossterm::event::{self, Event, KeyCode, KeyModifiers};
+use crossterm::event::{self, Event, KeyCode, KeyModifiers, MouseEvent};
 use crossterm::execute;
 use crossterm::terminal;
 use num_rational::Ratio;
@@ -108,6 +108,7 @@ fn main() {
 	let args = Args::from_args();
 	let update_ratio = Ratio::new(1, args.rate);
 	let mut show_help_menu = false;
+	let mut paused = false;
 
 	let program_name = env!("CARGO_PKG_NAME");
 	let app_dirs = AppDirs::new(Some(program_name), AppUI::CommandLine).unwrap();
@@ -135,10 +136,12 @@ fn main() {
 				break;
 			}
 			recv(ticker) -> _ => {
-				update_seconds = (update_seconds + update_ratio) % Ratio::from_integer(60);
-				update_widgets(&mut app.widgets, update_seconds);
-				if !show_help_menu {
-					draw(&mut terminal, &mut app).unwrap();
+				if !paused {
+					update_seconds = (update_seconds + update_ratio) % Ratio::from_integer(60);
+					update_widgets(&mut app.widgets, update_seconds);
+					if !show_help_menu {
+						draw(&mut terminal, &mut app).unwrap();
+					}
 				}
 			}
 			recv(ui_events_receiver) -> message => {
@@ -160,6 +163,33 @@ fn main() {
 												draw(&mut terminal, &mut app).unwrap();
 											}
 										},
+										' ' => {
+											paused = !paused;
+										},
+										'j' => {
+											app.widgets.proc.scroll_down();
+											if !show_help_menu {
+												draw_proc(&mut terminal, &mut app).unwrap();
+											}
+										},
+										'k' => {
+											app.widgets.proc.scroll_up();
+											if !show_help_menu {
+												draw_proc(&mut terminal, &mut app).unwrap();
+											}
+										},
+										'g' => {
+											app.widgets.proc.scroll_top();
+											if !show_help_menu {
+												draw_proc(&mut terminal, &mut app).unwrap();
+											}
+										},
+										'G' => {
+											app.widgets.proc.scroll_bottom();
+											if !show_help_menu {
+												draw_proc(&mut terminal, &mut app).unwrap();
+											}
+										},
 										_ => {}
 									}
 								},
@@ -169,6 +199,12 @@ fn main() {
 										draw(&mut terminal, &mut app).unwrap();
 									}
 								}
+								KeyCode::Tab => {
+									app.widgets.proc.toggle_grouping();
+									if !show_help_menu {
+										draw_proc(&mut terminal, &mut app).unwrap();
+									}
+								},
 								_ => {}
 							}
 						} else if key_event.modifiers == KeyModifiers::CONTROL {
@@ -186,9 +222,21 @@ fn main() {
 							}
 						}
 					}
+					// TODO: figure out why these aren't working
 					Event::Mouse(mouse_event) => match mouse_event {
-						_ => {
-						}
+						MouseEvent::ScrollUp(_, _, _) => {
+							app.widgets.proc.scroll_up();
+							if !show_help_menu {
+								draw_proc(&mut terminal, &mut app).unwrap();
+							}
+						},
+						MouseEvent::ScrollDown(_, _, _) => {
+							app.widgets.proc.scroll_down();
+							if !show_help_menu {
+								draw_proc(&mut terminal, &mut app).unwrap();
+							}
+						},
+						_ => {}
 					}
 					Event::Resize(_width, _height) => {
 						if show_help_menu {

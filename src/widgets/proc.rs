@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use std::process::Command;
 
 use num_rational::Ratio;
 use psutil::cpu;
@@ -51,6 +52,8 @@ pub struct ProcWidget<'a> {
 	selected_proc: Option<SelectedProc>,
 	sorting: ProcSorting,
 	sort_direction: SortDirection,
+	view_offset: usize,
+	scrolled: bool,
 
 	cpu_count: u64,
 
@@ -71,6 +74,8 @@ impl ProcWidget<'_> {
 			selected_proc: None,
 			sorting: ProcSorting::Cpu,
 			sort_direction: SortDirection::Down,
+			view_offset: 0,
+			scrolled: false,
 
 			cpu_count: cpu::cpu_count(),
 
@@ -78,6 +83,58 @@ impl ProcWidget<'_> {
 			grouped_procs: HashMap::new(),
 			processes: HashMap::new(),
 		}
+	}
+
+	fn scroll_count(&mut self, count: isize) {
+		self.selected_row = isize::max(0, self.selected_row as isize + count) as usize;
+		self.selected_proc = None;
+		self.scrolled = true;
+	}
+
+	fn scroll_to(&mut self, count: usize) {
+		self.selected_row = usize::min(
+			count,
+			if self.grouping {
+				self.grouped_procs.len()
+			} else {
+				self.procs.len()
+			} - 1,
+		);
+		self.selected_proc = None;
+		self.scrolled = true;
+	}
+
+	pub fn scroll_up(&mut self) {
+		self.scroll_count(-1);
+	}
+
+	pub fn scroll_down(&mut self) {
+		self.scroll_count(1);
+	}
+
+	pub fn scroll_top(&mut self) {
+		self.scroll_to(0);
+	}
+
+	pub fn scroll_bottom(&mut self) {
+		self.scroll_to(if self.grouping {
+			self.grouped_procs.len()
+		} else {
+			self.procs.len()
+		});
+	}
+
+	pub fn toggle_grouping(&mut self) {
+		self.grouping = !self.grouping;
+		self.selected_proc = None;
+	}
+
+	fn kill_process(&self) {
+		let (command, arg) = match self.selected_proc.as_ref().unwrap() {
+			SelectedProc::Pid(pid) => ("kill", pid.to_string()),
+			SelectedProc::Name(name) => ("pkill", name.clone()),
+		};
+		Command::new(command).arg(arg).spawn().unwrap();
 	}
 }
 
@@ -191,6 +248,7 @@ impl Widget for ProcWidget<'_> {
 			.unwrap_or(self.selected_row),
 			None => self.selected_row,
 		};
+		self.scroll_to(self.selected_row);
 		self.selected_proc = if self.grouping {
 			Some(SelectedProc::Name(
 				procs[self.selected_row].name.to_string(),
@@ -199,9 +257,18 @@ impl Widget for ProcWidget<'_> {
 			Some(SelectedProc::Pid(procs[self.selected_row].num))
 		};
 
+		if self.scrolled {
+			self.scrolled = false;
+			if self.selected_row > area.height as usize + self.view_offset - 4 {
+				self.view_offset = self.selected_row + 4 - area.height as usize;
+			} else if self.selected_row < self.view_offset {
+				self.view_offset = self.selected_row;
+			}
+		}
+
 		Table::new(
 			header.iter(),
-			procs.into_iter().map(|proc| {
+			procs.into_iter().skip(self.view_offset).map(|proc| {
 				Row::StyledData(
 					vec![
 						proc.num.to_string(),
@@ -221,7 +288,7 @@ impl Widget for ProcWidget<'_> {
 		.block(block::new(self.colorscheme, &self.title))
 		.header_style(self.colorscheme.text.modifier(Modifier::BOLD))
 		.widths(&[
-			Constraint::Length(5),
+			Constraint::Length(6),
 			// Constraint::Min(5),
 			Constraint::Length(u16::max((area.width as i16 - 2 - 18) as u16, 5)),
 			Constraint::Length(5),
@@ -231,7 +298,7 @@ impl Widget for ProcWidget<'_> {
 		.header_gap(0)
 		.draw(area, buf);
 
-		let cursor_y = area.y + 2 + self.selected_row as u16;
+		let cursor_y = area.y + 2 + self.selected_row as u16 - self.view_offset as u16;
 		if cursor_y < area.y + area.height - 1 {
 			for i in (area.x + 1)..(area.x + area.width - 1) {
 				let cell = buf.get_mut(i, cursor_y);

@@ -108,3 +108,44 @@ pub fn draw_help_menu<B: Backend>(terminal: &mut Terminal<B>, app: &mut App) -> 
 		app.help_menu.render(&mut frame, rect);
 	})
 }
+
+// TODO: figure out how to draw the proc widget without clearing rest of the screen
+pub fn draw_proc<B: Backend>(terminal: &mut Terminal<B>, app: &mut App) -> io::Result<()> {
+	draw(terminal, app)
+	// terminal.draw(|mut frame| {
+	// 	let chunks = if app.statusbar.is_some() {
+	// 		Layout::default()
+	// 			.constraints([Constraint::Min(0), Constraint::Length(1)].as_ref())
+	// 			.split(frame.size())
+	// 	} else {
+	// 		Layout::default()
+	// 			.constraints(vec![Constraint::Percentage(100)])
+	// 			.split(frame.size())
+	// 	};
+
+	// 	let vertical_chunks = if app.widgets.temp.is_some() {
+	// 		Layout::default()
+	// 			.direction(Direction::Vertical)
+	// 			.constraints(
+	// 				[
+	// 					Constraint::Ratio(1, 3),
+	// 					Constraint::Ratio(1, 3),
+	// 					Constraint::Ratio(1, 3),
+	// 				]
+	// 				.as_ref(),
+	// 			)
+	// 			.split(chunks[0])
+	// 	} else {
+	// 		Layout::default()
+	// 			.direction(Direction::Vertical)
+	// 			.constraints([Constraint::Ratio(1, 2), Constraint::Ratio(1, 2)].as_ref())
+	// 			.split(chunks[0])
+	// 	};
+
+	// 	let horizontal_chunks = Layout::default()
+	// 		.direction(Direction::Horizontal)
+	// 		.constraints([Constraint::Ratio(1, 2), Constraint::Ratio(1, 2)].as_ref())
+	// 		.split(*vertical_chunks.last().unwrap());
+	// 	app.widgets.proc.render(&mut frame, horizontal_chunks[1]);
+	// })
+}
