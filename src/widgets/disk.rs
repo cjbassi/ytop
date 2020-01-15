@@ -61,7 +61,7 @@ impl UpdatableWidget for DiskWidget<'_> {
 					.unwrap()
 					.to_string_lossy()
 					.to_string();
-				// TODO: just going with it for now
+				// TODO: hardcoding this for now, may need to fix later
 				if name == "cryptroot" {
 					name = "dm-0".to_string();
 				}
