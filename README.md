@@ -12,8 +12,9 @@
 ## Missing features
 
 - Only works on Linux
-- Most keybinds aren't implemented
+- Process filtering isn't implemented
 - Mouse usage isn't implemented
+- `rate` and `interfaces` cli args aren't implemented
 
 ## Installation
 
@@ -53,6 +54,7 @@ Install `ytop`, `ytop-bin`, or `ytop-git` from the AUR.
 ### Keybinds
 
 - Quit: `q` or `<C-c>`
+- Pause: `<Space>`
 - Process navigation:
 	- `k` and `<Up>`: up
 	- `j` and `<Down>`: down
@@ -66,9 +68,10 @@ Install `ytop`, `ytop-bin`, or `ytop-git` from the AUR.
 	- `<Tab>`: toggle process grouping
 	- `dd`: kill selected process or process group
 - Process sorting:
-	- `c`: CPU
-	- `m`: Mem
-	- `p`: PID
+	- p: PID/Count
+	- n: Command
+	- c: CPU
+	- m: Mem
 - Process filtering:
 	- `/`: start editing filter
 	- (while editing):

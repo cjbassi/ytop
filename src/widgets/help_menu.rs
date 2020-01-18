@@ -7,6 +7,7 @@ use crate::colorscheme::Colorscheme;
 use crate::widgets::block;
 
 const TEXT: &str = r"Quit: q or <C-c>
+Pause: <Space>
 Process navigation:
   - k and <Up>: up
   - j and <Down>: down
@@ -20,9 +21,10 @@ Process actions:
   - <Tab>: toggle process grouping
   - dd: kill selected process or process group
 Process sorting:
+  - p: PID/Count
+  - n: Command
   - c: CPU
   - m: Mem
-  - p: PID
 Process filtering:
   - /: start editing filter
   - (while editing):
@@ -33,7 +35,7 @@ CPU and Mem graph scaling:
   - l: scale out";
 
 const TEXT_WIDTH: u16 = 48;
-const TEXT_HEIGHT: u16 = 27;
+const TEXT_HEIGHT: u16 = 29;
 
 lazy_static! {
 	static ref TEXT_VEC: Vec<Text<'static>> = TEXT

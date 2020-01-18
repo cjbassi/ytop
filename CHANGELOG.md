@@ -23,9 +23,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add sensor label to temperature identifier
 - Process cpu percents are now working
 - Draw the proc cursor
-- Add basic scrolling for `g`, `G`, `j`, and `k`
-- Add process grouping toggling with `Tab`
+- Implement all keybinds except for proc filtering
 - Add pausing with `Space`
+- Add ability to sort processes by command
 
 ### Changed
 

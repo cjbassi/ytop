@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use std::ops::Not;
 use std::process::Command;
 
 use num_rational::Ratio;
@@ -16,16 +17,41 @@ use crate::widgets::block;
 const UP_ARROW: &str = "▲";
 const DOWN_ARROW: &str = "▼";
 
-enum ProcSorting {
+#[derive(PartialEq)]
+enum SortMethod {
 	Cpu,
 	Mem,
 	Num,
 	Command,
 }
 
+impl Default for SortMethod {
+	fn default() -> Self {
+		SortMethod::Cpu
+	}
+}
+
+#[derive(PartialEq, Clone, Copy)]
 enum SortDirection {
 	Up,
 	Down,
+}
+
+impl Default for SortDirection {
+	fn default() -> Self {
+		SortDirection::Down
+	}
+}
+
+impl Not for SortDirection {
+	type Output = SortDirection;
+
+	fn not(self) -> Self::Output {
+		match self {
+			SortDirection::Up => SortDirection::Down,
+			SortDirection::Down => SortDirection::Up,
+		}
+	}
 }
 
 enum SelectedProc {
@@ -50,10 +76,11 @@ pub struct ProcWidget<'a> {
 	grouping: bool,
 	selected_row: usize,
 	selected_proc: Option<SelectedProc>,
-	sorting: ProcSorting,
+	sort_method: SortMethod,
 	sort_direction: SortDirection,
 	view_offset: usize,
 	scrolled: bool,
+	view_height: usize,
 
 	cpu_count: u64,
 
@@ -72,10 +99,11 @@ impl ProcWidget<'_> {
 			grouping: true,
 			selected_row: 0,
 			selected_proc: None,
-			sorting: ProcSorting::Cpu,
-			sort_direction: SortDirection::Down,
+			sort_method: SortMethod::default(),
+			sort_direction: SortDirection::default(),
 			view_offset: 0,
 			scrolled: false,
+			view_height: 0,
 
 			cpu_count: cpu::cpu_count(),
 
@@ -124,17 +152,58 @@ impl ProcWidget<'_> {
 		});
 	}
 
+	pub fn scroll_half_page_down(&mut self) {
+		self.scroll_count(self.view_height as isize / 2);
+	}
+
+	pub fn scroll_half_page_up(&mut self) {
+		self.scroll_count(-(self.view_height as isize / 2));
+	}
+
+	pub fn scroll_full_page_down(&mut self) {
+		self.scroll_count(self.view_height as isize);
+	}
+
+	pub fn scroll_full_page_up(&mut self) {
+		self.scroll_count(-(self.view_height as isize));
+	}
+
 	pub fn toggle_grouping(&mut self) {
 		self.grouping = !self.grouping;
 		self.selected_proc = None;
 	}
 
-	fn kill_process(&self) {
+	pub fn kill_process(&self) {
 		let (command, arg) = match self.selected_proc.as_ref().unwrap() {
 			SelectedProc::Pid(pid) => ("kill", pid.to_string()),
 			SelectedProc::Name(name) => ("pkill", name.clone()),
 		};
 		Command::new(command).arg(arg).spawn().unwrap();
+	}
+
+	fn sort(&mut self, sort_method: SortMethod) {
+		if self.sort_method == sort_method {
+			self.sort_direction = !self.sort_direction;
+		} else {
+			self.sort_method = sort_method;
+			self.sort_direction = SortDirection::default();
+		}
+	}
+
+	pub fn sort_by_num(&mut self) {
+		self.sort(SortMethod::Num);
+	}
+
+	pub fn sort_by_command(&mut self) {
+		self.sort(SortMethod::Command);
+	}
+
+	pub fn sort_by_cpu(&mut self) {
+		self.sort(SortMethod::Cpu);
+	}
+
+	pub fn sort_by_mem(&mut self) {
+		self.sort(SortMethod::Mem);
 	}
 }
 
@@ -204,18 +273,20 @@ impl UpdatableWidget for ProcWidget<'_> {
 
 impl Widget for ProcWidget<'_> {
 	fn draw(&mut self, area: Rect, buf: &mut Buffer) {
+		self.view_height = area.height as usize - 3;
+
 		let mut procs = if self.grouping {
 			self.grouped_procs.values().cloned().collect()
 		} else {
 			self.procs.clone()
 		};
-		procs.sort_by(|a, b| match &self.sorting {
-			ProcSorting::Cpu => a.cpu.partial_cmp(&b.cpu).unwrap(),
-			ProcSorting::Mem => a.mem.partial_cmp(&b.mem).unwrap(),
-			ProcSorting::Num => a.num.cmp(&b.num),
-			ProcSorting::Command => a.commandline.cmp(&b.commandline),
+		procs.sort_by(|a, b| match &self.sort_method {
+			SortMethod::Cpu => a.cpu.partial_cmp(&b.cpu).unwrap(),
+			SortMethod::Mem => a.mem.partial_cmp(&b.mem).unwrap(),
+			SortMethod::Num => a.num.cmp(&b.num),
+			SortMethod::Command => a.commandline.cmp(&b.commandline),
 		});
-		if let SortDirection::Down = self.sort_direction {
+		if self.sort_direction == SortDirection::Down {
 			procs.reverse();
 		}
 
@@ -225,11 +296,11 @@ impl Widget for ProcWidget<'_> {
 			"CPU%",
 			"Mem%",
 		];
-		let header_index = match &self.sorting {
-			ProcSorting::Cpu => 2,
-			ProcSorting::Mem => 3,
-			ProcSorting::Num => 0,
-			ProcSorting::Command => 1,
+		let header_index = match &self.sort_method {
+			SortMethod::Cpu => 2,
+			SortMethod::Mem => 3,
+			SortMethod::Num => 0,
+			SortMethod::Command => 1,
 		};
 		let arrow = match &self.sort_direction {
 			SortDirection::Up => UP_ARROW,
@@ -290,7 +361,7 @@ impl Widget for ProcWidget<'_> {
 		.widths(&[
 			Constraint::Length(6),
 			// Constraint::Min(5),
-			Constraint::Length(u16::max((area.width as i16 - 2 - 18) as u16, 5)),
+			Constraint::Length(u16::max((area.width as i16 - 2 - 16 - 3) as u16, 5)),
 			Constraint::Length(5),
 			Constraint::Length(5),
 		])

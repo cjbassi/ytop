@@ -9,6 +9,8 @@ use crate::colorscheme::Colorscheme;
 use crate::update::UpdatableWidget;
 use crate::widgets::block;
 
+const HORIZONTAL_SCALE_DELTA: u64 = 25;
+
 #[derive(Default)]
 struct MemData {
 	total: u64,
@@ -51,6 +53,16 @@ impl MemWidget<'_> {
 			main,
 			swap,
 		}
+	}
+
+	pub fn scale_in(&mut self) {
+		if self.horizontal_scale > HORIZONTAL_SCALE_DELTA {
+			self.horizontal_scale -= HORIZONTAL_SCALE_DELTA;
+		}
+	}
+
+	pub fn scale_out(&mut self) {
+		self.horizontal_scale += HORIZONTAL_SCALE_DELTA;
 	}
 }
 

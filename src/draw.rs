@@ -149,3 +149,8 @@ pub fn draw_proc<B: Backend>(terminal: &mut Terminal<B>, app: &mut App) -> io::R
 	// 	app.widgets.proc.render(&mut frame, horizontal_chunks[1]);
 	// })
 }
+
+// TODO: figure out how to draw the graphs without clearing rest of the screen
+pub fn draw_graphs<B: Backend>(terminal: &mut Terminal<B>, app: &mut App) -> io::Result<()> {
+	draw(terminal, app)
+}

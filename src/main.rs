@@ -15,7 +15,7 @@ use std::time::{Duration, Instant};
 use anyhow::Result;
 use backtrace::Backtrace;
 use crossbeam_channel::{select, tick, unbounded, Receiver};
-use crossterm::event::{self, Event, KeyCode, KeyModifiers, MouseEvent};
+use crossterm::event::{self, Event, KeyCode, KeyEvent, KeyModifiers, MouseEvent};
 use crossterm::execute;
 use crossterm::terminal;
 use num_rational::Ratio;
@@ -107,8 +107,6 @@ fn setup_ticker(rate: u64) -> Receiver<Instant> {
 fn main() {
 	let args = Args::from_args();
 	let update_ratio = Ratio::new(1, args.rate);
-	let mut show_help_menu = false;
-	let mut paused = false;
 
 	let program_name = env!("CARGO_PKG_NAME");
 	let app_dirs = AppDirs::new(Some(program_name), AppUI::CommandLine).unwrap();
@@ -129,6 +127,13 @@ fn main() {
 	update_widgets(&mut app.widgets, update_seconds);
 	draw(&mut terminal, &mut app).unwrap();
 
+	let mut show_help_menu = false;
+	let mut paused = false;
+	let mut previous_key_event: Option<KeyEvent> = None;
+	let mut proc_modified: bool;
+	let mut graphs_modified: bool;
+	let mut skip_key: bool;
+
 	loop {
 		select! {
 			recv(ctrl_c_events) -> _ => {
@@ -145,53 +150,67 @@ fn main() {
 				}
 			}
 			recv(ui_events_receiver) -> message => {
+				proc_modified = false;
+				graphs_modified = false;
+				skip_key = false;
+
 				match message.unwrap() {
 					Event::Key(key_event) => {
 						if key_event.modifiers.is_empty() {
 							match key_event.code {
-								KeyCode::Char(c) => {
-									match c {
-										'q' => {
-											cleanup_terminal().unwrap();
-											break
-										},
-										'?' => {
-											show_help_menu = !show_help_menu;
-											if show_help_menu {
-												draw_help_menu(&mut terminal, &mut app).unwrap();
-											} else {
-												draw(&mut terminal, &mut app).unwrap();
-											}
-										},
-										' ' => {
-											paused = !paused;
-										},
-										'j' => {
-											app.widgets.proc.scroll_down();
-											if !show_help_menu {
-												draw_proc(&mut terminal, &mut app).unwrap();
-											}
-										},
-										'k' => {
-											app.widgets.proc.scroll_up();
-											if !show_help_menu {
-												draw_proc(&mut terminal, &mut app).unwrap();
-											}
-										},
-										'g' => {
-											app.widgets.proc.scroll_top();
-											if !show_help_menu {
-												draw_proc(&mut terminal, &mut app).unwrap();
-											}
-										},
-										'G' => {
-											app.widgets.proc.scroll_bottom();
-											if !show_help_menu {
-												draw_proc(&mut terminal, &mut app).unwrap();
-											}
-										},
-										_ => {}
+								KeyCode::Char('q') => {
+									cleanup_terminal().unwrap();
+									break
+								},
+								KeyCode::Char('?') => {
+									show_help_menu = !show_help_menu;
+									if show_help_menu {
+										draw_help_menu(&mut terminal, &mut app).unwrap();
+									} else {
+										draw(&mut terminal, &mut app).unwrap();
 									}
+								},
+								KeyCode::Char(' ') => {
+									paused = !paused;
+								},
+								KeyCode::Char('j') | KeyCode::Down => {
+									app.widgets.proc.scroll_down();
+									proc_modified = true;
+								},
+								KeyCode::Char('k') | KeyCode::Up => {
+									app.widgets.proc.scroll_up();
+									proc_modified = true;
+								},
+								KeyCode::Char('g') => {
+									if previous_key_event == Some(KeyEvent::from(KeyCode::Char('g'))) {
+										app.widgets.proc.scroll_top();
+										proc_modified = true;
+										skip_key = true;
+									}
+								},
+								KeyCode::Home => {
+									app.widgets.proc.scroll_top();
+									proc_modified = true;
+								},
+								KeyCode::Char('G') | KeyCode::End => {
+									app.widgets.proc.scroll_bottom();
+									proc_modified = true;
+								},
+								KeyCode::Char('d') => {
+									if previous_key_event == Some(KeyEvent::from(KeyCode::Char('d'))) {
+										app.widgets.proc.kill_process();
+										skip_key = true;
+									}
+								},
+								KeyCode::Char('h') => {
+									app.widgets.cpu.scale_in();
+									app.widgets.mem.scale_in();
+									graphs_modified = true;
+								},
+								KeyCode::Char('l') => {
+									app.widgets.cpu.scale_out();
+									app.widgets.mem.scale_out();
+									graphs_modified = true;
 								},
 								KeyCode::Esc => {
 									if show_help_menu {
@@ -201,40 +220,67 @@ fn main() {
 								}
 								KeyCode::Tab => {
 									app.widgets.proc.toggle_grouping();
-									if !show_help_menu {
-										draw_proc(&mut terminal, &mut app).unwrap();
-									}
+									proc_modified = true;
+								},
+								KeyCode::Char('p') => {
+									app.widgets.proc.sort_by_num();
+									proc_modified = true;
+								},
+								KeyCode::Char('n') => {
+									app.widgets.proc.sort_by_command();
+									proc_modified = true;
+								},
+								KeyCode::Char('c') => {
+									app.widgets.proc.sort_by_cpu();
+									proc_modified = true;
+								},
+								KeyCode::Char('m') => {
+									app.widgets.proc.sort_by_mem();
+									proc_modified = true;
 								},
 								_ => {}
 							}
 						} else if key_event.modifiers == KeyModifiers::CONTROL {
 							match key_event.code {
-								KeyCode::Char(c) => {
-									match c {
-										'c' => {
-											cleanup_terminal().unwrap();
-											break
-										},
-										_ => {}
-									}
+								KeyCode::Char('c') => {
+									cleanup_terminal().unwrap();
+									break
+								},
+								KeyCode::Char('d') => {
+									app.widgets.proc.scroll_half_page_down();
+									proc_modified = true;
+								},
+								KeyCode::Char('u') => {
+									app.widgets.proc.scroll_half_page_up();
+									proc_modified = true;
+								},
+								KeyCode::Char('f') => {
+									app.widgets.proc.scroll_full_page_down();
+									proc_modified = true;
+								},
+								KeyCode::Char('b') => {
+									app.widgets.proc.scroll_full_page_up();
+									proc_modified = true;
 								},
 								_ => {}
 							}
 						}
+
+						previous_key_event = if skip_key {
+							None
+						} else {
+							Some(key_event)
+						};
 					}
 					// TODO: figure out why these aren't working
 					Event::Mouse(mouse_event) => match mouse_event {
 						MouseEvent::ScrollUp(_, _, _) => {
 							app.widgets.proc.scroll_up();
-							if !show_help_menu {
-								draw_proc(&mut terminal, &mut app).unwrap();
-							}
+							proc_modified = true;
 						},
 						MouseEvent::ScrollDown(_, _, _) => {
 							app.widgets.proc.scroll_down();
-							if !show_help_menu {
-								draw_proc(&mut terminal, &mut app).unwrap();
-							}
+							proc_modified = true;
 						},
 						_ => {}
 					}
@@ -244,6 +290,14 @@ fn main() {
 						} else {
 							draw(&mut terminal, &mut app).unwrap();
 						}
+					}
+				}
+
+				if !show_help_menu {
+					if proc_modified {
+						draw_proc(&mut terminal, &mut app).unwrap();
+					} else if graphs_modified {
+						draw_graphs(&mut terminal, &mut app).unwrap();
 					}
 				}
 			}

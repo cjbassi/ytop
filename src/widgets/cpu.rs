@@ -8,6 +8,8 @@ use crate::colorscheme::Colorscheme;
 use crate::update::UpdatableWidget;
 use crate::widgets::block;
 
+const HORIZONTAL_SCALE_DELTA: u64 = 25;
+
 pub struct CpuWidget<'a> {
 	title: String,
 	update_interval: Ratio<u64>,
@@ -42,8 +44,9 @@ impl CpuWidget<'_> {
 			update_interval,
 			colorscheme,
 
-			update_count,
 			horizontal_scale: 100,
+
+			update_count,
 
 			cpu_count: cpu::cpu_count() as usize,
 
@@ -73,6 +76,16 @@ impl CpuWidget<'_> {
 		}
 
 		cpu_widget
+	}
+
+	pub fn scale_in(&mut self) {
+		if self.horizontal_scale > HORIZONTAL_SCALE_DELTA {
+			self.horizontal_scale -= HORIZONTAL_SCALE_DELTA;
+		}
+	}
+
+	pub fn scale_out(&mut self) {
+		self.horizontal_scale += HORIZONTAL_SCALE_DELTA;
 	}
 }
 
