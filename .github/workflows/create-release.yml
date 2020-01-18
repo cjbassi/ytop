@@ -1,0 +1,21 @@
+name: Create Release
+
+on:
+  push:
+    tags:
+    - '*'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create Release
+        uses: actions/create-release@v1.0.0
+        env:
+          # https://github.community/t5/GitHub-Actions/Github-Action-trigger-on-release-not-working-if-releases-was/td-p/34559
+          GITHUB_TOKEN: ${{ secrets.PAT }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: ${{ github.ref }}
+          draft: false
+          prerelease: false

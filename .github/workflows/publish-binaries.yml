@@ -1,6 +1,9 @@
 name: Publish Binaries
 
-on: release
+on:
+  release:
+    types:
+      - created
 
 jobs:
   publish:
@@ -37,13 +40,15 @@ jobs:
           command: build
           args: --release --target=${{ matrix.target }}
 
-      - name: Archive and compress binary
+      - name: Package release
         run: tar -czf ytop-${{ github.event.release.tag_name }}-${{ matrix.target }}.tar.gz -C ./target/${{ matrix.target }}/release/ ytop
 
-      - name: Upload archive to GitHub releases
-        uses: JasonEtco/upload-to-release@master
-        with:
-          args: ytop-${{ github.event.release.tag_name }}-${{ matrix.target }}.tar.gz application/zip
-
+      - name: Upload release asset
+        uses: actions/upload-release-asset@v1.0.1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ytop-${{ github.event.release.tag_name }}-${{ matrix.target }}.tar.gz
+          asset_name: ytop-${{ github.event.release.tag_name }}-${{ matrix.target }}.tar.gz
+          asset_content_type: application/zip
