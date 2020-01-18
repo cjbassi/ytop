@@ -99,8 +99,13 @@ impl UpdatableWidget for CpuWidget<'_> {
 		}
 		if self.show_percpu {
 			let percpu_percents = self.collector.cpu_percent_percpu().unwrap();
-			for i in 0..self.cpu_count {
-				self.percpu_data[i].push((self.update_count as f64, percpu_percents[i].into()));
+			if percpu_percents.len() != self.cpu_count {
+				// TODO
+			} else {
+				#[allow(clippy::needless_range_loop)]
+				for i in 0..self.cpu_count {
+					self.percpu_data[i].push((self.update_count as f64, percpu_percents[i].into()));
+				}
 			}
 		}
 	}
