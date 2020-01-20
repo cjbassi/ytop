@@ -262,12 +262,12 @@ impl Widget for ProcWidget<'_> {
 		} else {
 			self.procs.clone()
 		};
-		procs.sort_by(|a, b| match &self.sort_method {
-			SortMethod::Cpu => a.cpu.partial_cmp(&b.cpu).unwrap(),
-			SortMethod::Mem => a.mem.partial_cmp(&b.mem).unwrap(),
-			SortMethod::Num => a.num.cmp(&b.num),
-			SortMethod::Command => a.commandline.cmp(&b.commandline),
-		});
+		match self.sort_method {
+			SortMethod::Cpu => procs.sort_by(|a, b| a.cpu.partial_cmp(&b.cpu).unwrap()),
+			SortMethod::Mem => procs.sort_by(|a, b| a.mem.partial_cmp(&b.mem).unwrap()),
+			SortMethod::Num => procs.sort_by(|a, b| a.num.cmp(&b.num)),
+			SortMethod::Command => procs.sort_by(|a, b| a.commandline.cmp(&b.commandline)),
+		}
 		if self.sort_direction == SortDirection::Down {
 			procs.reverse();
 		}
