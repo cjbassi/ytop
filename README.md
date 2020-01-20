@@ -1,5 +1,8 @@
 # ytop
 
+![Minimum rustc version](https://img.shields.io/badge/rustc-1.39+-green.svg)
+![Matrix](https://img.shields.io/matrix/ytop:matrix.org)
+
 <div align="center">
 
 *Another* TUI based resource monitor, this time in Rust! Currently a WIP.
