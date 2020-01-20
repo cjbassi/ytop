@@ -86,7 +86,8 @@ pub struct ProcWidget<'a> {
 
 	procs: Vec<Proc>,
 	grouped_procs: HashMap<String, Proc>,
-	processes: HashMap<u32, process::Process>,
+
+	process_collector: process::ProcessCollector,
 }
 
 impl ProcWidget<'_> {
@@ -109,7 +110,8 @@ impl ProcWidget<'_> {
 
 			procs: Vec::new(),
 			grouped_procs: HashMap::new(),
-			processes: HashMap::new(),
+
+			process_collector: process::ProcessCollector::new().unwrap(),
 		}
 	}
 
@@ -209,39 +211,23 @@ impl ProcWidget<'_> {
 
 impl UpdatableWidget for ProcWidget<'_> {
 	fn update(&mut self) {
-		process::processes()
-			.unwrap()
-			.into_iter()
-			.filter_map(|process| process.ok())
-			.for_each(|process| {
-				if !self.processes.contains_key(&process.pid())
-					|| self.processes[&process.pid()] != process
-				{
-					self.processes.insert(process.pid(), process);
-				}
-			});
+		self.process_collector.update().unwrap();
 
-		let mut to_remove = Vec::new();
 		let cpu_count = self.cpu_count as f32;
 
 		self.procs = self
+			.process_collector
 			.processes
 			.values_mut()
 			.map(|process| {
-				let result = {
-					let name = process.name()?;
-					Ok(Proc {
-						num: process.pid(),
-						name: name.to_string(),
-						commandline: process.cmdline()?.unwrap_or_else(|| format!("[{}]", name)),
-						cpu: process.cpu_percent()? / cpu_count,
-						mem: process.memory_percent()?,
-					})
-				};
-				if result.is_err() {
-					to_remove.push(process.pid());
-				}
-				result
+				let name = process.name()?;
+				Ok(Proc {
+					num: process.pid(),
+					name: name.to_string(),
+					commandline: process.cmdline()?.unwrap_or_else(|| format!("[{}]", name)),
+					cpu: process.cpu_percent()? / cpu_count,
+					mem: process.memory_percent()?,
+				})
 			})
 			.filter_map(|process: process::ProcessResult<Proc>| process.ok())
 			.collect();
@@ -259,10 +245,6 @@ impl UpdatableWidget for ProcWidget<'_> {
 					num: 1,
 					..proc.clone()
 				});
-		}
-
-		for id in to_remove {
-			self.processes.remove(&id);
 		}
 	}
 

@@ -602,7 +602,7 @@ dependencies = [
 [[package]]
 name = "psutil"
 version = "1.7.0"
-source = "git+https://github.com/borntyping/rust-psutil#5aa5613a3b3b2ea3f73909eb536103ced9dd9fa5"
+source = "git+https://github.com/borntyping/rust-psutil#d74a2895d422d3a8c030af0f3d205c43786b0e98"
 dependencies = [
  "glob 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "nix 0.16.1 (git+https://github.com/nix-rust/nix)",
