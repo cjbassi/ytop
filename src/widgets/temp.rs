@@ -47,7 +47,7 @@ impl UpdatableWidget for TempWidget<'_> {
 					if self.fahrenheit {
 						sensor.current().fahrenheit()
 					} else {
-						sensor.current().celcius()
+						sensor.current().celsius()
 					},
 				)
 			})
