@@ -15,6 +15,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0] - 2020-01-20
+
 ### Added
 
 - Color temperatures based on value
@@ -40,4 +42,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Initial release!
 
-[Unreleased]: https://github.com/cjbassi/ytop/compare/0.1.0...HEAD
+[Unreleased]: https://github.com/cjbassi/ytop/compare/0.2.0...HEAD
+[0.2.0]: https://github.com/cjbassi/ytop/compare/0.1.0...0.2.0
