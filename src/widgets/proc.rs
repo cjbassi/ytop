@@ -232,7 +232,7 @@ impl UpdatableWidget for ProcWidget<'_> {
 			.filter_map(|process: process::ProcessResult<Proc>| process.ok())
 			.collect();
 
-		self.grouped_procs = HashMap::new();
+		self.grouped_procs.clear();
 		for proc in self.procs.iter() {
 			self.grouped_procs
 				.entry(proc.name.clone())
@@ -262,14 +262,20 @@ impl Widget for ProcWidget<'_> {
 		} else {
 			self.procs.clone()
 		};
-		match self.sort_method {
-			SortMethod::Cpu => procs.sort_by(|a, b| a.cpu.partial_cmp(&b.cpu).unwrap()),
-			SortMethod::Mem => procs.sort_by(|a, b| a.mem.partial_cmp(&b.mem).unwrap()),
-			SortMethod::Num => procs.sort_by(|a, b| a.num.cmp(&b.num)),
-			SortMethod::Command => procs.sort_by(|a, b| a.commandline.cmp(&b.commandline)),
-		}
-		if self.sort_direction == SortDirection::Down {
-			procs.reverse();
+		if self.sort_direction == SortDirection::Up {
+			match self.sort_method {
+				SortMethod::Cpu => procs.sort_by(|a, b| a.cpu.partial_cmp(&b.cpu).unwrap()),
+				SortMethod::Mem => procs.sort_by(|a, b| a.mem.partial_cmp(&b.mem).unwrap()),
+				SortMethod::Num => procs.sort_by(|a, b| a.num.cmp(&b.num)),
+				SortMethod::Command => procs.sort_by(|a, b| a.commandline.cmp(&b.commandline)),
+			}
+		} else {
+			match self.sort_method {
+				SortMethod::Cpu => procs.sort_by(|b, a| a.cpu.partial_cmp(&b.cpu).unwrap()),
+				SortMethod::Mem => procs.sort_by(|b, a| a.mem.partial_cmp(&b.mem).unwrap()),
+				SortMethod::Num => procs.sort_by(|b, a| a.num.cmp(&b.num)),
+				SortMethod::Command => procs.sort_by(|b, a| a.commandline.cmp(&b.commandline)),
+			}
 		}
 
 		let mut header = [
