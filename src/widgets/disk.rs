@@ -52,26 +52,25 @@ impl DiskWidget<'_> {
 impl UpdatableWidget for DiskWidget<'_> {
 	#[cfg(target_os = "linux")]
 	fn update(&mut self) {
-		let io_counters = self.collector.disk_io_counters_perdisk().unwrap();
+		let mut io_counters_perdisk = self.collector.disk_io_counters_per_partition().unwrap();
 		self.partitions = disk::partitions_physical()
 			.unwrap()
 			.into_iter()
 			.map(|partition| {
-				let mut name = PathBuf::from(partition.device())
+				let name = PathBuf::from(partition.device())
 					.file_name()
 					.unwrap()
 					.to_string_lossy()
 					.to_string();
-				// TODO: hardcoding this for now, may need to fix later
-				if name == "cryptroot" {
-					name = "dm-0".to_string();
-				}
 				let mountpoint = partition.mountpoint().to_path_buf();
 
 				let disk_usage = disk::disk_usage(&mountpoint).unwrap();
+				let io_counters = io_counters_perdisk
+					.remove(&partition.device().replace("/dev", ""))
+					.unwrap_or_default();
 
-				let bytes_read = io_counters[&name].read_count();
-				let bytes_written = io_counters[&name].read_count();
+				let bytes_read = io_counters.read_count();
+				let bytes_written = io_counters.read_count();
 				let (bytes_read_recently, bytes_written_recently) = self
 					.partitions
 					.get(&name)
@@ -116,7 +115,7 @@ impl Widget for DiskWidget<'_> {
 		partitions.sort_by(|a, b| a.name.cmp(&b.name));
 
 		Table::new(
-			["Disk", "Mount", "Used", "Free", "R/s", "W/s"].iter(),
+			["Partition", "Mount", "Used", "Free", "R/s", "W/s"].iter(),
 			partitions.into_iter().map(|partition| {
 				Row::StyledData(
 					vec![
