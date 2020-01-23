@@ -28,7 +28,7 @@ pub struct MemWidget<'a> {
 	update_count: u64,
 
 	main: MemData,
-	swap: MemData,
+	swap: Option<MemData>,
 }
 
 impl MemWidget<'_> {
@@ -36,10 +36,7 @@ impl MemWidget<'_> {
 		let update_count = 0;
 
 		let mut main = MemData::default();
-		let mut swap = MemData::default();
-
 		main.percents.push((update_count as f64, 0.0));
-		swap.percents.push((update_count as f64, 0.0));
 
 		MemWidget {
 			title: " Memory Usage ".to_string(),
@@ -51,7 +48,7 @@ impl MemWidget<'_> {
 			update_count,
 
 			main,
-			swap,
+			swap: None,
 		}
 	}
 
@@ -79,11 +76,25 @@ impl UpdatableWidget for MemWidget<'_> {
 			.percents
 			.push((self.update_count as f64, main.percent().into()));
 
-		self.swap.total = swap.total();
-		self.swap.used = swap.used();
-		self.swap
-			.percents
-			.push((self.update_count as f64, swap.percent().into()));
+		if swap.total() == 0 {
+			self.swap = None;
+		} else {
+			if self.swap.is_none() {
+				self.swap = Some(MemData::default());
+				self.swap
+					.as_mut()
+					.unwrap()
+					.percents
+					.push((self.update_count as f64 - 1.0, 0.0));
+			}
+			self.swap.as_mut().unwrap().total = swap.total();
+			self.swap.as_mut().unwrap().used = swap.used();
+			self.swap
+				.as_mut()
+				.unwrap()
+				.percents
+				.push((self.update_count as f64, swap.percent().into()));
+		}
 	}
 
 	fn get_update_interval(&self) -> Ratio<u64> {
@@ -93,6 +104,21 @@ impl UpdatableWidget for MemWidget<'_> {
 
 impl Widget for MemWidget<'_> {
 	fn draw(&mut self, area: Rect, buf: &mut Buffer) {
+		let mut datasets = vec![Dataset::default()
+			.marker(Marker::Braille)
+			.graph_type(GraphType::Line)
+			.style(self.colorscheme.mem_main)
+			.data(&self.main.percents)];
+		if let Some(swap) = &self.swap {
+			datasets.push(
+				Dataset::default()
+					.marker(Marker::Braille)
+					.graph_type(GraphType::Line)
+					.style(self.colorscheme.mem_swap)
+					.data(&swap.percents),
+			)
+		}
+
 		Chart::<String, String>::default()
 			.block(block::new(self.colorscheme, &self.title))
 			.x_axis(Axis::default().bounds([
@@ -100,18 +126,7 @@ impl Widget for MemWidget<'_> {
 				self.update_count as f64 + 1.0,
 			]))
 			.y_axis(Axis::default().bounds([0.0, 100.0]))
-			.datasets(&[
-				Dataset::default()
-					.marker(Marker::Braille)
-					.graph_type(GraphType::Line)
-					.style(self.colorscheme.mem_main)
-					.data(&self.main.percents),
-				Dataset::default()
-					.marker(Marker::Braille)
-					.graph_type(GraphType::Line)
-					.style(self.colorscheme.mem_swap)
-					.data(&self.swap.percents),
-			])
+			.datasets(&datasets)
 			.draw(area, buf);
 
 		buf.set_string(
@@ -126,16 +141,18 @@ impl Widget for MemWidget<'_> {
 			self.colorscheme.mem_main,
 		);
 
-		buf.set_string(
-			area.x + 3,
-			area.y + 3,
-			format!(
-				"Swap {:3.0}% {}/{}",
-				self.swap.percents.last().unwrap().1,
-				Size::Bytes(self.swap.used),
-				Size::Bytes(self.swap.total),
-			),
-			self.colorscheme.mem_swap,
-		);
+		if let Some(swap) = &self.swap {
+			buf.set_string(
+				area.x + 3,
+				area.y + 3,
+				format!(
+					"Swap {:3.0}% {}/{}",
+					swap.percents.last().unwrap().1,
+					Size::Bytes(swap.used),
+					Size::Bytes(swap.total),
+				),
+				self.colorscheme.mem_swap,
+			);
+		}
 	}
 }
