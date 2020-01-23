@@ -13,7 +13,6 @@ use std::thread;
 use std::time::{Duration, Instant};
 
 use anyhow::Result;
-use backtrace::Backtrace;
 use crossbeam_channel::{select, tick, unbounded, Receiver};
 use crossterm::event::{self, Event, KeyCode, KeyEvent, KeyModifiers, MouseEvent};
 use crossterm::execute;
@@ -93,8 +92,7 @@ fn setup_logfile(logfile_path: &Path) {
 fn setup_panic_hook() {
 	panic::set_hook(Box::new(|panic_info| {
 		cleanup_terminal().unwrap();
-		println!("{:?}", panic_info);
-		print!("{:?}", Backtrace::new());
+		better_panic::Settings::auto().create_panic_handler()(panic_info);
 	}));
 }
 
@@ -105,6 +103,8 @@ fn setup_ticker(rate: u64) -> Receiver<Instant> {
 }
 
 fn main() {
+	better_panic::install();
+
 	let args = Args::from_args();
 	let update_ratio = Ratio::new(1, args.rate);
 
