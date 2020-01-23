@@ -47,14 +47,6 @@ brew install ytop
 
 ### From source
 
-Latest release:
-
-```bash
-cargo install -f --git https://github.com/cjbassi/ytop --tag 0.3.0
-```
-
-Latest commit:
-
 ```bash
 cargo install -f --git https://github.com/cjbassi/ytop
 ```
