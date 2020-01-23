@@ -1,6 +1,6 @@
 [package]
 name = "ytop"
-version = "0.2.0"
+version = "0.3.0"
 authors = ["Caleb Bassi <calebjbassi@gmail.com>"]
 license = "MIT"
 description = "A TUI system monitor written in Rust"
