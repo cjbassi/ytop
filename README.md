@@ -14,16 +14,16 @@
 
 ## Missing features
 
-- Only works on Linux
+- macOS is missing temperatures, disks, and process commandline
 - Process filtering isn't implemented
 - Mouse usage isn't implemented
 - `rate` and `interfaces` cli args aren't implemented
 
 ## Installation
 
-Currently only working on Linux with support planned for all major platforms.
+Currently working on Linux and macOS with support planned for all major platforms.
 
-### Prebuilt binaries:
+### Prebuilt binaries
 
 Run the following to run [this](https://github.com/japaric/trust/blob/gh-pages/install.sh) script to download the correct binary for your system from the releases tab into `~/.cargo/bin`, courtesy of [japaric/trust](https://github.com/japaric/trust):
 
@@ -34,7 +34,18 @@ bash <(curl -LSfs https://japaric.github.io/trust/install.sh) \
 
 Specify `--to` to change the download location.
 
-### From source:
+### Arch Linux
+
+Install `ytop`, `ytop-bin`, or `ytop-git` from the AUR.
+
+### Homebrew
+
+```bash
+brew tap cjbassi/ytop
+brew install ytop
+```
+
+### From source
 
 Latest release:
 
@@ -47,10 +58,6 @@ Latest commit:
 ```bash
 cargo install -f --git https://github.com/cjbassi/ytop
 ```
-
-### Arch Linux
-
-Install `ytop`, `ytop-bin`, or `ytop-git` from the AUR.
 
 ## Usage
 
