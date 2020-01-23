@@ -50,6 +50,7 @@ impl DiskWidget<'_> {
 }
 
 impl UpdatableWidget for DiskWidget<'_> {
+	#[cfg(target_os = "linux")]
 	fn update(&mut self) {
 		let io_counters = self.collector.disk_io_counters_perdisk().unwrap();
 		self.partitions = disk::partitions_physical()
@@ -100,6 +101,9 @@ impl UpdatableWidget for DiskWidget<'_> {
 			})
 			.collect();
 	}
+
+	#[cfg(target_os = "macos")]
+	fn update(&mut self) {}
 
 	fn get_update_interval(&self) -> Ratio<u64> {
 		self.update_interval

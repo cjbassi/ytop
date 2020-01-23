@@ -224,7 +224,11 @@ impl UpdatableWidget for ProcWidget<'_> {
 				Ok(Proc {
 					num: process.pid(),
 					name: name.to_string(),
-					commandline: process.cmdline()?.unwrap_or_else(|| format!("[{}]", name)),
+					commandline: if cfg!(target_os = "linux") {
+						process.cmdline()?.unwrap_or_else(|| format!("[{}]", name))
+					} else {
+						String::default()
+					},
 					cpu: process.cpu_percent()? / cpu_count,
 					mem: process.memory_percent()?,
 				})

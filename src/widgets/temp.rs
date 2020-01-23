@@ -34,6 +34,7 @@ impl TempWidget<'_> {
 }
 
 impl UpdatableWidget for TempWidget<'_> {
+	#[cfg(target_os = "linux")]
 	fn update(&mut self) {
 		self.temp_data = sensors::temperatures()
 			.into_iter()
@@ -54,6 +55,9 @@ impl UpdatableWidget for TempWidget<'_> {
 			.filter(|data| data.1 > 0.0)
 			.collect()
 	}
+
+	#[cfg(target_os = "macos")]
+	fn update(&mut self) {}
 
 	fn get_update_interval(&self) -> Ratio<u64> {
 		self.update_interval
