@@ -75,9 +75,9 @@ impl Widget for TempWidget<'_> {
 			let y = area.y + 1 + i as u16;
 			buf.set_string(area.x + 1, y, label, self.colorscheme.text);
 			buf.set_string(
-				area.x + area.width - 4,
+				area.x + area.width - 5,
 				y,
-				format!("{:2.0}{}", data, if self.fahrenheit { "F" } else { "C" },),
+				format!("{:2.0}°{}", data, if self.fahrenheit { "F" } else { "C" },),
 				if data < &self.temp_threshold {
 					self.colorscheme.temp_low
 				} else {
