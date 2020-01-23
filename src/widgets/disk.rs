@@ -66,7 +66,7 @@ impl UpdatableWidget for DiskWidget<'_> {
 
 				let disk_usage = disk::disk_usage(&mountpoint).unwrap();
 				let io_counters = io_counters_perdisk
-					.remove(&partition.device().replace("/dev", ""))
+					.remove(&partition.device().replace("/dev/", ""))
 					.unwrap_or_default();
 
 				let bytes_read = io_counters.read_count();
