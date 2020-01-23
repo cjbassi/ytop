@@ -5,7 +5,7 @@
 
 <div align="center">
 
-*Another* TUI based resource monitor, this time in Rust! Currently a WIP.
+*Another* TUI based system monitor, this time in Rust!
 
 <img src="./assets/demos/demo.gif" />
 <img src="./assets/screenshots/minimal.png" width="96%" />
