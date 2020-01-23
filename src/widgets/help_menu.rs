@@ -1,4 +1,4 @@
-use lazy_static::lazy_static;
+use once_cell::sync::Lazy;
 use tui::buffer::Buffer;
 use tui::layout::Rect;
 use tui::widgets::{Paragraph, Text, Widget};
@@ -37,12 +37,11 @@ CPU and Mem graph scaling:
 const TEXT_WIDTH: u16 = 48;
 const TEXT_HEIGHT: u16 = 29;
 
-lazy_static! {
-	static ref TEXT_VEC: Vec<Text<'static>> = TEXT
-		.lines()
+static TEXT_VEC: Lazy<Vec<Text<'static>>> = Lazy::new(|| {
+	TEXT.lines()
 		.map(|line| Text::raw(format!("{}\n", line)))
-		.collect();
-}
+		.collect()
+});
 
 pub struct HelpMenu<'a> {
 	title: String,
