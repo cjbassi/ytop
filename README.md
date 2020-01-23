@@ -25,14 +25,7 @@ Currently working on Linux and macOS with support planned for all major platform
 
 ### Prebuilt binaries
 
-Run the following to run [this](https://github.com/japaric/trust/blob/gh-pages/install.sh) script to download the correct binary for your system from the releases tab into `~/.cargo/bin`, courtesy of [japaric/trust](https://github.com/japaric/trust):
-
-```bash
-bash <(curl -LSfs https://japaric.github.io/trust/install.sh) \
-  -f --git cjbassi/ytop
-```
-
-Specify `--to` to change the download location.
+Prebuilt binaries are provided in the [releases](https://github.com/cjbassi/ytop/releases) tab.
 
 ### Arch Linux
 
