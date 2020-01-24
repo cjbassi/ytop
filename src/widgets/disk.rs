@@ -56,7 +56,7 @@ impl UpdatableWidget for DiskWidget<'_> {
 		self.partitions = disk::partitions_physical()
 			.unwrap()
 			.into_iter()
-			.rev()
+			.rev() // fixes the mountpoint when the partition is mounted multiple times (#25)
 			.map(|partition| {
 				let name = PathBuf::from(partition.device())
 					.file_name()
