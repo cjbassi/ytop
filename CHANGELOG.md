@@ -15,6 +15,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- [disk][macos] add partition and disk usage support
+
 ## [0.3.0] - 2020-01-23
 
 ### Added
