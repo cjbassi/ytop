@@ -56,6 +56,7 @@ impl UpdatableWidget for DiskWidget<'_> {
 		self.partitions = disk::partitions_physical()
 			.unwrap()
 			.into_iter()
+			.rev()
 			.map(|partition| {
 				let name = PathBuf::from(partition.device())
 					.file_name()
