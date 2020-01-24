@@ -85,6 +85,7 @@ fn setup_logfile(logfile_path: &Path) {
 			))
 		})
 		.chain(logfile)
+		.level_for("mio", log::LevelFilter::Debug)
 		.apply()
 		.unwrap();
 }

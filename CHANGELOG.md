@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - add better-panic
+- ignore mio trace logs in logfile
 - [disk] fix panic if io counters not found
 - [disk] fix mountpoint when partition mounted multiple times
 - [disk][macos] add partition and disk usage support
