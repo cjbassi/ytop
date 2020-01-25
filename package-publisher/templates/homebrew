@@ -1,0 +1,16 @@
+class Ytop < Formula
+  desc "A TUI system monitor written in Rust"
+  homepage "https://github.com/cjbassi/ytop"
+  version "{{ VERSION }}"
+  url "https://github.com/cjbassi/ytop/releases/download/{{ VERSION }}/ytop-{{ VERSION }}-x86_64-apple-darwin.tar.gz"
+  sha256 "{{ MACOS_SHA256 }}"
+
+  if OS.linux?
+    url "https://github.com/cjbassi/ytop/releases/download/{{ VERSION }}/ytop-{{ VERSION }}-x86_64-unknown-linux-gnu.tar.gz"
+    sha256 "{{ LINUX_SHA256 }}"
+  end
+
+  def install
+    bin.install "ytop"
+  end
+end
