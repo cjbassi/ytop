@@ -11,7 +11,7 @@ Before opening an issue, make sure to:
 
 Required information:
 
-- rtop version (`rtop -V`):
+- ytop version (`ytop -V`):
 - The output of `uname -a`:
 
 Include any of the following information if relevant:
@@ -20,4 +20,4 @@ Include any of the following information if relevant:
 - tmux version (`tmux -V`):
 - Any relevenat hardware info:
 
-Please copy or attach `~/.local/state/rtop/errors.log` if it exists and contains logs:
+Please copy or attach `~/.local/state/ytop/errors.log` if it exists and contains logs:
