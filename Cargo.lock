@@ -1047,7 +1047,7 @@ dependencies = [
 
 [[package]]
 name = "ytop"
-version = "0.3.0"
+version = "0.4.0"
 dependencies = [
  "anyhow 1.0.26 (registry+https://github.com/rust-lang/crates.io-index)",
  "battery 0.7.5 (registry+https://github.com/rust-lang/crates.io-index)",
