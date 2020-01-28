@@ -51,7 +51,7 @@ impl UpdatableWidget for BatteryWidget<'_> {
 				.or_default()
 				.push((
 					self.update_count as f64,
-					battery.state_of_charge().value as f64,
+					battery.state_of_charge().value as f64 * 100.0,
 				));
 			current_batteries.push(model.to_string());
 		}

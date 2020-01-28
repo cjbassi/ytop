@@ -6,10 +6,6 @@ license = "MIT"
 description = "A TUI system monitor written in Rust"
 edition = "2018"
 
-[[bin]]
-name = "ytop"
-path = "src/main.rs"
-
 [dependencies]
 anyhow = "1.0.26"
 battery = "0.7.5"
