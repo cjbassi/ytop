@@ -7,8 +7,8 @@ description = "A TUI system monitor written in Rust"
 edition = "2018"
 
 [[bin]]
-path = "src/main.rs"
 name = "ytop"
+path = "src/main.rs"
 
 [dependencies]
 anyhow = "1.0.26"
