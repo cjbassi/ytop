@@ -536,7 +536,7 @@ dependencies = [
 [[package]]
 name = "nix"
 version = "0.16.1"
-source = "git+https://github.com/nix-rust/nix#90f9301641463f211be7f3599f9a9bdd5e9f03b4"
+source = "git+https://github.com/nix-rust/nix#b23e8e5f1d45cdf1b64cc6999c05fb4a048bc880"
 dependencies = [
  "bitflags 1.2.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "cc 1.0.50 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -667,7 +667,7 @@ dependencies = [
 [[package]]
 name = "psutil"
 version = "1.7.0"
-source = "git+https://github.com/borntyping/rust-psutil#87d1bbfb41a6f4e4ce67a328ae7fb0143a6547e8"
+source = "git+https://github.com/borntyping/rust-psutil#d16e3f7ded13f30ffafd87aa4207ef2bc9f1fcc0"
 dependencies = [
  "cfg-if 0.1.10 (registry+https://github.com/rust-lang/crates.io-index)",
  "darwin-libproc 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
