@@ -667,7 +667,7 @@ dependencies = [
 [[package]]
 name = "psutil"
 version = "2.0.0"
-source = "git+https://github.com/borntyping/rust-psutil#16d9f67df6b65dde3a226c14d6295e16da45bc86"
+source = "git+https://github.com/borntyping/rust-psutil#db811b3b84b4666b9aba2398839b09e86c2bc739"
 dependencies = [
  "cfg-if 0.1.10 (registry+https://github.com/rust-lang/crates.io-index)",
  "darwin-libproc 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -678,6 +678,7 @@ dependencies = [
  "once_cell 1.3.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "platforms 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "snafu 0.6.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "unescape 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -974,6 +975,11 @@ version = "1.11.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
+name = "unescape"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
 name = "unicode-segmentation"
 version = "1.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1185,6 +1191,7 @@ dependencies = [
 "checksum time 0.1.42 (registry+https://github.com/rust-lang/crates.io-index)" = "db8dcfca086c1143c9270ac42a2bbd8a7ee477b78ac8e45b19abfb0cbede4b6f"
 "checksum tui 0.8.0 (git+https://github.com/cjbassi/tui-rs)" = "<none>"
 "checksum typenum 1.11.2 (registry+https://github.com/rust-lang/crates.io-index)" = "6d2783fe2d6b8c1101136184eb41be8b1ad379e4657050b8aaff0c79ee7575f9"
+"checksum unescape 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)" = "ccb97dac3243214f8d8507998906ca3e2e0b900bf9bf4870477f125b82e68f6e"
 "checksum unicode-segmentation 1.6.0 (registry+https://github.com/rust-lang/crates.io-index)" = "e83e153d1053cbb5a118eeff7fd5be06ed99153f00dbcd8ae310c5fb2b22edc0"
 "checksum unicode-width 0.1.7 (registry+https://github.com/rust-lang/crates.io-index)" = "caaa9d531767d1ff2150b9332433f32a24622147e5ebb1f26409d5da67afd479"
 "checksum unicode-xid 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)" = "826e7639553986605ec5979c7dd957c7895e93eabed50ab2ffa7f6128a75097c"

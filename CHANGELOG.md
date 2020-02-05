@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - [battery] fix battery percent
 - [disk][unix] fix compilation on arm
+- [disk] fix crash due to escaped partition mountpoint
 - [proc] fix crash due to overflow when subtracting durations
 
 ## [0.4.0] - 2020-01-25
