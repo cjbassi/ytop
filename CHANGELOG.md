@@ -15,6 +15,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.1] - 2020-02-04
+
 ### Fixed
 
 - [battery] fix battery percent
@@ -67,7 +69,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Initial release!
 
-[Unreleased]: https://github.com/cjbassi/ytop/compare/0.4.0...HEAD
+[Unreleased]: https://github.com/cjbassi/ytop/compare/0.4.1...HEAD
+[0.4.1]: https://github.com/cjbassi/ytop/compare/0.4.0...0.4.1
 [0.4.0]: https://github.com/cjbassi/ytop/compare/0.3.0...0.4.0
 [0.3.0]: https://github.com/cjbassi/ytop/compare/0.2.0...0.3.0
 [0.2.0]: https://github.com/cjbassi/ytop/compare/0.1.0...0.2.0
