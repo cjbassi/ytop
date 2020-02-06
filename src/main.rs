@@ -35,6 +35,8 @@ fn setup_terminal() -> Result<Terminal<CrosstermBackend<io::Stdout>>> {
 
 	execute!(stdout, terminal::EnterAlternateScreen)?;
 	execute!(stdout, cursor::Hide)?;
+
+	// for TTYs
 	execute!(stdout, terminal::Clear(terminal::ClearType::All))?;
 
 	terminal::enable_raw_mode()?;
@@ -47,6 +49,10 @@ fn setup_terminal() -> Result<Terminal<CrosstermBackend<io::Stdout>>> {
 
 fn cleanup_terminal() -> Result<()> {
 	let mut stdout = io::stdout();
+
+	// for TTYs
+	execute!(stdout, cursor::MoveTo(0, 0))?;
+	execute!(stdout, terminal::Clear(terminal::ClearType::All))?;
 
 	execute!(stdout, terminal::LeaveAlternateScreen)?;
 	execute!(stdout, cursor::Show)?;
