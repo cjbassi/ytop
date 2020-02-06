@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - fix several 'overflow when subtracting durations' panics
 - [cpu] fix CPUs overflowing widget
+- [temp][linux] fix panic due to 'not implemented'
 
 ## [0.4.1] - 2020-02-04
 
