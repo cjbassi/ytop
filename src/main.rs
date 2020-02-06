@@ -14,6 +14,7 @@ use std::time::{Duration, Instant};
 
 use anyhow::Result;
 use crossbeam_channel::{select, tick, unbounded, Receiver};
+use crossterm::cursor;
 use crossterm::event::{self, Event, KeyCode, KeyEvent, KeyModifiers, MouseEvent};
 use crossterm::execute;
 use crossterm::terminal;
@@ -31,19 +32,25 @@ use update::*;
 
 fn setup_terminal() -> Result<Terminal<CrosstermBackend<io::Stdout>>> {
 	let mut stdout = io::stdout();
+
 	execute!(stdout, terminal::EnterAlternateScreen)?;
+	execute!(stdout, cursor::Hide)?;
+	execute!(stdout, terminal::Clear(terminal::ClearType::All))?;
+
 	terminal::enable_raw_mode()?;
+
 	let backend = CrosstermBackend::new(stdout);
-	let mut terminal = Terminal::new(backend)?;
-	terminal.hide_cursor()?;
-	terminal.clear()?;
+	let terminal = Terminal::new(backend)?;
 
 	Ok(terminal)
 }
 
 fn cleanup_terminal() -> Result<()> {
 	let mut stdout = io::stdout();
+
 	execute!(stdout, terminal::LeaveAlternateScreen)?;
+	execute!(stdout, cursor::Show)?;
+
 	terminal::disable_raw_mode()?;
 
 	Ok(())
