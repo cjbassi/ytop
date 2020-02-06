@@ -165,9 +165,13 @@ impl Widget for CpuWidget<'_> {
 		if self.show_percpu {
 			let offset = if self.show_average { 1 } else { 0 };
 			for i in 0..self.cpu_count {
+				let y = area.y + 2 + offset + i as u16;
+				if y >= area.bottom() - 1 {
+					break;
+				}
 				buf.set_string(
 					area.x + 3,
-					area.y + 2 + offset + i as u16,
+					y,
 					format!("CPU{} {:3.0}%", i, self.percpu_data[i].last().unwrap().1),
 					self.colorscheme.cpu_lines
 						[(i + offset as usize) % self.colorscheme.cpu_lines.len()],
