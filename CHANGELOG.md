@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - fix several 'overflow when subtracting durations' panics
+- fix ytop not clearing the screen when run on a TTY
 - [cpu] fix CPUs overflowing widget
 - [temp][linux] fix panic due to 'not implemented'
 

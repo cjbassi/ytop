@@ -36,6 +36,7 @@ fn setup_terminal() -> Result<Terminal<CrosstermBackend<io::Stdout>>> {
 	let backend = CrosstermBackend::new(stdout);
 	let mut terminal = Terminal::new(backend)?;
 	terminal.hide_cursor()?;
+	terminal.clear()?;
 
 	Ok(terminal)
 }
