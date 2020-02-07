@@ -1,5 +1,3 @@
-use std::io;
-
 use tui::backend::Backend;
 use tui::layout::{Constraint, Direction, Layout, Rect};
 use tui::widgets::Widget as _;
@@ -7,21 +5,23 @@ use tui::{Frame, Terminal};
 
 use crate::app::{App, Widgets};
 
-pub fn draw<B: Backend>(terminal: &mut Terminal<B>, app: &mut App) -> io::Result<()> {
-	terminal.draw(|mut frame| {
-		if let Some(statusbar) = app.statusbar.as_mut() {
-			let chunks = Layout::default()
-				.constraints([Constraint::Min(0), Constraint::Length(1)].as_ref())
-				.split(frame.size());
-			draw_widgets(&mut frame, &mut app.widgets, chunks[0]);
-			statusbar.render(&mut frame, chunks[1]);
-		} else {
-			let chunks = Layout::default()
-				.constraints(vec![Constraint::Percentage(100)])
-				.split(frame.size());
-			draw_widgets(&mut frame, &mut app.widgets, chunks[0]);
-		}
-	})
+pub fn draw<B: Backend>(terminal: &mut Terminal<B>, app: &mut App) {
+	terminal
+		.draw(|mut frame| {
+			if let Some(statusbar) = app.statusbar.as_mut() {
+				let chunks = Layout::default()
+					.constraints([Constraint::Min(0), Constraint::Length(1)].as_ref())
+					.split(frame.size());
+				draw_widgets(&mut frame, &mut app.widgets, chunks[0]);
+				statusbar.render(&mut frame, chunks[1]);
+			} else {
+				let chunks = Layout::default()
+					.constraints(vec![Constraint::Percentage(100)])
+					.split(frame.size());
+				draw_widgets(&mut frame, &mut app.widgets, chunks[0]);
+			}
+		})
+		.unwrap();
 }
 
 pub fn draw_widgets<B: Backend>(frame: &mut Frame<B>, widgets: &mut Widgets, area: Rect) {
@@ -102,16 +102,18 @@ pub fn draw_bottom_row<B: Backend>(frame: &mut Frame<B>, widgets: &mut Widgets, 
 	widgets.proc.render(frame, horizontal_chunks[1]);
 }
 
-pub fn draw_help_menu<B: Backend>(terminal: &mut Terminal<B>, app: &mut App) -> io::Result<()> {
-	terminal.draw(|mut frame| {
-		let rect = app.help_menu.get_rect(frame.size());
-		app.help_menu.render(&mut frame, rect);
-	})
+pub fn draw_help_menu<B: Backend>(terminal: &mut Terminal<B>, app: &mut App) {
+	terminal
+		.draw(|mut frame| {
+			let rect = app.help_menu.get_rect(frame.size());
+			app.help_menu.render(&mut frame, rect);
+		})
+		.unwrap();
 }
 
 // TODO: figure out how to draw the proc widget without clearing rest of the screen
-pub fn draw_proc<B: Backend>(terminal: &mut Terminal<B>, app: &mut App) -> io::Result<()> {
-	draw(terminal, app)
+pub fn draw_proc<B: Backend>(terminal: &mut Terminal<B>, app: &mut App) {
+	draw(terminal, app);
 	// terminal.draw(|mut frame| {
 	// 	let chunks = if app.statusbar.is_some() {
 	// 		Layout::default()
@@ -151,6 +153,6 @@ pub fn draw_proc<B: Backend>(terminal: &mut Terminal<B>, app: &mut App) -> io::R
 }
 
 // TODO: figure out how to draw the graphs without clearing rest of the screen
-pub fn draw_graphs<B: Backend>(terminal: &mut Terminal<B>, app: &mut App) -> io::Result<()> {
-	draw(terminal, app)
+pub fn draw_graphs<B: Backend>(terminal: &mut Terminal<B>, app: &mut App) {
+	draw(terminal, app);
 }

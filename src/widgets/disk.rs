@@ -54,12 +54,14 @@ impl UpdatableWidget for DiskWidget<'_> {
 		let mut io_counters_perdisk = if cfg!(target_os = "linux") {
 			self.collector.disk_io_counters_per_partition().unwrap()
 		} else {
-			Default::default()
+			Default::default() // not implemented yet on macOS
 		};
+		// `.rev()` selects the correct mountpoint when the partition is mounted multiple times
+		// https://github.com/cjbassi/ytop/issues/25
 		self.partitions = disk::partitions_physical()
 			.unwrap()
 			.into_iter()
-			.rev() // fixes the mountpoint when the partition is mounted multiple times (#25)
+			.rev()
 			.map(|partition| {
 				let name = PathBuf::from(partition.device())
 					.file_name()
@@ -134,6 +136,8 @@ impl Widget for DiskWidget<'_> {
 		)
 		.block(block::new(self.colorscheme, &self.title))
 		.header_style(self.colorscheme.text.modifier(Modifier::BOLD))
+		// TODO: this is only a temporary workaround until we fix the table column resizing
+		// https://github.com/cjbassi/ytop/issues/23
 		.widths(&if area.width > 55 {
 			vec![
 				// Constraint::Min(5),

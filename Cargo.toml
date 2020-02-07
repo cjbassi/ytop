@@ -7,7 +7,6 @@ description = "A TUI system monitor written in Rust"
 edition = "2018"
 
 [dependencies]
-anyhow = "1.0.26"
 battery = "0.7.5"
 better-panic = "0.2.0"
 chrono = "0.4.10"

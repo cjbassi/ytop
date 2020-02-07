@@ -350,6 +350,8 @@ impl Widget for ProcWidget<'_> {
 		)
 		.block(block::new(self.colorscheme, &self.title))
 		.header_style(self.colorscheme.text.modifier(Modifier::BOLD))
+		// TODO: this is only a temporary workaround until we fix the table column resizing
+		// https://github.com/cjbassi/ytop/issues/23
 		.widths(&[
 			Constraint::Length(6),
 			// Constraint::Min(5),

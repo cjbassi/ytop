@@ -12,7 +12,6 @@ use std::path::Path;
 use std::thread;
 use std::time::{Duration, Instant};
 
-use anyhow::Result;
 use crossbeam_channel::{select, tick, unbounded, Receiver};
 use crossterm::cursor;
 use crossterm::event::{self, Event, KeyCode, KeyEvent, KeyModifiers, MouseEvent};
@@ -30,36 +29,37 @@ use colorscheme::*;
 use draw::*;
 use update::*;
 
-fn setup_terminal() -> Result<Terminal<CrosstermBackend<io::Stdout>>> {
+fn setup_terminal() {
 	let mut stdout = io::stdout();
 
-	execute!(stdout, terminal::EnterAlternateScreen)?;
-	execute!(stdout, cursor::Hide)?;
+	execute!(stdout, terminal::EnterAlternateScreen).unwrap();
+	execute!(stdout, cursor::Hide).unwrap();
 
-	// for TTYs
-	execute!(stdout, terminal::Clear(terminal::ClearType::All))?;
+	// needed for when ytop is run in a TTY since TTYs don't actually have an alternate screen
+	// must be executed after attempting to enter the alternate screen so that it only clears the
+	// 		primary screen if we are running in a TTY
+	// if not running in a TTY, then we just end up clearing the alternate screen which should have
+	// 		no effect
+	execute!(stdout, terminal::Clear(terminal::ClearType::All)).unwrap();
 
-	terminal::enable_raw_mode()?;
-
-	let backend = CrosstermBackend::new(stdout);
-	let terminal = Terminal::new(backend)?;
-
-	Ok(terminal)
+	terminal::enable_raw_mode().unwrap();
 }
 
-fn cleanup_terminal() -> Result<()> {
+fn cleanup_terminal() {
 	let mut stdout = io::stdout();
 
-	// for TTYs
-	execute!(stdout, cursor::MoveTo(0, 0))?;
-	execute!(stdout, terminal::Clear(terminal::ClearType::All))?;
+	// needed for when ytop is run in a TTY since TTYs don't actually have an alternate screen
+	// must be executed before attempting to leave the alternate screen so that it only modifies the
+	// 		primary screen if we are running in a TTY
+	// if not running in a TTY, then we just end up modifying the alternate screen which should have
+	// 		no effect
+	execute!(stdout, cursor::MoveTo(0, 0)).unwrap();
+	execute!(stdout, terminal::Clear(terminal::ClearType::All)).unwrap();
 
-	execute!(stdout, terminal::LeaveAlternateScreen)?;
-	execute!(stdout, cursor::Show)?;
+	execute!(stdout, terminal::LeaveAlternateScreen).unwrap();
+	execute!(stdout, cursor::Show).unwrap();
 
-	terminal::disable_raw_mode()?;
-
-	Ok(())
+	terminal::disable_raw_mode().unwrap();
 }
 
 fn setup_ui_events() -> Receiver<Event> {
@@ -71,13 +71,14 @@ fn setup_ui_events() -> Receiver<Event> {
 	receiver
 }
 
-fn setup_ctrl_c() -> Result<Receiver<()>, ctrlc::Error> {
+fn setup_ctrl_c() -> Receiver<()> {
 	let (sender, receiver) = unbounded();
 	ctrlc::set_handler(move || {
 		sender.send(()).unwrap();
-	})?;
+	})
+	.unwrap();
 
-	Ok(receiver)
+	receiver
 }
 
 fn setup_logfile(logfile_path: &Path) {
@@ -106,7 +107,7 @@ fn setup_logfile(logfile_path: &Path) {
 
 fn setup_panic_hook() {
 	panic::set_hook(Box::new(|panic_info| {
-		cleanup_terminal().unwrap();
+		cleanup_terminal();
 		better_panic::Settings::auto().create_panic_handler()(panic_info);
 	}));
 }
@@ -130,17 +131,20 @@ fn main() {
 	let colorscheme = read_colorscheme(&app_dirs.config_dir, &args.colorscheme).unwrap();
 	let mut app = setup_app(&args, update_ratio, &colorscheme, program_name);
 	setup_logfile(&logfile_path);
-	let mut terminal = setup_terminal().unwrap();
+
+	let backend = CrosstermBackend::new(io::stdout());
+	let mut terminal = Terminal::new(backend).unwrap();
 
 	setup_panic_hook();
+	setup_terminal();
 
 	let mut update_seconds = Ratio::from_integer(0);
 	let ticker = setup_ticker(args.rate);
 	let ui_events_receiver = setup_ui_events();
-	let ctrl_c_events = setup_ctrl_c().unwrap();
+	let ctrl_c_events = setup_ctrl_c();
 
 	update_widgets(&mut app.widgets, update_seconds);
-	draw(&mut terminal, &mut app).unwrap();
+	draw(&mut terminal, &mut app);
 
 	let mut show_help_menu = false;
 	let mut paused = false;
@@ -152,7 +156,6 @@ fn main() {
 	loop {
 		select! {
 			recv(ctrl_c_events) -> _ => {
-				cleanup_terminal().unwrap();
 				break;
 			}
 			recv(ticker) -> _ => {
@@ -160,7 +163,7 @@ fn main() {
 					update_seconds = (update_seconds + update_ratio) % Ratio::from_integer(60);
 					update_widgets(&mut app.widgets, update_seconds);
 					if !show_help_menu {
-						draw(&mut terminal, &mut app).unwrap();
+						draw(&mut terminal, &mut app);
 					}
 				}
 			}
@@ -174,15 +177,14 @@ fn main() {
 						if key_event.modifiers.is_empty() {
 							match key_event.code {
 								KeyCode::Char('q') => {
-									cleanup_terminal().unwrap();
 									break
 								},
 								KeyCode::Char('?') => {
 									show_help_menu = !show_help_menu;
 									if show_help_menu {
-										draw_help_menu(&mut terminal, &mut app).unwrap();
+										draw_help_menu(&mut terminal, &mut app);
 									} else {
-										draw(&mut terminal, &mut app).unwrap();
+										draw(&mut terminal, &mut app);
 									}
 								},
 								KeyCode::Char(' ') => {
@@ -230,7 +232,7 @@ fn main() {
 								KeyCode::Esc => {
 									if show_help_menu {
 										show_help_menu = false;
-										draw(&mut terminal, &mut app).unwrap();
+										draw(&mut terminal, &mut app);
 									}
 								}
 								KeyCode::Tab => {
@@ -258,7 +260,6 @@ fn main() {
 						} else if key_event.modifiers == KeyModifiers::CONTROL {
 							match key_event.code {
 								KeyCode::Char('c') => {
-									cleanup_terminal().unwrap();
 									break
 								},
 								KeyCode::Char('d') => {
@@ -301,21 +302,23 @@ fn main() {
 					}
 					Event::Resize(_width, _height) => {
 						if show_help_menu {
-							draw_help_menu(&mut terminal, &mut app).unwrap();
+							draw_help_menu(&mut terminal, &mut app);
 						} else {
-							draw(&mut terminal, &mut app).unwrap();
+							draw(&mut terminal, &mut app);
 						}
 					}
 				}
 
 				if !show_help_menu {
 					if proc_modified {
-						draw_proc(&mut terminal, &mut app).unwrap();
+						draw_proc(&mut terminal, &mut app);
 					} else if graphs_modified {
-						draw_graphs(&mut terminal, &mut app).unwrap();
+						draw_graphs(&mut terminal, &mut app);
 					}
 				}
 			}
 		}
 	}
+
+	cleanup_terminal();
 }
