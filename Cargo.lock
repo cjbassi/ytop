@@ -662,7 +662,7 @@ dependencies = [
 [[package]]
 name = "psutil"
 version = "2.0.0"
-source = "git+https://github.com/borntyping/rust-psutil#c5dad2e88de8d28f7eeb041116fc284b857617f8"
+source = "git+https://github.com/borntyping/rust-psutil#3a2dc99ae9bc841dcdc0d29de6770f3e53cc69e9"
 dependencies = [
  "cfg-if 0.1.10 (registry+https://github.com/rust-lang/crates.io-index)",
  "darwin-libproc 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
