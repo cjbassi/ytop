@@ -15,6 +15,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.2] - 2020-02-10
+
 ### Fixed
 
 - fix several 'overflow when subtracting durations' panics
@@ -77,7 +79,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Initial release!
 
-[Unreleased]: https://github.com/cjbassi/ytop/compare/0.4.1...HEAD
+[Unreleased]: https://github.com/cjbassi/ytop/compare/0.4.2...HEAD
+[0.4.2]: https://github.com/cjbassi/ytop/compare/0.4.1...0.4.2
 [0.4.1]: https://github.com/cjbassi/ytop/compare/0.4.0...0.4.1
 [0.4.0]: https://github.com/cjbassi/ytop/compare/0.3.0...0.4.0
 [0.3.0]: https://github.com/cjbassi/ytop/compare/0.2.0...0.3.0
