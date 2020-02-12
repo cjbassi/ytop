@@ -280,6 +280,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "derive_more"
+version = "0.99.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "proc-macro2 1.0.7 (registry+https://github.com/rust-lang/crates.io-index)",
+ "quote 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "syn 1.0.13 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
 name = "dirs"
 version = "2.0.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -661,11 +671,12 @@ dependencies = [
 
 [[package]]
 name = "psutil"
-version = "2.0.0"
-source = "git+https://github.com/borntyping/rust-psutil#3a2dc99ae9bc841dcdc0d29de6770f3e53cc69e9"
+version = "3.0.0"
+source = "git+https://github.com/borntyping/rust-psutil#828eb6f487c6a97d9a6d91a2889ea23516f956c9"
 dependencies = [
  "cfg-if 0.1.10 (registry+https://github.com/rust-lang/crates.io-index)",
  "darwin-libproc 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "derive_more 0.99.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "glob 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "mach 0.3.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "nix 0.17.0 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -1061,7 +1072,7 @@ dependencies = [
  "num-rational 0.2.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "once_cell 1.3.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "platform-dirs 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "psutil 2.0.0 (git+https://github.com/borntyping/rust-psutil)",
+ "psutil 3.0.0 (git+https://github.com/borntyping/rust-psutil)",
  "serde 1.0.104 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde_json 1.0.44 (registry+https://github.com/rust-lang/crates.io-index)",
  "size 0.1.2 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -1103,6 +1114,7 @@ dependencies = [
 "checksum ctrlc 3.1.3 (registry+https://github.com/rust-lang/crates.io-index)" = "c7dfd2d8b4c82121dfdff120f818e09fc4380b0b7e17a742081a89b94853e87f"
 "checksum darwin-libproc 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)" = "ade5a88af8d9646bf770687321a9488a0f2b4610aa08b0373016cd1af37f0a31"
 "checksum darwin-libproc-sys 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)" = "c30d1a078d74da1183b02fed8a8b07afc412d3998334b53b750d0ed03b031541"
+"checksum derive_more 0.99.2 (registry+https://github.com/rust-lang/crates.io-index)" = "2159be042979966de68315bce7034bb000c775f22e3e834e1c52ff78f041cae8"
 "checksum dirs 2.0.2 (registry+https://github.com/rust-lang/crates.io-index)" = "13aea89a5c93364a98e9b37b2fa237effbb694d5cfe01c5b70941f7eb087d5e3"
 "checksum dirs-sys 0.3.4 (registry+https://github.com/rust-lang/crates.io-index)" = "afa0b23de8fd801745c471deffa6e12d248f962c9fd4b4c33787b055599bde7b"
 "checksum doc-comment 0.3.1 (registry+https://github.com/rust-lang/crates.io-index)" = "923dea538cea0aa3025e8685b20d6ee21ef99c4f77e954a30febbaac5ec73a97"
@@ -1148,7 +1160,7 @@ dependencies = [
 "checksum proc-macro-error 0.4.4 (registry+https://github.com/rust-lang/crates.io-index)" = "53c98547ceaea14eeb26fcadf51dc70d01a2479a7839170eae133721105e4428"
 "checksum proc-macro-error-attr 0.4.3 (registry+https://github.com/rust-lang/crates.io-index)" = "c2bf5d493cf5d3e296beccfd61794e445e830dfc8070a9c248ad3ee071392c6c"
 "checksum proc-macro2 1.0.7 (registry+https://github.com/rust-lang/crates.io-index)" = "0319972dcae462681daf4da1adeeaa066e3ebd29c69be96c6abb1259d2ee2bcc"
-"checksum psutil 2.0.0 (git+https://github.com/borntyping/rust-psutil)" = "<none>"
+"checksum psutil 3.0.0 (git+https://github.com/borntyping/rust-psutil)" = "<none>"
 "checksum quote 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)" = "053a8c8bcc71fcce321828dc897a98ab9760bef03a4fc36693c231e5b3216cfe"
 "checksum rand_core 0.3.1 (registry+https://github.com/rust-lang/crates.io-index)" = "7a6fdeb83b075e8266dcc8762c22776f6877a63111121f5f8c7411e5be7eed4b"
 "checksum rand_core 0.4.2 (registry+https://github.com/rust-lang/crates.io-index)" = "9c33a3c44ca05fa6f1807d8e6743f3824e8509beca625669633be0acbdf509dc"
