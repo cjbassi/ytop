@@ -118,6 +118,49 @@ impl UpdatableWidget for DiskWidget<'_> {
 	}
 }
 
+// TODO: this is only a temporary workaround until we fix the table column resizing
+// https://github.com/cjbassi/ytop/issues/23
+fn custom_column_sizing(width: u16) -> Vec<Constraint> {
+	let width = width - 2;
+	if width >= 39 + 5 {
+		vec![
+			Constraint::Length((width - 34) / 2),
+			Constraint::Length((width - 34) / 2),
+			// Constraint::Min(5),
+			// Constraint::Min(5),
+			Constraint::Length(5),
+			Constraint::Length(8),
+			Constraint::Length(8),
+			Constraint::Length(8),
+		]
+	} else if width >= 31 + 4 {
+		vec![
+			Constraint::Length((width - 25) / 2),
+			Constraint::Length((width - 25) / 2),
+			Constraint::Length(5),
+			Constraint::Length(8),
+			Constraint::Length(8),
+		]
+	} else if width >= 23 + 3 {
+		vec![
+			Constraint::Length((width - 16) / 2),
+			Constraint::Length((width - 16) / 2),
+			Constraint::Length(5),
+			Constraint::Length(8),
+		]
+	} else if width >= 15 + 2 {
+		vec![
+			Constraint::Length((width - 7) / 2),
+			Constraint::Length((width - 7) / 2),
+			Constraint::Length(5),
+		]
+	} else if width >= 10 + 1 {
+		vec![Constraint::Min(5), Constraint::Min(5)]
+	} else {
+		vec![]
+	}
+}
+
 impl Widget for DiskWidget<'_> {
 	fn draw(&mut self, area: Rect, buf: &mut Buffer) {
 		let mut partitions: Vec<Partition> = self.partitions.values().cloned().collect();
@@ -142,22 +185,7 @@ impl Widget for DiskWidget<'_> {
 		)
 		.block(block::new(self.colorscheme, &self.title))
 		.header_style(self.colorscheme.text.modifier(Modifier::BOLD))
-		// TODO: this is only a temporary workaround until we fix the table column resizing
-		// https://github.com/cjbassi/ytop/issues/23
-		.widths(&if area.width > 55 {
-			vec![
-				// Constraint::Min(5),
-				// Constraint::Min(5),
-				Constraint::Length(u16::max((area.width as i16 - 2 - 50) as u16, 5)),
-				Constraint::Length(u16::max((area.width as i16 - 2 - 50) as u16, 5)),
-				Constraint::Length(5),
-				Constraint::Length(8),
-				Constraint::Length(8),
-				Constraint::Length(8),
-			]
-		} else {
-			vec![Constraint::Length(5), Constraint::Length(5)]
-		})
+		.widths(&custom_column_sizing(area.width))
 		.column_spacing(1)
 		.header_gap(0)
 		.draw(area, buf);
