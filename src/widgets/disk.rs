@@ -71,12 +71,18 @@ impl UpdatableWidget for DiskWidget<'_> {
 				let mountpoint = partition.mountpoint().to_path_buf();
 
 				let disk_usage = disk::disk_usage(&mountpoint).unwrap();
+				// TODO: we use an `unwrap_or_default` since rust-psutil doesn't provide a way to
+				// match up virtual partitions returned from `partitions_physical` with their
+				// corresponding io counters in `disk_io_counters_per_partition()`since the disk
+				// is named differently in each function
 				let io_counters = io_counters_perdisk
 					.remove(&partition.device().replace("/dev/", ""))
 					.unwrap_or_default();
 
 				let bytes_read = io_counters.read_count();
 				let bytes_written = io_counters.read_count();
+				// Here we use an `unwrap_or_default` for when we are adding a new disk partition
+				// that is loaded when on ytop is already running.
 				let (bytes_read_recently, bytes_written_recently) = self
 					.partitions
 					.get(&name)

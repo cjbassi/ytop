@@ -14,7 +14,7 @@ use std::time::{Duration, Instant};
 
 use crossbeam_channel::{select, tick, unbounded, Receiver};
 use crossterm::cursor;
-use crossterm::event::{self, Event, KeyCode, KeyEvent, KeyModifiers, MouseEvent};
+use crossterm::event::{Event, KeyCode, KeyEvent, KeyModifiers, MouseEvent};
 use crossterm::execute;
 use crossterm::terminal;
 use num_rational::Ratio;
@@ -29,17 +29,19 @@ use colorscheme::*;
 use draw::*;
 use update::*;
 
+const PROGRAM_NAME: &str = env!("CARGO_PKG_NAME");
+
 fn setup_terminal() {
 	let mut stdout = io::stdout();
 
 	execute!(stdout, terminal::EnterAlternateScreen).unwrap();
 	execute!(stdout, cursor::Hide).unwrap();
 
-	// needed for when ytop is run in a TTY since TTYs don't actually have an alternate screen
-	// must be executed after attempting to enter the alternate screen so that it only clears the
-	// 		primary screen if we are running in a TTY
-	// if not running in a TTY, then we just end up clearing the alternate screen which should have
-	// 		no effect
+	// Needed for when ytop is run in a TTY since TTYs don't actually have an alternate screen.
+	// Must be executed after attempting to enter the alternate screen so that it only clears the
+	// 		primary screen if we are running in a TTY.
+	// If not running in a TTY, then we just end up clearing the alternate screen which should have
+	// 		no effect.
 	execute!(stdout, terminal::Clear(terminal::ClearType::All)).unwrap();
 
 	terminal::enable_raw_mode().unwrap();
@@ -48,11 +50,11 @@ fn setup_terminal() {
 fn cleanup_terminal() {
 	let mut stdout = io::stdout();
 
-	// needed for when ytop is run in a TTY since TTYs don't actually have an alternate screen
-	// must be executed before attempting to leave the alternate screen so that it only modifies the
-	// 		primary screen if we are running in a TTY
-	// if not running in a TTY, then we just end up modifying the alternate screen which should have
-	// 		no effect
+	// Needed for when ytop is run in a TTY since TTYs don't actually have an alternate screen.
+	// Must be executed before attempting to leave the alternate screen so that it only modifies the
+	// 		primary screen if we are running in a TTY.
+	// If not running in a TTY, then we just end up modifying the alternate screen which should have
+	// 		no effect.
 	execute!(stdout, cursor::MoveTo(0, 0)).unwrap();
 	execute!(stdout, terminal::Clear(terminal::ClearType::All)).unwrap();
 
@@ -65,7 +67,7 @@ fn cleanup_terminal() {
 fn setup_ui_events() -> Receiver<Event> {
 	let (sender, receiver) = unbounded();
 	thread::spawn(move || loop {
-		sender.send(event::read().unwrap()).unwrap();
+		sender.send(crossterm::event::read().unwrap()).unwrap();
 	});
 
 	receiver
@@ -81,6 +83,8 @@ fn setup_ctrl_c() -> Receiver<()> {
 	receiver
 }
 
+// The log file currently isn't being used for anything right now, but it does help when debugging
+// and we'll probably use it when we clean up the error handling.
 fn setup_logfile(logfile_path: &Path) {
 	fs::create_dir_all(logfile_path.parent().unwrap()).unwrap();
 	let logfile = fs::OpenOptions::new()
@@ -105,6 +109,8 @@ fn setup_logfile(logfile_path: &Path) {
 		.unwrap();
 }
 
+// We need to catch panics since we need to close the terminal before logging any error messages to
+// the screen.
 fn setup_panic_hook() {
 	panic::set_hook(Box::new(|panic_info| {
 		cleanup_terminal();
@@ -124,12 +130,11 @@ fn main() {
 	let args = Args::from_args();
 	let update_ratio = Ratio::new(1, args.rate);
 
-	let program_name = env!("CARGO_PKG_NAME");
-	let app_dirs = AppDirs::new(Some(program_name), AppUI::CommandLine).unwrap();
+	let app_dirs = AppDirs::new(Some(PROGRAM_NAME), AppUI::CommandLine).unwrap();
 	let logfile_path = app_dirs.state_dir.join("errors.log");
 
 	let colorscheme = read_colorscheme(&app_dirs.config_dir, &args.colorscheme).unwrap();
-	let mut app = setup_app(&args, update_ratio, &colorscheme, program_name);
+	let mut app = setup_app(&args, update_ratio, &colorscheme, PROGRAM_NAME);
 	setup_logfile(&logfile_path);
 
 	let backend = CrosstermBackend::new(io::stdout());
@@ -148,10 +153,16 @@ fn main() {
 
 	let mut show_help_menu = false;
 	let mut paused = false;
+
+	// Used to keep track of the previous key for actions that required 2 keypresses.
 	let mut previous_key_event: Option<KeyEvent> = None;
+	// If `skip_key` is set to true, we set the previous key to None instead of recording it.
+	let mut skip_key: bool;
+
+	// Used to keep track of whether we need to redraw the process or CPU/Mem widgets after they
+	// have been updated.
 	let mut proc_modified: bool;
 	let mut graphs_modified: bool;
-	let mut skip_key: bool;
 
 	loop {
 		select! {

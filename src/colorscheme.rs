@@ -15,7 +15,7 @@ pub enum Colorschemes {
 }
 
 impl FromStr for Colorschemes {
-	type Err = std::io::Error;
+	type Err = std::convert::Infallible;
 
 	fn from_str(s: &str) -> Result<Self, Self::Err> {
 		Ok(match s {
