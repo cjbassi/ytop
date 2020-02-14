@@ -2,7 +2,7 @@ use sha2::{Digest, Sha256};
 use std::fs;
 use std::process::Command;
 
-const VERSION: &str = "0.4.2";
+const VERSION: &str = "0.4.3";
 
 async fn fetch_archive(url: &str) -> Vec<u8> {
 	reqwest::get(url)

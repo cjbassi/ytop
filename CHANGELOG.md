@@ -15,6 +15,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.3] - 2020-02-14
+
 ### Fixed
 
 - [disk] fix disk widget constantly resizing
@@ -83,7 +85,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Initial release!
 
-[Unreleased]: https://github.com/cjbassi/ytop/compare/0.4.2...HEAD
+[Unreleased]: https://github.com/cjbassi/ytop/compare/0.4.3...HEAD
+[0.4.3]: https://github.com/cjbassi/ytop/compare/0.4.2...0.4.3
 [0.4.2]: https://github.com/cjbassi/ytop/compare/0.4.1...0.4.2
 [0.4.1]: https://github.com/cjbassi/ytop/compare/0.4.0...0.4.1
 [0.4.0]: https://github.com/cjbassi/ytop/compare/0.3.0...0.4.0
