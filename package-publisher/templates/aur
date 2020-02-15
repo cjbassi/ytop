@@ -13,7 +13,7 @@ makedepends=("cargo")
 provides=(${pkgname})
 conflicts=(${pkgname})
 source=("${pkgname}-${pkgver}.tar.gz::${url}/archive/${pkgver}.tar.gz")
-sha256sums=("{{ SHA256 }}")
+sha256sums=("{{ REPO_SHA256 }}")
 
 build() {
 	cd "${pkgname}-${pkgver}"

@@ -1,8 +1,26 @@
-use sha2::{Digest, Sha256};
 use std::fs;
 use std::process::Command;
+use std::env;
+
+use sha2::{Digest, Sha256};
+use hex;
+use tokio;
+use reqwest;
 
 const VERSION: &str = "0.4.3";
+
+const AUR_DIR: &str = "/home/cjbassi/playground/packages/ytop";
+const AUR_BIN_DIR: &str = "/home/cjbassi/playground/packages/ytop-bin";
+const HOMEBREW_DIR: &str = "/home/cjbassi/playground/packages/homebrew-ytop";
+
+const AUR_TEMPLATE: &str = include_str!("../templates/aur");
+const AUR_BIN_TEMPLATE: &str = include_str!("../templates/aur-bin");
+const HOMEBREW_TEMPLATE: &str = include_str!("../templates/homebrew");
+
+const AUR_FILE: &str = "PKGBUILD";
+const AUR_BIN_FILE: &str = "PKGBUILD";
+const HOMEBREW_FILE: &str = "ytop.rb";
+
 
 async fn fetch_archive(url: &str) -> Vec<u8> {
 	reqwest::get(url)
@@ -20,16 +38,32 @@ fn hash_archive(archive: &[u8]) -> String {
 	hex::encode(&hasher.result()[..])
 }
 
+fn srcinfo() {
+	let output = Command::new("makepkg")
+		.args(&["--printsrcinfo"])
+		.output()
+		.unwrap()
+		.stdout;
+	fs::write(".SRCINFO", output).unwrap();
+}
+
+fn git_add_commit_push() {
+	Command::new("git")
+		.args(&["add", "."])
+		.status()
+		.unwrap();
+	Command::new("git")
+		.args(&["commit", "-m", VERSION])
+		.status()
+		.unwrap();
+	Command::new("git")
+		.args(&["push"])
+		.status()
+		.unwrap();
+}
+
 #[tokio::main]
 async fn main() {
-	let aur_dir = "/home/cjbassi/playground/packages/ytop";
-	let aur_bin_dir = "/home/cjbassi/playground/packages/ytop-bin";
-	let homebrew_dir = "/home/cjbassi/playground/packages/homebrew-ytop";
-
-	let aur_template = include_str!("../templates/aur");
-	let aur_bin_template = include_str!("../templates/aur-bin");
-	let homebrew_template = include_str!("../templates/homebrew");
-
 	let macos_url = format!(
 		"https://github.com/cjbassi/ytop/releases/download/{}/ytop-{}-x86_64-apple-darwin.tar.gz",
 		VERSION, VERSION
@@ -45,79 +79,36 @@ async fn main() {
 	let linux_hash = hash_archive(&linux_archive);
 	let repo_hash = hash_archive(&repo_archive);
 
-	std::env::set_current_dir(homebrew_dir).unwrap();
+	env::set_current_dir(HOMEBREW_DIR).unwrap();
 	fs::write(
-		"ytop.rb",
-		homebrew_template
+		HOMEBREW_FILE,
+		HOMEBREW_TEMPLATE
 			.replace("{{ VERSION }}", VERSION)
 			.replace("{{ MACOS_SHA256 }}", &macos_hash)
 			.replace("{{ LINUX_SHA256 }}", &linux_hash),
 	)
 	.unwrap();
-	Command::new("git")
-		.args(&["add", "."])
-		.status()
-		.expect("failed to execute process");
-	Command::new("git")
-		.args(&["commit", "-m", VERSION])
-		.status()
-		.expect("failed to execute process");
-	Command::new("git")
-		.args(&["push"])
-		.status()
-		.expect("failed to execute process");
+	git_add_commit_push();
 
-	std::env::set_current_dir(aur_dir).unwrap();
+	env::set_current_dir(AUR_DIR).unwrap();
 	fs::write(
-		"PKGBUILD",
-		aur_template
+		AUR_FILE,
+		AUR_TEMPLATE
 			.replace("{{ VERSION }}", VERSION)
-			.replace("{{ SHA256 }}", &repo_hash),
+			.replace("{{ REPO_SHA256 }}", &repo_hash),
 	)
 	.unwrap();
-	let output = Command::new("makepkg")
-		.args(&["--printsrcinfo"])
-		.output()
-		.expect("failed to execute process")
-		.stdout;
-	fs::write(".SRCINFO", output).unwrap();
-	Command::new("git")
-		.args(&["add", "."])
-		.status()
-		.expect("failed to execute process");
-	Command::new("git")
-		.args(&["commit", "-m", VERSION])
-		.status()
-		.expect("failed to execute process");
-	Command::new("git")
-		.args(&["push"])
-		.status()
-		.expect("failed to execute process");
+	srcinfo();
+	git_add_commit_push();
 
-	std::env::set_current_dir(aur_bin_dir).unwrap();
+	env::set_current_dir(AUR_BIN_DIR).unwrap();
 	fs::write(
-		"PKGBUILD",
-		aur_bin_template
+		AUR_BIN_FILE,
+		AUR_BIN_TEMPLATE
 			.replace("{{ VERSION }}", VERSION)
-			.replace("{{ SHA256 }}", &linux_hash),
+			.replace("{{ LINUX_SHA256 }}", &linux_hash),
 	)
 	.unwrap();
-	let output = Command::new("makepkg")
-		.args(&["--printsrcinfo"])
-		.output()
-		.expect("failed to execute process")
-		.stdout;
-	fs::write(".SRCINFO", output).unwrap();
-	Command::new("git")
-		.args(&["add", "."])
-		.status()
-		.expect("failed to execute process");
-	Command::new("git")
-		.args(&["commit", "-m", VERSION])
-		.status()
-		.expect("failed to execute process");
-	Command::new("git")
-		.args(&["push"])
-		.status()
-		.expect("failed to execute process");
+	srcinfo();
+	git_add_commit_push();
 }

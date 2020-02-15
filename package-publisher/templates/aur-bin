@@ -11,7 +11,7 @@ license=("MIT")
 provides=(${_pkgname})
 conflicts=(${_pkgname})
 source=("${_pkgname}-${pkgver}.tar.gz::${url}/releases/download/${pkgver}/${_pkgname}-${pkgver}-${arch}-unknown-linux-gnu.tar.gz")
-sha256sums=("{{ SHA256 }}")
+sha256sums=("{{ LINUX_SHA256 }}")
 
 package() {
 	install -Dm755 "${_pkgname}" "${pkgdir}/usr/bin/${_pkgname}"
