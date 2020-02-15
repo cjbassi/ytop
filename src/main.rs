@@ -133,7 +133,7 @@ fn main() {
 	let app_dirs = AppDirs::new(Some(PROGRAM_NAME), AppUI::CommandLine).unwrap();
 	let logfile_path = app_dirs.state_dir.join("errors.log");
 
-	let colorscheme = read_colorscheme(&app_dirs.config_dir, &args.colorscheme).unwrap();
+	let colorscheme = read_colorscheme(&app_dirs.config_dir, &args.colorscheme);
 	let mut app = setup_app(&args, update_ratio, &colorscheme, PROGRAM_NAME);
 	setup_logfile(&logfile_path);
 

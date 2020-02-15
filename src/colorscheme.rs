@@ -118,14 +118,12 @@ fn convert_color(raw: i64) -> Color {
 	}
 }
 
-fn parse_colorscheme(
-	config_folder: &Path,
-	colorscheme: &Colorschemes,
-) -> serde_json::Result<ColorschemeRaw> {
+fn parse_colorscheme(config_folder: &Path, colorscheme: &Colorschemes) -> ColorschemeRaw {
 	match colorscheme {
 		Colorschemes::Custom(name) => serde_json::from_str(
 			&fs::read_to_string(config_folder.join(name).with_extension("json")).unwrap(),
-		),
+		)
+		.unwrap(),
 		_ => {
 			let json_string = match colorscheme {
 				Colorschemes::Default => include_str!("../colorschemes/default.json"),
@@ -135,17 +133,12 @@ fn parse_colorscheme(
 				Colorschemes::Vice => include_str!("../colorschemes/vice.json"),
 				_ => unreachable!(),
 			};
-			Ok(serde_json::from_str(json_string)
-				.expect("statically defined and verified json colorschemes"))
+			serde_json::from_str(json_string)
+				.expect("statically defined and verified json colorschemes")
 		}
 	}
 }
 
-pub fn read_colorscheme(
-	config_folder: &Path,
-	colorscheme: &Colorschemes,
-) -> serde_json::Result<Colorscheme> {
-	let raw_colorscheme = parse_colorscheme(config_folder, colorscheme)?;
-
-	Ok(Colorscheme::from(raw_colorscheme))
+pub fn read_colorscheme(config_folder: &Path, colorscheme: &Colorschemes) -> Colorscheme {
+	parse_colorscheme(config_folder, colorscheme).into()
 }
