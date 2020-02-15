@@ -122,6 +122,7 @@ fn main() {
 	better_panic::install();
 
 	let args = Args::from_args();
+	let draw_interval = Ratio::min(Ratio::from_integer(1), args.interval);
 
 	let app_dirs = AppDirs::new(Some(PROGRAM_NAME), AppUI::CommandLine).unwrap();
 	let logfile_path = app_dirs.state_dir.join("errors.log");
@@ -137,7 +138,7 @@ fn main() {
 	setup_terminal();
 
 	let ticker = tick(Duration::from_secs_f64(
-		*args.interval.numer() as f64 / *args.interval.denom() as f64,
+		*draw_interval.numer() as f64 / *draw_interval.denom() as f64,
 	));
 	let ui_events_receiver = setup_ui_events();
 	let ctrl_c_events = setup_ctrl_c();
@@ -169,7 +170,7 @@ fn main() {
 			}
 			recv(ticker) -> _ => {
 				if !paused {
-					update_seconds = (update_seconds + args.interval) % Ratio::from_integer(60);
+					update_seconds = (update_seconds + draw_interval) % Ratio::from_integer(60);
 					update_widgets(&mut app.widgets, update_seconds);
 					if !show_help_menu {
 						draw(&mut terminal, &mut app);

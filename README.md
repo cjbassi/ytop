@@ -17,7 +17,7 @@
 - macOS is missing temperatures, disk io counters, and process commandline
 - Process filtering isn't implemented
 - Mouse usage isn't implemented
-- `interval` and `interfaces` cli args aren't implemented
+- `interfaces` cli args aren't implemented
 
 ## Installation
 
