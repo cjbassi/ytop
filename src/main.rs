@@ -10,7 +10,7 @@ use std::io::{self, Write};
 use std::panic;
 use std::path::Path;
 use std::thread;
-use std::time::{Duration, Instant};
+use std::time::Duration;
 
 use crossbeam_channel::{select, tick, unbounded, Receiver};
 use crossterm::cursor;
@@ -118,23 +118,16 @@ fn setup_panic_hook() {
 	}));
 }
 
-fn setup_ticker(rate: u64) -> Receiver<Instant> {
-	tick(Duration::from_nanos(
-		Duration::from_secs(1).as_nanos() as u64 / rate,
-	))
-}
-
 fn main() {
 	better_panic::install();
 
 	let args = Args::from_args();
-	let update_ratio = Ratio::new(1, args.rate);
 
 	let app_dirs = AppDirs::new(Some(PROGRAM_NAME), AppUI::CommandLine).unwrap();
 	let logfile_path = app_dirs.state_dir.join("errors.log");
 
 	let colorscheme = read_colorscheme(&app_dirs.config_dir, &args.colorscheme);
-	let mut app = setup_app(&args, update_ratio, &colorscheme, PROGRAM_NAME);
+	let mut app = setup_app(&args, &colorscheme, PROGRAM_NAME);
 	setup_logfile(&logfile_path);
 
 	let backend = CrosstermBackend::new(io::stdout());
@@ -143,13 +136,15 @@ fn main() {
 	setup_panic_hook();
 	setup_terminal();
 
-	let mut update_seconds = Ratio::from_integer(0);
-	let ticker = setup_ticker(args.rate);
+	let ticker = tick(Duration::from_secs_f64(
+		*args.interval.numer() as f64 / *args.interval.denom() as f64,
+	));
 	let ui_events_receiver = setup_ui_events();
 	let ctrl_c_events = setup_ctrl_c();
 
-	update_widgets(&mut app.widgets, update_seconds);
-	draw(&mut terminal, &mut app);
+	// Used to keep track of how many seconds has passed so we know which widgets to update.
+	// Resets to 0 every 60 Seconds.
+	let mut update_seconds = Ratio::from_integer(0);
 
 	let mut show_help_menu = false;
 	let mut paused = false;
@@ -164,6 +159,9 @@ fn main() {
 	let mut proc_modified: bool;
 	let mut graphs_modified: bool;
 
+	update_widgets(&mut app.widgets, update_seconds);
+	draw(&mut terminal, &mut app);
+
 	loop {
 		select! {
 			recv(ctrl_c_events) -> _ => {
@@ -171,7 +169,7 @@ fn main() {
 			}
 			recv(ticker) -> _ => {
 				if !paused {
-					update_seconds = (update_seconds + update_ratio) % Ratio::from_integer(60);
+					update_seconds = (update_seconds + args.interval) % Ratio::from_integer(60);
 					update_widgets(&mut app.widgets, update_seconds);
 					if !show_help_menu {
 						draw(&mut terminal, &mut app);

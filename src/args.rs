@@ -1,3 +1,4 @@
+use num_rational::Ratio;
 use structopt::StructOpt;
 
 use crate::colorscheme::Colorschemes;
@@ -35,6 +36,10 @@ pub struct Args {
 	#[structopt(short = "i", long = "interfaces", default_value = "!tun0")]
 	pub interfaces: String,
 
+	/// Duration of interval in seconds between updates of the CPU and Mem widgets.
+	#[structopt(long = "interval", default_value = "1")]
+	pub interval: Ratio<u64>,
+
 	/// Only show the CPU, Mem, and Process widgets.
 	#[structopt(short = "m", long = "minimal")]
 	pub minimal: bool,
@@ -42,10 +47,6 @@ pub struct Args {
 	/// Show each CPU in the CPU widget.
 	#[structopt(short = "p", long = "per-cpu")]
 	pub per_cpu: bool,
-
-	/// Number of times per second to update the CPU and Mem widgets.
-	#[structopt(short = "r", long = "rate", default_value = "1")]
-	pub rate: u64,
 
 	/// Show a statusbar with the time.
 	#[structopt(short = "s", long = "statusbar")]

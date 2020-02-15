@@ -1,5 +1,3 @@
-use num_rational::Ratio;
-
 use crate::args::Args;
 use crate::colorscheme::Colorscheme;
 use crate::widgets::*;
@@ -22,12 +20,11 @@ pub struct Widgets<'a, 'b> {
 
 pub fn setup_app<'a, 'b>(
 	args: &'b Args,
-	update_ratio: Ratio<u64>,
 	colorscheme: &'a Colorscheme,
 	program_name: &str,
 ) -> App<'a, 'b> {
-	let cpu = CpuWidget::new(colorscheme, update_ratio, args.average_cpu, args.per_cpu);
-	let mem = MemWidget::new(colorscheme, update_ratio);
+	let cpu = CpuWidget::new(colorscheme, args.interval, args.average_cpu, args.per_cpu);
+	let mem = MemWidget::new(colorscheme, args.interval);
 	let proc = ProcWidget::new(colorscheme);
 	let help_menu = HelpMenu::new(colorscheme);
 

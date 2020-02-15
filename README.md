@@ -17,7 +17,7 @@
 - macOS is missing temperatures, disk io counters, and process commandline
 - Process filtering isn't implemented
 - Mouse usage isn't implemented
-- `rate` and `interfaces` cli args aren't implemented
+- `interval` and `interfaces` cli args aren't implemented
 
 ## Installation
 
@@ -95,18 +95,19 @@ USAGE:
     ytop [FLAGS] [OPTIONS]
 
 FLAGS:
-    -a, --average-cpu    Show average CPU in the CPU widget.
-    -b, --battery        Show Battery widget (overridden by 'minimal' flag).
-    -f, --fahrenheit     Show temperatures in fahrenheit.
+    -a, --average-cpu    Show average CPU in the CPU widget
+    -b, --battery        Show Battery widget (overridden by 'minimal' flag)
+    -f, --fahrenheit     Show temperatures in fahrenheit
     -h, --help           Prints help information
-    -m, --minimal        Only show the CPU, Mem, and Process widgets.
-    -p, --per-cpu        Show each CPU in the CPU widget.
-    -s, --statusbar      Show a statusbar with the time.
+    -m, --minimal        Only show the CPU, Mem, and Process widgets
+    -p, --per-cpu        Show each CPU in the CPU widget
+    -s, --statusbar      Show a statusbar with the time
     -V, --version        Prints version information
 
 OPTIONS:
-    -c, --colorscheme <colorscheme>    Set a colorscheme. [default: default]
+    -c, --colorscheme <colorscheme>    Set a colorscheme [default: default]
     -i, --interfaces <interfaces>      Comma separated list of network interfaces to show. Prepend an interface with '!'
-                                       to hide it. 'all' shows all interfaces. [default: !tun0]
-    -r, --rate <rate>                  Number of times per second to update the CPU and Mem widgets. [default: 1]
+                                       to hide it. 'all' shows all interfaces [default: !tun0]
+        --interval <interval>          Duration of interval in seconds between updates of the CPU and Mem widgets
+                                       [default: 1]
 ```
