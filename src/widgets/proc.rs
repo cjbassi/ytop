@@ -259,7 +259,18 @@ impl UpdatableWidget for ProcWidget<'_> {
 
 impl Widget for ProcWidget<'_> {
 	fn draw(&mut self, area: Rect, buf: &mut Buffer) {
-		self.view_height = area.height as usize - 3;
+		if area.height < 3 {
+			return;
+		}
+
+		let inner = Rect {
+			x: area.x + 1,
+			y: area.y + 1,
+			width: area.width - 2,
+			height: area.height - 2,
+		};
+
+		self.view_height = inner.height as usize - 1;
 
 		let mut procs = if self.grouping {
 			self.grouped_procs.values().cloned().collect()
@@ -322,8 +333,8 @@ impl Widget for ProcWidget<'_> {
 
 		if self.scrolled {
 			self.scrolled = false;
-			if self.selected_row > area.height as usize + self.view_offset - 4 {
-				self.view_offset = self.selected_row + 4 - area.height as usize;
+			if self.selected_row > inner.height as usize + self.view_offset - 2 {
+				self.view_offset = self.selected_row + 2 - inner.height as usize;
 			} else if self.selected_row < self.view_offset {
 				self.view_offset = self.selected_row;
 			}
@@ -363,9 +374,10 @@ impl Widget for ProcWidget<'_> {
 		.header_gap(0)
 		.draw(area, buf);
 
-		let cursor_y = area.y + 2 + self.selected_row as u16 - self.view_offset as u16;
-		if cursor_y < area.y + area.height - 1 {
-			for i in (area.x + 1)..(area.x + area.width - 1) {
+		// Draw cursor.
+		let cursor_y = inner.y + 1 + self.selected_row as u16 - self.view_offset as u16;
+		if cursor_y < inner.bottom() {
+			for i in inner.x..inner.right() {
 				let cell = buf.get_mut(i, cursor_y);
 				if cell.symbol != " " {
 					cell.set_modifier(Modifier::REVERSED);

@@ -87,13 +87,6 @@ impl Widget for NetWidget<'_, '_> {
 			height: (inner.height / 2),
 		};
 
-		let top_sparkline = Rect {
-			x: inner.x,
-			y: inner.y + 3,
-			width: inner.width,
-			height: i16::max((inner.height as i16 / 2) - 3, 0) as u16,
-		};
-
 		let bottom_half = Rect {
 			x: inner.x,
 			y: inner.y + (inner.height / 2),
@@ -101,12 +94,23 @@ impl Widget for NetWidget<'_, '_> {
 			height: (inner.height / 2),
 		};
 
-		let bottom_sparkline = Rect {
-			x: inner.x,
-			y: inner.y + (inner.height / 2) + 3,
-			width: inner.width,
-			height: i16::max((inner.height as i16 / 2) - 3, 0) as u16,
+		let top_sparkline = Rect {
+			x: top_half.x,
+			y: top_half.y + 3,
+			width: top_half.width,
+			height: i16::max(top_half.height as i16 - 3, 0) as u16,
 		};
+
+		let bottom_sparkline = Rect {
+			x: bottom_half.x,
+			y: bottom_half.y + 3,
+			width: bottom_half.width,
+			height: i16::max(bottom_half.height as i16 - 3, 0) as u16,
+		};
+
+		if inner.height < 3 {
+			return;
+		}
 
 		buf.set_string(
 			top_half.x + 1,
@@ -140,6 +144,10 @@ impl Widget for NetWidget<'_, '_> {
 			.max(*self.bytes_recv.iter().max().unwrap())
 			.style(self.colorscheme.net_bars)
 			.draw(top_sparkline, buf);
+
+		if inner.height < 5 {
+			return;
+		}
 
 		buf.set_string(
 			bottom_half.x + 1,

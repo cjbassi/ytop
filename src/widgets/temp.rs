@@ -68,14 +68,25 @@ impl Widget for TempWidget<'_> {
 	fn draw(&mut self, area: Rect, buf: &mut Buffer) {
 		block::new(self.colorscheme, &self.title).draw(area, buf);
 
+		if area.height < 2 {
+			return;
+		}
+
+		let inner = Rect {
+			x: area.x + 1,
+			y: area.y + 1,
+			width: area.width - 2,
+			height: area.height - 2,
+		};
+
 		for (i, (label, data)) in self.temp_data.iter().enumerate() {
-			if i >= area.height as usize - 2 {
+			if i >= inner.height as usize {
 				break;
 			}
-			let y = area.y + 1 + i as u16;
-			buf.set_string(area.x + 1, y, label, self.colorscheme.text);
+			let y = inner.y + i as u16;
+			buf.set_string(inner.x, y, label, self.colorscheme.text);
 			buf.set_string(
-				area.x + area.width - 5,
+				inner.right() - 4,
 				y,
 				format!("{:2.0}°{}", data, if self.fahrenheit { "F" } else { "C" },),
 				if data < &self.temp_threshold {
