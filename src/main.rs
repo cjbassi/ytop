@@ -109,8 +109,8 @@ fn setup_logfile(logfile_path: &Path) {
 		.unwrap();
 }
 
-// We need to catch panics since we need to close the terminal before logging any error messages to
-// the screen.
+// We need to catch panics since we need to close the UI and cleanup the terminal before logging any
+// error messages to the screen.
 fn setup_panic_hook() {
 	panic::set_hook(Box::new(|panic_info| {
 		cleanup_terminal();
