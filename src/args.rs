@@ -36,7 +36,7 @@ pub struct Args {
 	#[structopt(short = "i", long = "interfaces", default_value = "!tun0")]
 	pub interfaces: String,
 
-	/// Duration of interval in seconds between updates of the CPU and Mem widgets.
+	/// Interval in seconds between updates of the CPU and Mem widgets. Can specify either a whole number or a fraction with a numerator of 1.
 	#[structopt(long = "interval", default_value = "1")]
 	pub interval: Ratio<u64>,
 

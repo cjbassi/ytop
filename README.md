@@ -108,6 +108,6 @@ OPTIONS:
     -c, --colorscheme <colorscheme>    Set a colorscheme [default: default]
     -i, --interfaces <interfaces>      Comma separated list of network interfaces to show. Prepend an interface with '!'
                                        to hide it. 'all' shows all interfaces [default: !tun0]
-        --interval <interval>          Duration of interval in seconds between updates of the CPU and Mem widgets
-                                       [default: 1]
+        --interval <interval>          Interval in seconds between updates of the CPU and Mem widgets. Can specify
+                                       either a whole number or a fraction with a numerator of 1 [default: 1]
 ```
