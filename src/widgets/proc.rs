@@ -4,7 +4,10 @@ use std::process::Command;
 
 use num_rational::Ratio;
 use psutil::cpu;
+use psutil::memory;
 use psutil::process;
+#[cfg(target_os = "linux")]
+use psutil::process::os::linux::Oneshot;
 use tui::buffer::Buffer;
 use tui::layout::{Constraint, Rect};
 use tui::style::Modifier;
@@ -214,23 +217,38 @@ impl UpdatableWidget for ProcWidget<'_> {
 		self.process_collector.update().unwrap();
 
 		let cpu_count = self.cpu_count as f32;
+		let virtual_memory = memory::virtual_memory().unwrap();
 
 		self.procs = self
 			.process_collector
 			.processes
 			.values_mut()
 			.map(|process| {
+				let num = process.pid();
+
+				#[cfg(target_os = "linux")]
+				let name = process.name_oneshot();
+				#[cfg(target_os = "macos")]
 				let name = process.name()?;
+
+				#[cfg(target_os = "linux")]
+				let commandline = process.cmdline()?.unwrap_or_else(|| format!("[{}]", name));
+				#[cfg(target_os = "macos")]
+				let commandline = String::default();
+
+				#[cfg(target_os = "linux")]
+				let cpu = process.cpu_percent_oneshot() / cpu_count;
+				#[cfg(target_os = "macos")]
+				let cpu = process.cpu_percent()? / cpu_count;
+
+				let mem = process.memory_percent_oneshot(&virtual_memory)?;
+
 				Ok(Proc {
-					num: process.pid(),
-					name: name.to_string(),
-					commandline: if cfg!(target_os = "linux") {
-						process.cmdline()?.unwrap_or_else(|| format!("[{}]", name))
-					} else {
-						String::default()
-					},
-					cpu: process.cpu_percent()? / cpu_count,
-					mem: process.memory_percent()?,
+					num,
+					name,
+					commandline,
+					cpu,
+					mem,
 				})
 			})
 			.filter_map(|process: process::ProcessResult<Proc>| process.ok())

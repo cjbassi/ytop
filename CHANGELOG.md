@@ -15,6 +15,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- [process] fix process CPU calculation
+- [process][linux] improve efficiency of process data collection
+
 ## [0.5.0] - 2020-02-16
 
 ### Added
