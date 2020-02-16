@@ -17,11 +17,11 @@
 - macOS is missing temperatures, disk io counters, and process commandline
 - Process filtering isn't implemented
 - Mouse usage isn't implemented
-- `interfaces` cli args aren't implemented
+- `interfaces` cli arg aren't implemented
 
 ## Installation
 
-Currently working on Linux and macOS with support planned for all major platforms.
+Currently works on Linux and macOS with support planned for all major platforms.
 
 ### Prebuilt binaries
 
