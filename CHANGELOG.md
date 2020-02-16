@@ -15,18 +15,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.0] - 2020-02-16
+
 ### Added
 
 - implement `interval` cli arg
 - implement `interface` cli arg
 
-### Fixed
-
-- [net] fix double-counting of IO counters when a VPN is enabled
-
 ### Changed
 
 - Change `rate` cli arg to `interval`
+- Change `interfaces` cli arg to `interface`
+
+### Fixed
+
+- [net] fix double-counting of IO counters when a VPN is enabled
 
 ## [0.4.3] - 2020-02-14
 
@@ -98,7 +101,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Initial release!
 
-[Unreleased]: https://github.com/cjbassi/ytop/compare/0.4.3...HEAD
+[Unreleased]: https://github.com/cjbassi/ytop/compare/0.5.0...HEAD
+[0.5.0]: https://github.com/cjbassi/ytop/compare/0.4.3...0.5.0
 [0.4.3]: https://github.com/cjbassi/ytop/compare/0.4.2...0.4.3
 [0.4.2]: https://github.com/cjbassi/ytop/compare/0.4.1...0.4.2
 [0.4.1]: https://github.com/cjbassi/ytop/compare/0.4.0...0.4.1
