@@ -10,12 +10,14 @@ use crate::colorscheme::Colorscheme;
 use crate::update::UpdatableWidget;
 use crate::widgets::block;
 
+const VPN_INTERFACE: &str = "tun0";
+
 pub struct NetWidget<'a, 'b> {
 	title: String,
 	update_interval: Ratio<u64>,
 	colorscheme: &'a Colorscheme,
 
-	interfaces: &'b str,
+	interface: &'b str,
 
 	bytes_recv: Vec<u64>,
 	bytes_sent: Vec<u64>,
@@ -27,13 +29,17 @@ pub struct NetWidget<'a, 'b> {
 }
 
 impl NetWidget<'_, '_> {
-	pub fn new<'a, 'b>(colorscheme: &'a Colorscheme, interfaces: &'b str) -> NetWidget<'a, 'b> {
+	pub fn new<'a, 'b>(colorscheme: &'a Colorscheme, interface: &'b str) -> NetWidget<'a, 'b> {
 		NetWidget {
-			title: " Network Usage ".to_string(),
+			title: if interface == "all" {
+				" Network Usage ".to_string()
+			} else {
+				format!(" Network Usage: {} ", interface)
+			},
 			update_interval: Ratio::from_integer(1),
 			colorscheme,
 
-			interfaces,
+			interface,
 
 			bytes_recv: Vec::new(),
 			bytes_sent: Vec::new(),
@@ -48,7 +54,18 @@ impl NetWidget<'_, '_> {
 
 impl UpdatableWidget for NetWidget<'_, '_> {
 	fn update(&mut self) {
-		let io_counters = self.collector.net_io_counters().unwrap();
+		let io_counters: network::NetIoCounters = self
+			.collector
+			.net_io_counters_pernic()
+			.unwrap()
+			.into_iter()
+			.filter(|(name, _counters)| {
+				// Filter out the VPN interface unless specified directly since it gets double
+				// counted along with the hardware interfaces it is operating on.
+				(self.interface == "all" && name != VPN_INTERFACE) || name == self.interface
+			})
+			.map(|(_name, counters)| counters)
+			.sum();
 
 		if self.total_bytes_recv == 0 {
 			self.bytes_recv.push(0);

@@ -18,6 +18,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - implement `interval` cli arg
+- implement `interface` cli arg
+
+### Fixed
+
+- [net] fix double-counting of IO counters when a VPN is enabled
 
 ### Changed
 

@@ -17,7 +17,6 @@
 - macOS is missing temperatures, disk io counters, and process commandline
 - Process filtering isn't implemented
 - Mouse usage isn't implemented
-- `interfaces` cli arg aren't implemented
 
 ## Installation
 
@@ -106,8 +105,8 @@ FLAGS:
 
 OPTIONS:
     -c, --colorscheme <colorscheme>    Set a colorscheme [default: default]
-    -i, --interfaces <interfaces>      Comma separated list of network interfaces to show. Prepend an interface with '!'
-                                       to hide it. 'all' shows all interfaces [default: !tun0]
+    -i, --interface <interface>        The name of the network interface to show in the Net widget. 'all' shows all
+                                       interfaces [default: all]
         --interval <interval>          Interval in seconds between updates of the CPU and Mem widgets. Can specify
                                        either a whole number or a fraction with a numerator of 1 [default: 1]
 ```

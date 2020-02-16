@@ -32,9 +32,9 @@ pub struct Args {
 	#[structopt(short = "f", long = "fahrenheit")]
 	pub fahrenheit: bool,
 
-	/// Comma separated list of network interfaces to show. Prepend an interface with '!' to hide it. 'all' shows all interfaces.
-	#[structopt(short = "i", long = "interfaces", default_value = "!tun0")]
-	pub interfaces: String,
+	/// The name of the network interface to show in the Net widget. 'all' shows all interfaces.
+	#[structopt(short = "i", long = "interface", default_value = "all")]
+	pub interface: String,
 
 	/// Interval in seconds between updates of the CPU and Mem widgets. Can specify either a whole number or a fraction with a numerator of 1.
 	#[structopt(long = "interval", default_value = "1")]
