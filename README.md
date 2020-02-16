@@ -107,6 +107,6 @@ OPTIONS:
     -c, --colorscheme <colorscheme>    Set a colorscheme [default: default]
     -i, --interface <interface>        The name of the network interface to show in the Net widget. 'all' shows all
                                        interfaces [default: all]
-        --interval <interval>          Interval in seconds between updates of the CPU and Mem widgets. Can specify
+    -I, --interval <interval>          Interval in seconds between updates of the CPU and Mem widgets. Can specify
                                        either a whole number or a fraction with a numerator of 1 [default: 1]
 ```
