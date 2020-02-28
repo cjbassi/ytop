@@ -120,6 +120,7 @@ impl UpdatableWidget for DiskWidget<'_> {
 
 // TODO: this is only a temporary workaround until we fix the table column resizing
 // https://github.com/cjbassi/ytop/issues/23
+#[allow(clippy::all)]
 fn custom_column_sizing(width: u16) -> Vec<Constraint> {
 	let width = width - 2;
 	if width >= 39 + 5 {
