@@ -37,6 +37,14 @@ brew tap cjbassi/ytop
 brew install ytop
 ```
 
+### Alpine Linux
+
+Available in the testing repository, so you need to be on Alpine Linux Edge.
+
+```bash
+apk add ytop
+```
+
 ### From source
 
 ```bash
