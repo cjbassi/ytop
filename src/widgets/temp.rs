@@ -1,5 +1,4 @@
 use num_rational::Ratio;
-use psutil::sensors;
 use tui::buffer::Buffer;
 use tui::layout::Rect;
 use tui::widgets::Widget;
@@ -7,6 +6,9 @@ use tui::widgets::Widget;
 use crate::colorscheme::Colorscheme;
 use crate::update::UpdatableWidget;
 use crate::widgets::block;
+
+#[cfg(target_os = "linux")]
+use psutil::sensors;
 
 pub struct TempWidget<'a> {
 	title: String,
