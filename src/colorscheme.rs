@@ -1,5 +1,6 @@
 use std::fs;
 use std::path::Path;
+use std::process;
 use std::str::FromStr;
 
 use serde::Deserialize;
@@ -118,14 +119,20 @@ fn convert_color(raw: i64) -> Color {
 	}
 }
 
-fn parse_colorscheme(config_folder: &Path, colorscheme: &Colorschemes) -> ColorschemeRaw {
+fn get_colorscheme_config(config_folder: &Path, colorscheme: &Colorschemes) -> String {
 	match colorscheme {
-		Colorschemes::Custom(name) => serde_json::from_str(
-			&fs::read_to_string(config_folder.join(name).with_extension("json")).unwrap(),
-		)
-		.unwrap(),
+		Colorschemes::Custom(name) => {
+			let config_file = config_folder.join(name).with_extension("json");
+			match fs::read_to_string(&config_file) {
+				Ok(value) => value,
+				Err(_) => {
+					eprintln!("error: No colorscheme found with the name '{}'", name);
+					process::exit(1);
+				}
+			}
+		}
 		_ => {
-			let json_string = match colorscheme {
+			let selected_default_config = match colorscheme {
 				Colorschemes::Default => include_str!("../colorschemes/default.json"),
 				Colorschemes::DefaultDark => include_str!("../colorschemes/default-dark.json"),
 				Colorschemes::SolarizedDark => include_str!("../colorschemes/solarized-dark.json"),
@@ -133,12 +140,22 @@ fn parse_colorscheme(config_folder: &Path, colorscheme: &Colorschemes) -> Colors
 				Colorschemes::Vice => include_str!("../colorschemes/vice.json"),
 				_ => unreachable!(),
 			};
-			serde_json::from_str(json_string)
-				.expect("statically defined and verified json colorschemes")
+			String::from(selected_default_config)
+		}
+	}
+}
+
+fn parse_colorscheme(colorscheme_config: &str) -> ColorschemeRaw {
+	match serde_json::from_str(colorscheme_config) {
+		Ok(value) => value,
+		Err(_) => {
+			eprintln!("error: Could not parse the supplied colorscheme config");
+			process::exit(1);
 		}
 	}
 }
 
 pub fn read_colorscheme(config_folder: &Path, colorscheme: &Colorschemes) -> Colorscheme {
-	parse_colorscheme(config_folder, colorscheme).into()
+	let colorscheme_config = &get_colorscheme_config(config_folder, &colorscheme);
+	parse_colorscheme(colorscheme_config).into()
 }
