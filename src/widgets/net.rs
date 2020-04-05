@@ -29,8 +29,12 @@ pub struct NetWidget<'a, 'b> {
 	collector: network::NetIoCountersCollector,
 }
 
-impl NetWidget<'_, '_,> {
-	pub fn new<'a, 'b>(colorscheme: &'a Colorscheme, interface: &'b str, show_bits: bool) -> NetWidget<'a, 'b> {
+impl NetWidget<'_, '_> {
+	pub fn new<'a, 'b>(
+		colorscheme: &'a Colorscheme,
+		interface: &'b str,
+		show_bits: bool,
+	) -> NetWidget<'a, 'b> {
 		NetWidget {
 			title: if interface == "all" {
 				" Network Usage ".to_string()
@@ -49,7 +53,7 @@ impl NetWidget<'_, '_,> {
 			total_bytes_sent: 0,
 
 			collector: network::NetIoCountersCollector::default(),
-			show_bits: show_bits,
+			show_bits,
 		}
 	}
 }
@@ -144,12 +148,13 @@ impl Widget for NetWidget<'_, '_> {
 			if self.show_bits {
 				format!(
 					"Rx/s:     {} bits/s",
-					self.bytes_recv.last().unwrap().to_owned()*8)
-			}
-			else {
+					self.bytes_recv.last().unwrap().to_owned() * 8
+				)
+			} else {
 				format!(
 					"Rx/s:     {}/s",
-					Size::Bytes(self.bytes_recv.last().unwrap().to_owned()))
+					Size::Bytes(self.bytes_recv.last().unwrap().to_owned())
+				)
 			},
 			self.colorscheme.text.modifier(Modifier::BOLD),
 		);
@@ -187,13 +192,14 @@ impl Widget for NetWidget<'_, '_> {
 			if self.show_bits {
 				format!(
 					"Tx/s:     {} bits/s",
-					self.bytes_sent.last().unwrap().to_owned()*8)
-			}
-			else {
+					self.bytes_sent.last().unwrap().to_owned() * 8
+				)
+			} else {
 				format!(
 					"Rx/s:     {}/s",
-					Size::Bytes(self.bytes_sent.last().unwrap().to_owned()))
-			},			
+					Size::Bytes(self.bytes_sent.last().unwrap().to_owned())
+				)
+			},
 			self.colorscheme.text.modifier(Modifier::BOLD),
 		);
 
