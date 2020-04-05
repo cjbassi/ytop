@@ -38,7 +38,7 @@ pub fn setup_app<'a, 'b>(
 				None
 			},
 			Some(DiskWidget::new(colorscheme)),
-			Some(NetWidget::new(colorscheme, &args.interface)),
+			Some(NetWidget::new(colorscheme, &args.interface, args.bits)),
 			Some(TempWidget::new(colorscheme, args.fahrenheit)),
 		)
 	};

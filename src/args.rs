@@ -51,4 +51,8 @@ pub struct Args {
 	/// Show a statusbar with the time.
 	#[structopt(short = "s", long = "statusbar")]
 	pub statusbar: bool,
+
+	/// Show Network speed in bits per second
+	#[structopt(short = "B", long = "bits")]
+	pub bits: bool,
 }
