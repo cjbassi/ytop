@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - [disk] fix crash due to insufficient permissions
+- [temp] fix rendering of three digit temperatures
 
 ## [0.5.1] - 2020-02-16
 
