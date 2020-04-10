@@ -70,7 +70,10 @@ impl UpdatableWidget for DiskWidget<'_> {
 					.to_string();
 				let mountpoint = partition.mountpoint().to_path_buf();
 
-				let disk_usage = disk::disk_usage(&mountpoint).unwrap();
+				// We use `unwrap_or_default` since the function may return an error if there is
+				// insufficient permissions to read the disk usage of the partition.
+				// https://github.com/cjbassi/ytop/issues/48
+				let disk_usage = disk::disk_usage(&mountpoint).unwrap_or_default();
 				// TODO: we use an `unwrap_or_default` since rust-psutil doesn't provide a way to
 				// match up virtual partitions returned from `partitions_physical` with their
 				// corresponding io counters in `disk_io_counters_per_partition()`since the disk
