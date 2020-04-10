@@ -1,0 +1,6 @@
+[Desktop Entry]
+Name=ytop
+Exec=ytop
+Type=Application
+Icon=com.github.cjbassi.ytop
+Terminal=true

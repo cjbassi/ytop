@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 2020 Artem Polishchuk <ego.cordatus@gmail.com> -->
+<component type="console-application">
+  <id>com.github.cjbassi.ytop</id>
+  
+  <name>ytop</name>
+  <summary>A TUI system monitor written in Rust</summary>
+  
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>MIT</project_license>
+  
+  <description>
+    <p>
+      Another TUI based system monitor, this time in Rust!
+    </p>
+  </description>
+  
+  <categories>
+    <category>System</category>
+    <category>Monitor</category>
+  </categories>
+  
+  <provides>
+    <binary>ytop</binary>
+  </provides>
+
+  <screenshots>
+    <screenshot type="default">
+      <image>https://raw.githubusercontent.com/cjbassi/ytop/master/assets/screenshots/minimal.png</image>
+    </screenshot>
+  </screenshots>
+</component>
