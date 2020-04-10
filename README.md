@@ -118,3 +118,14 @@ OPTIONS:
     -I, --interval <interval>          Interval in seconds between updates of the CPU and Mem widgets. Can specify
                                        either a whole number or a fraction with a numerator of 1 [default: 1]
 ```
+
+## Related projects
+
+- [bashtop](https://github.com/aristocratos/bashtop)
+- [bottom](https://github.com/ClementTsang/bottom)
+- [glances](https://github.com/nicolargo/glances)
+- [gotop](https://github.com/cjbassi/gotop)
+- [gtop](https://github.com/aksakalli/gtop)
+- [htop](https://github.com/hishamhm/htop)
+- [vtop](https://github.com/MrRio/vtop)
+- [zenith](https://github.com/bvaisvil/zenith)
