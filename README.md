@@ -1,7 +1,7 @@
 # ytop
 
 ![Minimum rustc version](https://img.shields.io/badge/rustc-1.39+-green.svg)
-[![Matrix](https://img.shields.io/matrix/ytop:matrix.org)](https://matrix.to/#/#ytop:matrix.org)
+[![Matrix](https://img.shields.io/badge/matrix-%23ytop-blue.svg)](https://matrix.to/#/#ytop:matrix.org)
 
 <div align="center">
 
