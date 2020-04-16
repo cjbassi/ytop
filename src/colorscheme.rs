@@ -119,20 +119,22 @@ fn convert_color(raw: i64) -> Color {
 	}
 }
 
-fn get_colorscheme_config(config_folder: &Path, colorscheme: &Colorschemes) -> String {
+fn parse_colorscheme(config_folder: &Path, colorscheme: &Colorschemes) -> ColorschemeRaw {
 	match colorscheme {
-		Colorschemes::Custom(name) => {
-			let config_file = config_folder.join(name).with_extension("json");
-			match fs::read_to_string(&config_file) {
-				Ok(value) => value,
-				Err(_) => {
+		Colorschemes::Custom(name) => serde_json::from_str(
+			&fs::read_to_string(config_folder.join(name).with_extension("json")).unwrap_or_else(
+				|_| {
 					eprintln!("error: No colorscheme found with the name '{}'", name);
 					process::exit(1);
-				}
-			}
-		}
+				},
+			),
+		)
+		.unwrap_or_else(|e| {
+			eprintln!("error: Could not parse colorscheme ({})", e);
+			process::exit(1);
+		}),
 		_ => {
-			let selected_default_config = match colorscheme {
+			let json_string = match colorscheme {
 				Colorschemes::Default => include_str!("../colorschemes/default.json"),
 				Colorschemes::DefaultDark => include_str!("../colorschemes/default-dark.json"),
 				Colorschemes::SolarizedDark => include_str!("../colorschemes/solarized-dark.json"),
@@ -140,22 +142,12 @@ fn get_colorscheme_config(config_folder: &Path, colorscheme: &Colorschemes) -> S
 				Colorschemes::Vice => include_str!("../colorschemes/vice.json"),
 				_ => unreachable!(),
 			};
-			String::from(selected_default_config)
-		}
-	}
-}
-
-fn parse_colorscheme(colorscheme_config: &str) -> ColorschemeRaw {
-	match serde_json::from_str(colorscheme_config) {
-		Ok(value) => value,
-		Err(_) => {
-			eprintln!("error: Could not parse the supplied colorscheme config");
-			process::exit(1);
+			serde_json::from_str(json_string)
+				.expect("statically defined and verified json colorschemes")
 		}
 	}
 }
 
 pub fn read_colorscheme(config_folder: &Path, colorscheme: &Colorschemes) -> Colorscheme {
-	let colorscheme_config = &get_colorscheme_config(config_folder, &colorscheme);
-	parse_colorscheme(colorscheme_config).into()
+	parse_colorscheme(config_folder, colorscheme).into()
 }
