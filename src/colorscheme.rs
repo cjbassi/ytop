@@ -1,5 +1,6 @@
 use std::fs;
 use std::path::Path;
+use std::process;
 use std::str::FromStr;
 
 use serde::Deserialize;
@@ -121,9 +122,17 @@ fn convert_color(raw: i64) -> Color {
 fn parse_colorscheme(config_folder: &Path, colorscheme: &Colorschemes) -> ColorschemeRaw {
 	match colorscheme {
 		Colorschemes::Custom(name) => serde_json::from_str(
-			&fs::read_to_string(config_folder.join(name).with_extension("json")).unwrap(),
+			&fs::read_to_string(config_folder.join(name).with_extension("json")).unwrap_or_else(
+				|_| {
+					eprintln!("error: No colorscheme found with the name '{}'", name);
+					process::exit(1);
+				},
+			),
 		)
-		.unwrap(),
+		.unwrap_or_else(|e| {
+			eprintln!("error: Could not parse colorscheme ({})", e);
+			process::exit(1);
+		}),
 		_ => {
 			let json_string = match colorscheme {
 				Colorschemes::Default => include_str!("../colorschemes/default.json"),
