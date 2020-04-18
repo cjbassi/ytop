@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- gracefully exit when nonexistent or invalid colorscheme is supplied
 - [disk] fix crash due to insufficient permissions
 - [temp] fix rendering of three digit temperatures
 
