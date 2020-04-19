@@ -7,6 +7,9 @@ use crate::colorscheme::Colorscheme;
 use crate::update::UpdatableWidget;
 use crate::widgets::block;
 
+#[cfg(target_os = "macos")]
+use sysinfo::{ComponentExt, System, SystemExt};
+
 #[cfg(target_os = "linux")]
 use psutil::sensors;
 
@@ -59,7 +62,21 @@ impl UpdatableWidget for TempWidget<'_> {
 	}
 
 	#[cfg(target_os = "macos")]
-	fn update(&mut self) {}
+	fn update(&mut self) {
+		self.temp_data = Vec::new();
+
+		let sys = System::new_all();
+		let sensor_data = sys.get_components();
+
+		for component in sensor_data {
+			let num: f64 = component.get_temperature() as f64;
+			self.temp_data
+				.push((component.get_label().to_string(), num));
+		}
+
+		self.temp_data
+			.sort_by(|a, b| b.1.partial_cmp(&a.1).unwrap());
+	}
 
 	fn get_update_interval(&self) -> Ratio<u64> {
 		self.update_interval

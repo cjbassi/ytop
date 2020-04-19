@@ -26,3 +26,6 @@ size = "0.1.2"
 structopt = "0.3.13"
 # tui = { version = "0.8.0", features = ["crossterm"] }
 tui = { git = "https://github.com/cjbassi/tui-rs", branch = "master", default-features = false, features = ["crossterm"] }
+
+[target.'cfg(target_os = "macos")'.dependencies]
+sysinfo = "0.14.1"
