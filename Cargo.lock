@@ -237,7 +237,7 @@ dependencies = [
 
 [[package]]
 name = "crossterm"
-version = "0.14.1"
+version = "0.14.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "bitflags 1.2.1 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -975,11 +975,11 @@ dependencies = [
 [[package]]
 name = "tui"
 version = "0.8.0"
-source = "git+https://github.com/cjbassi/tui-rs#aff0a4c40aff6e0962a2a935d4b21065298e329c"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "bitflags 1.2.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "cassowary 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "crossterm 0.14.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "crossterm 0.14.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "either 1.5.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "itertools 0.8.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "log 0.4.8 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -1094,7 +1094,7 @@ dependencies = [
  "serde_json 1.0.51 (registry+https://github.com/rust-lang/crates.io-index)",
  "size 0.1.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "structopt 0.3.13 (registry+https://github.com/rust-lang/crates.io-index)",
- "tui 0.8.0 (git+https://github.com/cjbassi/tui-rs)",
+ "tui 0.8.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [metadata]
@@ -1127,7 +1127,7 @@ dependencies = [
 "checksum crossbeam-channel 0.4.2 (registry+https://github.com/rust-lang/crates.io-index)" = "cced8691919c02aac3cb0a1bc2e9b73d89e832bf9a06fc579d4e71b68a2da061"
 "checksum crossbeam-utils 0.6.6 (registry+https://github.com/rust-lang/crates.io-index)" = "04973fa96e96579258a5091af6003abde64af786b860f18622b82e026cca60e6"
 "checksum crossbeam-utils 0.7.0 (registry+https://github.com/rust-lang/crates.io-index)" = "ce446db02cdc3165b94ae73111e570793400d0794e46125cc4056c81cbb039f4"
-"checksum crossterm 0.14.1 (registry+https://github.com/rust-lang/crates.io-index)" = "9f03c2ede596aa7d3c74a36f63e9c01047375fdbcf2203a5cdb70a996656b028"
+"checksum crossterm 0.14.2 (registry+https://github.com/rust-lang/crates.io-index)" = "5750773d74a7dc612eac2ded3f55e9cdeeaa072210cd17c0192aedb48adb3618"
 "checksum crossterm 0.17.3 (registry+https://github.com/rust-lang/crates.io-index)" = "ccdd8ef63a44e821956c6a276eca0faaa889d6a067dfcdbd5bfe85dce3a1d250"
 "checksum crossterm_winapi 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)" = "8777c700901e2d5b50c406f736ed6b8f9e43645c7e104ddb74f8bc42b8ae62f6"
 "checksum crossterm_winapi 0.6.1 (registry+https://github.com/rust-lang/crates.io-index)" = "057b7146d02fb50175fd7dbe5158f6097f33d02831f43b4ee8ae4ddf67b68f5c"
@@ -1213,7 +1213,7 @@ dependencies = [
 "checksum termios 0.3.1 (registry+https://github.com/rust-lang/crates.io-index)" = "72b620c5ea021d75a735c943269bb07d30c9b77d6ac6b236bc8b5c496ef05625"
 "checksum textwrap 0.11.0 (registry+https://github.com/rust-lang/crates.io-index)" = "d326610f408c7a4eb6f51c37c330e496b08506c9457c9d34287ecc38809fb060"
 "checksum time 0.1.42 (registry+https://github.com/rust-lang/crates.io-index)" = "db8dcfca086c1143c9270ac42a2bbd8a7ee477b78ac8e45b19abfb0cbede4b6f"
-"checksum tui 0.8.0 (git+https://github.com/cjbassi/tui-rs)" = "<none>"
+"checksum tui 0.8.0 (registry+https://github.com/rust-lang/crates.io-index)" = "6b871b61f4c4b81e630215cd12e0ec29953d4545898e21a9e023b7520a74a9f9"
 "checksum typenum 1.11.2 (registry+https://github.com/rust-lang/crates.io-index)" = "6d2783fe2d6b8c1101136184eb41be8b1ad379e4657050b8aaff0c79ee7575f9"
 "checksum unescape 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)" = "ccb97dac3243214f8d8507998906ca3e2e0b900bf9bf4870477f125b82e68f6e"
 "checksum unicode-segmentation 1.6.0 (registry+https://github.com/rust-lang/crates.io-index)" = "e83e153d1053cbb5a118eeff7fd5be06ed99153f00dbcd8ae310c5fb2b22edc0"

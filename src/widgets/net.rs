@@ -4,7 +4,9 @@ use size::Size;
 use tui::buffer::Buffer;
 use tui::layout::Rect;
 use tui::style::Modifier;
-use tui::widgets::{RenderDirection, Sparkline, Widget};
+// use tui::widgets::{RenderDirection, Sparkline, Widget};
+use crate::sparkline::{RenderDirection, Sparkline};
+use tui::widgets::Widget;
 
 use crate::colorscheme::Colorscheme;
 use crate::update::UpdatableWidget;
