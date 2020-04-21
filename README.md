@@ -14,7 +14,7 @@
 
 ## Missing features
 
-- macOS is missing temperatures, disk io counters, and process commandline
+- macOS is missing disk io counters and process commandline
 - Process filtering isn't implemented
 - Mouse usage isn't implemented
 
