@@ -3,4 +3,5 @@ Name=ytop
 Exec=ytop
 Type=Application
 Icon=com.github.cjbassi.ytop
+Comment=A TUI system monitor written in Rust
 Terminal=true
