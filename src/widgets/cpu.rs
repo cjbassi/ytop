@@ -2,7 +2,8 @@ use num_rational::Ratio;
 use psutil::cpu;
 use tui::buffer::Buffer;
 use tui::layout::Rect;
-use tui::widgets::{Axis, Chart, Dataset, GraphType, Marker, Widget};
+use tui::widgets::{Axis, Chart, Dataset, GraphType, Widget};
+use tui::symbols::Marker;
 
 use crate::colorscheme::Colorscheme;
 use crate::update::UpdatableWidget;
@@ -115,8 +116,8 @@ impl UpdatableWidget for CpuWidget<'_> {
 	}
 }
 
-impl Widget for CpuWidget<'_> {
-	fn draw(&mut self, area: Rect, buf: &mut Buffer) {
+impl Widget for &CpuWidget<'_> {
+	fn render(self, area: Rect, buf: &mut Buffer) {
 		let mut datasets = Vec::new();
 		if self.show_average {
 			datasets.push(
@@ -151,7 +152,7 @@ impl Widget for CpuWidget<'_> {
 			]))
 			.y_axis(Axis::default().bounds([0.0, 100.0]))
 			.datasets(&datasets)
-			.draw(area, buf);
+			.render(area, buf);
 
 		if self.show_average {
 			buf.set_string(

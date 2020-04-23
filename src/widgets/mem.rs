@@ -3,7 +3,8 @@ use psutil::memory;
 use size::Size;
 use tui::buffer::Buffer;
 use tui::layout::Rect;
-use tui::widgets::{Axis, Chart, Dataset, GraphType, Marker, Widget};
+use tui::widgets::{Axis, Chart, Dataset, GraphType, Widget};
+use tui::symbols::Marker;
 
 use crate::colorscheme::Colorscheme;
 use crate::update::UpdatableWidget;
@@ -102,8 +103,8 @@ impl UpdatableWidget for MemWidget<'_> {
 	}
 }
 
-impl Widget for MemWidget<'_> {
-	fn draw(&mut self, area: Rect, buf: &mut Buffer) {
+impl Widget for &MemWidget<'_> {
+	fn render(self, area: Rect, buf: &mut Buffer) {
 		let mut datasets = vec![Dataset::default()
 			.marker(Marker::Braille)
 			.graph_type(GraphType::Line)
@@ -127,7 +128,7 @@ impl Widget for MemWidget<'_> {
 			]))
 			.y_axis(Axis::default().bounds([0.0, 100.0]))
 			.datasets(&datasets)
-			.draw(area, buf);
+			.render(area, buf);
 
 		buf.set_string(
 			area.x + 3,

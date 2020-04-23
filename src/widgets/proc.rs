@@ -275,8 +275,8 @@ impl UpdatableWidget for ProcWidget<'_> {
 	}
 }
 
-impl Widget for ProcWidget<'_> {
-	fn draw(&mut self, area: Rect, buf: &mut Buffer) {
+impl Widget for &mut ProcWidget<'_> {
+	fn render(self, area: Rect, buf: &mut Buffer) {
 		if area.height < 3 {
 			return;
 		}
@@ -390,7 +390,7 @@ impl Widget for ProcWidget<'_> {
 		])
 		.column_spacing(1)
 		.header_gap(0)
-		.draw(area, buf);
+		.render(area, buf);
 
 		// Draw cursor.
 		let cursor_y = inner.y + 1 + self.selected_row as u16 - self.view_offset as u16;
