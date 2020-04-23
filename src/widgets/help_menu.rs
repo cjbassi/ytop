@@ -1,4 +1,5 @@
 use once_cell::sync::Lazy;
+use std::cmp;
 use tui::buffer::Buffer;
 use tui::layout::Rect;
 use tui::widgets::{Paragraph, Text, Widget};
@@ -58,10 +59,10 @@ impl HelpMenu<'_> {
 
 	pub fn get_rect(&self, area: Rect) -> Rect {
 		Rect {
-			x: (area.width - TEXT_WIDTH) / 2,
-			y: (area.height - TEXT_HEIGHT) / 2,
-			width: TEXT_WIDTH,
-			height: TEXT_HEIGHT,
+			x: area.width.checked_sub(TEXT_WIDTH).unwrap_or_default() / 2,
+			y: area.height.checked_sub(TEXT_HEIGHT).unwrap_or_default() / 2,
+			width: cmp::min(TEXT_WIDTH, area.width),
+			height: cmp::min(TEXT_HEIGHT, area.height),
 		}
 	}
 }
