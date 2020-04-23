@@ -4,8 +4,8 @@ use battery::Manager;
 use num_rational::Ratio;
 use tui::buffer::Buffer;
 use tui::layout::Rect;
-use tui::widgets::{Axis, Chart, Dataset, GraphType, Widget};
 use tui::symbols::Marker;
+use tui::widgets::{Axis, Chart, Dataset, GraphType, Widget};
 
 use crate::colorscheme::Colorscheme;
 use crate::update::UpdatableWidget;
