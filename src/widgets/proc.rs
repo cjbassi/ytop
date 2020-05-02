@@ -312,7 +312,7 @@ impl Widget for ProcWidget<'_> {
 		}
 
 		let mut header = [
-			if self.grouping { "Count" } else { "PID" },
+			if self.grouping { " Count" } else { " PID" },
 			"Command",
 			"CPU%",
 			"Mem%",
@@ -363,7 +363,7 @@ impl Widget for ProcWidget<'_> {
 			procs.into_iter().skip(self.view_offset).map(|proc| {
 				Row::StyledData(
 					vec![
-						proc.num.to_string(),
+						format!(" {}", proc.num),
 						if self.grouping {
 							proc.name
 						} else {
