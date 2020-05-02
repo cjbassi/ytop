@@ -369,8 +369,8 @@ impl Widget for ProcWidget<'_> {
 						} else {
 							proc.commandline
 						},
-						format!("{:2.1}", proc.cpu),
-						format!("{:2.1}", proc.mem),
+						format!("{:>5.1}", proc.cpu),
+						format!("{:>4.1}", proc.mem),
 					]
 					.into_iter(),
 					self.colorscheme.text,
