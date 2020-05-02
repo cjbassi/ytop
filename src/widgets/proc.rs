@@ -96,7 +96,7 @@ pub struct ProcWidget<'a> {
 impl ProcWidget<'_> {
 	pub fn new(colorscheme: &Colorscheme) -> ProcWidget {
 		ProcWidget {
-			title: " Processes ".to_string(),
+			title: "Processes".to_string(),
 			update_interval: Ratio::from_integer(1),
 			colorscheme,
 
@@ -358,6 +358,7 @@ impl Widget for ProcWidget<'_> {
 			}
 		}
 
+		let procs_count = procs.len();
 		Table::new(
 			header.iter(),
 			procs.into_iter().skip(self.view_offset).map(|proc| {
@@ -377,14 +378,26 @@ impl Widget for ProcWidget<'_> {
 				)
 			}),
 		)
-		.block(block::new(self.colorscheme, &self.title))
+		.block(block::new(
+			self.colorscheme,
+			&format!(
+				" {} ({}-{} of {}) ",
+				self.title,
+				self.view_offset + 1,
+				self.view_offset + self.view_height,
+				procs_count
+			),
+		))
 		.header_style(self.colorscheme.text.modifier(Modifier::BOLD))
 		// TODO: this is only a temporary workaround until we fix the table column resizing
 		// https://github.com/cjbassi/ytop/issues/23
 		.widths(&[
-			Constraint::Length(6),
+			// max PID can be 4194304 (7 digits) + 1 for padding
+			Constraint::Length(8),
 			// Constraint::Min(5),
-			Constraint::Length(u16::max((area.width as i16 - 2 - 16 - 3) as u16, 5)),
+			// width - (left + right border) - (column1 + column3 + column4 width) - (spaces
+			// between colums)
+			Constraint::Length(u16::max((area.width as i16 - 2 - 18 - 3) as u16, 5)),
 			Constraint::Length(5),
 			Constraint::Length(5),
 		])
