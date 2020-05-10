@@ -48,7 +48,7 @@ apk add ytop
 ### From source
 
 ```bash
-cargo install -f --git https://github.com/cjbassi/ytop ytop
+cargo install ytop
 ```
 
 ## Usage
