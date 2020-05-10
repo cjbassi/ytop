@@ -7,7 +7,7 @@ use hex;
 use tokio;
 use reqwest;
 
-const VERSION: &str = "0.6.0";
+const VERSION: &str = "0.6.1";
 
 const AUR_DIR: &str = "/home/cjbassi/playground/packages/ytop";
 const AUR_BIN_DIR: &str = "/home/cjbassi/playground/packages/ytop-bin";

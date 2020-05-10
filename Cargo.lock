@@ -1187,7 +1187,7 @@ dependencies = [
 
 [[package]]
 name = "ytop"
-version = "0.6.0"
+version = "0.6.1"
 dependencies = [
  "battery",
  "better-panic",
