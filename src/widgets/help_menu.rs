@@ -66,10 +66,10 @@ impl HelpMenu<'_> {
 	}
 }
 
-impl Widget for HelpMenu<'_> {
-	fn draw(&mut self, area: Rect, buf: &mut Buffer) {
+impl Widget for &HelpMenu<'_> {
+	fn render(self, area: Rect, buf: &mut Buffer) {
 		Paragraph::new(TEXT_VEC.iter())
 			.block(block::new(self.colorscheme, &self.title))
-			.draw(area, buf);
+			.render(area, buf);
 	}
 }

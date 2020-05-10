@@ -88,9 +88,9 @@ impl UpdatableWidget for NetWidget<'_, '_> {
 	}
 }
 
-impl Widget for NetWidget<'_, '_> {
-	fn draw(&mut self, area: Rect, buf: &mut Buffer) {
-		block::new(self.colorscheme, &self.title).draw(area, buf);
+impl Widget for &NetWidget<'_, '_> {
+	fn render(self, area: Rect, buf: &mut Buffer) {
+		block::new(self.colorscheme, &self.title).render(area, buf);
 
 		let inner = Rect {
 			x: area.x + 1,
@@ -162,7 +162,7 @@ impl Widget for NetWidget<'_, '_> {
 			.show_baseline(true)
 			.max(*self.bytes_recv.iter().max().unwrap())
 			.style(self.colorscheme.net_bars)
-			.draw(top_sparkline, buf);
+			.render(top_sparkline, buf);
 
 		if inner.height < 5 {
 			return;
@@ -199,6 +199,6 @@ impl Widget for NetWidget<'_, '_> {
 			.show_baseline(true)
 			.max(*self.bytes_sent.iter().max().unwrap())
 			.style(self.colorscheme.net_bars)
-			.draw(bottom_sparkline, buf);
+			.render(bottom_sparkline, buf);
 	}
 }

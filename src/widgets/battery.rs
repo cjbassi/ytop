@@ -4,7 +4,8 @@ use battery::Manager;
 use num_rational::Ratio;
 use tui::buffer::Buffer;
 use tui::layout::Rect;
-use tui::widgets::{Axis, Chart, Dataset, GraphType, Marker, Widget};
+use tui::symbols::Marker;
+use tui::widgets::{Axis, Chart, Dataset, GraphType, Widget};
 
 use crate::colorscheme::Colorscheme;
 use crate::update::UpdatableWidget;
@@ -69,8 +70,8 @@ impl UpdatableWidget for BatteryWidget<'_> {
 	}
 }
 
-impl Widget for BatteryWidget<'_> {
-	fn draw(&mut self, area: Rect, buf: &mut Buffer) {
+impl Widget for &BatteryWidget<'_> {
+	fn render(self, area: Rect, buf: &mut Buffer) {
 		let datasets: Vec<Dataset> = self
 			.battery_data
 			.values()
@@ -92,7 +93,7 @@ impl Widget for BatteryWidget<'_> {
 			]))
 			.y_axis(Axis::default().bounds([0.0, 100.0]))
 			.datasets(&datasets)
-			.draw(area, buf);
+			.render(area, buf);
 
 		for (i, data) in self.battery_data.iter().enumerate() {
 			buf.set_string(
