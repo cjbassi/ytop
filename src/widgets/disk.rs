@@ -165,8 +165,8 @@ fn custom_column_sizing(width: u16) -> Vec<Constraint> {
 	}
 }
 
-impl Widget for DiskWidget<'_> {
-	fn draw(&mut self, area: Rect, buf: &mut Buffer) {
+impl Widget for &DiskWidget<'_> {
+	fn render(self, area: Rect, buf: &mut Buffer) {
 		let mut partitions: Vec<Partition> = self.partitions.values().cloned().collect();
 		partitions.sort_by(|a, b| a.name.cmp(&b.name));
 
@@ -192,6 +192,6 @@ impl Widget for DiskWidget<'_> {
 		.widths(&custom_column_sizing(area.width))
 		.column_spacing(1)
 		.header_gap(0)
-		.draw(area, buf);
+		.render(area, buf);
 	}
 }

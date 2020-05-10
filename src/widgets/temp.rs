@@ -83,9 +83,9 @@ impl UpdatableWidget for TempWidget<'_> {
 	}
 }
 
-impl Widget for TempWidget<'_> {
-	fn draw(&mut self, area: Rect, buf: &mut Buffer) {
-		block::new(self.colorscheme, &self.title).draw(area, buf);
+impl<'a> Widget for &TempWidget<'a> {
+	fn render(self, area: Rect, buf: &mut Buffer) {
+		block::new(self.colorscheme, &self.title).render(area, buf);
 
 		if area.height < 2 {
 			return;

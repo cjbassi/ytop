@@ -26,8 +26,8 @@ impl Statusbar<'_> {
 	}
 }
 
-impl Widget for Statusbar<'_> {
-	fn draw(&mut self, area: Rect, buf: &mut Buffer) {
+impl<'a> Widget for &mut Statusbar<'a> {
+	fn render(self, area: Rect, buf: &mut Buffer) {
 		let time = Local::now().format("%H:%M:%S").to_string();
 		buf.set_string(area.x + 1, area.y, &self.hostname, self.colorscheme.text);
 		buf.set_string(
