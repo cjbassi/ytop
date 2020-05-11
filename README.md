@@ -26,6 +26,15 @@ Currently works on Linux and macOS with support planned for all major platforms.
 
 [![Packaging status](https://repology.org/badge/vertical-allrepos/ytop.svg)](https://repology.org/project/ytop/versions)
 
+#### Fedora/CentOS
+
+Updates in official Fedora/EPEL repositories may lag at this moment. As an alternative you can install from [COPR](https://copr.fedorainfracloud.org/coprs/atim/ytop/):
+
+```bash
+sudo dnf copr enable atim/ytop -y
+sudo dnf install ytop
+```
+
 ### Homebrew
 
 ```bash
