@@ -15,9 +15,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- [process] add process count
+
 ### Fixed
 
 - [help] fix crash when window is too small on help menu
+- [process] align process CPU and MEM columns to the right
+- [process] add left padding to process count/PID column
 
 ## [0.6.1] - 2020-05-10
 
