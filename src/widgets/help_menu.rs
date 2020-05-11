@@ -1,5 +1,6 @@
-use once_cell::sync::Lazy;
 use std::cmp;
+
+use once_cell::sync::Lazy;
 use tui::buffer::Buffer;
 use tui::layout::Rect;
 use tui::widgets::{Paragraph, Text, Widget};
