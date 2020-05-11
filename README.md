@@ -45,6 +45,14 @@ Available in the testing repository, so you need to be on Alpine Linux Edge.
 apk add ytop
 ```
 
+### Fedora
+
+`ytop` is available in official Fedora repositories.
+
+```sh
+sudo dnf install ytop
+```
+
 ### From source
 
 ```bash
