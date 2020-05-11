@@ -26,6 +26,10 @@ Currently works on Linux and macOS with support planned for all major platforms.
 
 Prebuilt binaries are provided in the [releases](https://github.com/cjbassi/ytop/releases) tab.
 
+### Package managers
+
+[![Packaging status](https://repology.org/badge/vertical-allrepos/ytop.svg)](https://repology.org/project/ytop/versions)
+
 ### Arch Linux
 
 Install `ytop`, `ytop-bin`, or `ytop-git` from the AUR.
