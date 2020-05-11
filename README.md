@@ -22,17 +22,9 @@
 
 Currently works on Linux and macOS with support planned for all major platforms.
 
-### Prebuilt binaries
-
-Prebuilt binaries are provided in the [releases](https://github.com/cjbassi/ytop/releases) tab.
-
 ### Package managers
 
 [![Packaging status](https://repology.org/badge/vertical-allrepos/ytop.svg)](https://repology.org/project/ytop/versions)
-
-### Arch Linux
-
-Install `ytop`, `ytop-bin`, or `ytop-git` from the AUR.
 
 ### Homebrew
 
@@ -41,13 +33,9 @@ brew tap cjbassi/ytop
 brew install ytop
 ```
 
-### Alpine Linux
+### Prebuilt binaries
 
-Available in the testing repository, so you need to be on Alpine Linux Edge.
-
-```bash
-apk add ytop
-```
+Prebuilt binaries are provided in the [releases](https://github.com/cjbassi/ytop/releases) tab.
 
 ### From source
 
