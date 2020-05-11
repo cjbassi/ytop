@@ -96,7 +96,7 @@ pub struct ProcWidget<'a> {
 impl ProcWidget<'_> {
 	pub fn new(colorscheme: &Colorscheme) -> ProcWidget {
 		ProcWidget {
-			title: " Processes ".to_string(),
+			title: "Processes".to_string(),
 			update_interval: Ratio::from_integer(1),
 			colorscheme,
 
@@ -275,8 +275,8 @@ impl UpdatableWidget for ProcWidget<'_> {
 	}
 }
 
-impl Widget for ProcWidget<'_> {
-	fn draw(&mut self, area: Rect, buf: &mut Buffer) {
+impl Widget for &mut ProcWidget<'_> {
+	fn render(self, area: Rect, buf: &mut Buffer) {
 		if area.height < 3 {
 			return;
 		}
@@ -312,7 +312,7 @@ impl Widget for ProcWidget<'_> {
 		}
 
 		let mut header = [
-			if self.grouping { "Count" } else { "PID" },
+			if self.grouping { " Count" } else { " PID" },
 			"Command",
 			"CPU%",
 			"Mem%",
@@ -358,39 +358,52 @@ impl Widget for ProcWidget<'_> {
 			}
 		}
 
+		let procs_count = procs.len();
 		Table::new(
 			header.iter(),
 			procs.into_iter().skip(self.view_offset).map(|proc| {
 				Row::StyledData(
 					vec![
-						proc.num.to_string(),
+						format!(" {}", proc.num),
 						if self.grouping {
 							proc.name
 						} else {
 							proc.commandline
 						},
-						format!("{:2.1}", proc.cpu),
-						format!("{:2.1}", proc.mem),
+						format!("{:>5.1}", proc.cpu),
+						format!("{:>4.1}", proc.mem),
 					]
 					.into_iter(),
 					self.colorscheme.text,
 				)
 			}),
 		)
-		.block(block::new(self.colorscheme, &self.title))
+		.block(block::new(
+			self.colorscheme,
+			&format!(
+				" {} ({}-{} of {}) ",
+				self.title,
+				self.view_offset + 1,
+				self.view_offset + self.view_height,
+				procs_count
+			),
+		))
 		.header_style(self.colorscheme.text.modifier(Modifier::BOLD))
 		// TODO: this is only a temporary workaround until we fix the table column resizing
 		// https://github.com/cjbassi/ytop/issues/23
 		.widths(&[
-			Constraint::Length(6),
+			// max PID can be 4194304 (7 digits) + 1 for padding
+			Constraint::Length(8),
 			// Constraint::Min(5),
-			Constraint::Length(u16::max((area.width as i16 - 2 - 16 - 3) as u16, 5)),
+			// width - (left + right border) - (column1 + column3 + column4 width) - (spaces
+			// between colums)
+			Constraint::Length(u16::max((area.width as i16 - 2 - 18 - 3) as u16, 5)),
 			Constraint::Length(5),
 			Constraint::Length(5),
 		])
 		.column_spacing(1)
 		.header_gap(0)
-		.draw(area, buf);
+		.render(area, buf);
 
 		// Draw cursor.
 		let cursor_y = inner.y + 1 + self.selected_row as u16 - self.view_offset as u16;

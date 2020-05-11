@@ -1,3 +1,5 @@
+use std::cmp;
+
 use once_cell::sync::Lazy;
 use tui::buffer::Buffer;
 use tui::layout::Rect;
@@ -58,18 +60,18 @@ impl HelpMenu<'_> {
 
 	pub fn get_rect(&self, area: Rect) -> Rect {
 		Rect {
-			x: (area.width - TEXT_WIDTH) / 2,
-			y: (area.height - TEXT_HEIGHT) / 2,
-			width: TEXT_WIDTH,
-			height: TEXT_HEIGHT,
+			x: area.width.checked_sub(TEXT_WIDTH).unwrap_or_default() / 2,
+			y: area.height.checked_sub(TEXT_HEIGHT).unwrap_or_default() / 2,
+			width: cmp::min(TEXT_WIDTH, area.width),
+			height: cmp::min(TEXT_HEIGHT, area.height),
 		}
 	}
 }
 
-impl Widget for HelpMenu<'_> {
-	fn draw(&mut self, area: Rect, buf: &mut Buffer) {
+impl Widget for &HelpMenu<'_> {
+	fn render(self, area: Rect, buf: &mut Buffer) {
 		Paragraph::new(TEXT_VEC.iter())
 			.block(block::new(self.colorscheme, &self.title))
-			.draw(area, buf);
+			.render(area, buf);
 	}
 }

@@ -15,6 +15,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- [process] add process count
+
+### Fixed
+
+- [help] fix crash when window is too small on help menu
+- [process] align process CPU and MEM columns to the right
+- [process] add left padding to process count/PID column
+
+## [0.6.1] - 2020-05-10
+
+### Fixed
+
+- [cpu/mem] fix line graph drawing
+
+## [0.6.0] - 2020-04-21
+
+### Added
+
+- [temp] add temperature on macOS
+
+### Fixed
+
+- gracefully exit when nonexistent or invalid colorscheme is supplied
+- [disk] fix crash due to insufficient permissions
+- [temp] fix rendering of three digit temperatures
+
 ## [0.5.1] - 2020-02-16
 
 ### Fixed
@@ -108,7 +136,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Initial release!
 
-[Unreleased]: https://github.com/cjbassi/ytop/compare/0.5.1...HEAD
+[Unreleased]: https://github.com/cjbassi/ytop/compare/0.6.1...HEAD
+[0.6.1]: https://github.com/cjbassi/ytop/compare/0.6.0...0.6.1
+[0.6.0]: https://github.com/cjbassi/ytop/compare/0.5.1...0.6.0
 [0.5.1]: https://github.com/cjbassi/ytop/compare/0.5.0...0.5.1
 [0.5.0]: https://github.com/cjbassi/ytop/compare/0.4.3...0.5.0
 [0.4.3]: https://github.com/cjbassi/ytop/compare/0.4.2...0.4.3

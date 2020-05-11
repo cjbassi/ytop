@@ -1,7 +1,7 @@
 # ytop
 
 ![Minimum rustc version](https://img.shields.io/badge/rustc-1.39+-green.svg)
-[![Matrix](https://img.shields.io/matrix/ytop:matrix.org)](https://matrix.to/#/#ytop:matrix.org)
+[![Matrix](https://img.shields.io/badge/matrix-%23ytop-blue.svg)](https://matrix.to/#/#ytop:matrix.org)
 
 <div align="center">
 
@@ -14,7 +14,7 @@
 
 ## Missing features
 
-- macOS is missing temperatures, disk io counters, and process commandline
+- macOS is missing disk io counters and process commandline
 - Process filtering isn't implemented
 - Mouse usage isn't implemented
 
@@ -22,13 +22,9 @@
 
 Currently works on Linux and macOS with support planned for all major platforms.
 
-### Prebuilt binaries
+### Package managers
 
-Prebuilt binaries are provided in the [releases](https://github.com/cjbassi/ytop/releases) tab.
-
-### Arch Linux
-
-Install `ytop`, `ytop-bin`, or `ytop-git` from the AUR.
+[![Packaging status](https://repology.org/badge/vertical-allrepos/ytop.svg)](https://repology.org/project/ytop/versions)
 
 ### Homebrew
 
@@ -37,13 +33,9 @@ brew tap cjbassi/ytop
 brew install ytop
 ```
 
-### Alpine Linux
+### Prebuilt binaries
 
-Available in the testing repository, so you need to be on Alpine Linux Edge.
-
-```bash
-apk add ytop
-```
+Prebuilt binaries are provided in the [releases](https://github.com/cjbassi/ytop/releases) tab.
 
 ### Fedora
 
@@ -56,7 +48,7 @@ sudo dnf install ytop
 ### From source
 
 ```bash
-cargo install -f --git https://github.com/cjbassi/ytop ytop
+cargo install ytop
 ```
 
 ## Usage
@@ -78,10 +70,10 @@ cargo install -f --git https://github.com/cjbassi/ytop ytop
 	- `<Tab>`: toggle process grouping
 	- `dd`: kill selected process or process group
 - Process sorting:
-	- p: PID/Count
-	- n: Command
-	- c: CPU
-	- m: Mem
+	- `p`: PID/Count
+	- `n`: Command
+	- `c`: CPU
+	- `m`: Mem
 - Process filtering:
 	- `/`: start editing filter
 	- (while editing):
@@ -126,3 +118,14 @@ OPTIONS:
     -I, --interval <interval>          Interval in seconds between updates of the CPU and Mem widgets. Can specify
                                        either a whole number or a fraction with a numerator of 1 [default: 1]
 ```
+
+## Related projects
+
+- [bashtop](https://github.com/aristocratos/bashtop)
+- [bottom](https://github.com/ClementTsang/bottom)
+- [glances](https://github.com/nicolargo/glances)
+- [gotop](https://github.com/cjbassi/gotop)
+- [gtop](https://github.com/aksakalli/gtop)
+- [htop](https://github.com/hishamhm/htop)
+- [vtop](https://github.com/MrRio/vtop)
+- [zenith](https://github.com/bvaisvil/zenith)

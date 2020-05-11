@@ -70,7 +70,10 @@ impl UpdatableWidget for DiskWidget<'_> {
 					.to_string();
 				let mountpoint = partition.mountpoint().to_path_buf();
 
-				let disk_usage = disk::disk_usage(&mountpoint).unwrap();
+				// We use `unwrap_or_default` since the function may return an error if there is
+				// insufficient permissions to read the disk usage of the partition.
+				// https://github.com/cjbassi/ytop/issues/48
+				let disk_usage = disk::disk_usage(&mountpoint).unwrap_or_default();
 				// TODO: we use an `unwrap_or_default` since rust-psutil doesn't provide a way to
 				// match up virtual partitions returned from `partitions_physical` with their
 				// corresponding io counters in `disk_io_counters_per_partition()`since the disk
@@ -162,8 +165,8 @@ fn custom_column_sizing(width: u16) -> Vec<Constraint> {
 	}
 }
 
-impl Widget for DiskWidget<'_> {
-	fn draw(&mut self, area: Rect, buf: &mut Buffer) {
+impl Widget for &DiskWidget<'_> {
+	fn render(self, area: Rect, buf: &mut Buffer) {
 		let mut partitions: Vec<Partition> = self.partitions.values().cloned().collect();
 		partitions.sort_by(|a, b| a.name.cmp(&b.name));
 
@@ -189,6 +192,6 @@ impl Widget for DiskWidget<'_> {
 		.widths(&custom_column_sizing(area.width))
 		.column_spacing(1)
 		.header_gap(0)
-		.draw(area, buf);
+		.render(area, buf);
 	}
 }

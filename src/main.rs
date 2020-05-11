@@ -2,6 +2,7 @@ mod app;
 mod args;
 mod colorscheme;
 mod draw;
+mod sparkline;
 mod update;
 mod widgets;
 
