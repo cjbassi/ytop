@@ -244,6 +244,8 @@ fn main() {
 									if show_help_menu {
 										show_help_menu = false;
 										draw(&mut terminal, &mut app);
+									} else {
+										app.widgets.proc.no_follow_proc();
 									}
 								}
 								KeyCode::Tab => {
