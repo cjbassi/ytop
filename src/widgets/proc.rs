@@ -17,6 +17,8 @@ use crate::colorscheme::Colorscheme;
 use crate::update::UpdatableWidget;
 use crate::widgets::block;
 
+const TITLE: &str = " Processes ";
+
 const UP_ARROW: &str = "▲";
 const DOWN_ARROW: &str = "▼";
 
@@ -72,7 +74,6 @@ struct Proc {
 }
 
 pub struct ProcWidget<'a> {
-	title: String,
 	update_interval: Ratio<u64>,
 	colorscheme: &'a Colorscheme,
 
@@ -96,7 +97,6 @@ pub struct ProcWidget<'a> {
 impl ProcWidget<'_> {
 	pub fn new(colorscheme: &Colorscheme) -> ProcWidget {
 		ProcWidget {
-			title: "Processes".to_string(),
 			update_interval: Ratio::from_integer(1),
 			colorscheme,
 
@@ -312,7 +312,7 @@ impl Widget for &mut ProcWidget<'_> {
 		}
 
 		let mut header = [
-			if self.grouping { " Count" } else { " PID" },
+			if self.grouping { "Count" } else { "PID" },
 			"Command",
 			"CPU%",
 			"Mem%",
@@ -364,14 +364,14 @@ impl Widget for &mut ProcWidget<'_> {
 			procs.into_iter().skip(self.view_offset).map(|proc| {
 				Row::StyledData(
 					vec![
-						format!(" {}", proc.num),
+						proc.num.to_string(),
 						if self.grouping {
 							proc.name
 						} else {
 							proc.commandline
 						},
 						format!("{:>5.1}", proc.cpu),
-						format!("{:>4.1}", proc.mem),
+						format!("{:>5.1}", proc.mem),
 					]
 					.into_iter(),
 					self.colorscheme.text,
@@ -381,8 +381,8 @@ impl Widget for &mut ProcWidget<'_> {
 		.block(block::new(
 			self.colorscheme,
 			&format!(
-				" {} ({}-{} of {}) ",
-				self.title,
+				"{}({}-{} of {}) ",
+				TITLE,
 				self.view_offset + 1,
 				self.view_offset + self.view_height,
 				procs_count
@@ -392,29 +392,38 @@ impl Widget for &mut ProcWidget<'_> {
 		// TODO: this is only a temporary workaround until we fix the table column resizing
 		// https://github.com/cjbassi/ytop/issues/23
 		.widths(&[
-			// max PID can be 4194304 (7 digits) + 1 for padding
-			Constraint::Length(8),
+			// max PID can be 4194304 (7 digits)
+			Constraint::Length(7),
 			// Constraint::Min(5),
 			// width - (left + right border) - (column1 + column3 + column4 width) - (spaces
 			// between colums)
-			Constraint::Length(u16::max((area.width as i16 - 2 - 18 - 3) as u16, 5)),
+			Constraint::Length(u16::max((area.width as i16 - 2 - 17 - 3) as u16, 5)),
 			Constraint::Length(5),
 			Constraint::Length(5),
 		])
 		.column_spacing(1)
 		.header_gap(0)
-		.render(area, buf);
+		.render(
+			area,
+			// Rect {
+			// 	x: area.x - 3,
+			// 	y: area.y,
+			// 	width: area.width - 1,
+			// 	height: area.height,
+			// },
+			buf,
+		);
 
 		// Draw cursor.
 		let cursor_y = inner.y + 1 + self.selected_row as u16 - self.view_offset as u16;
 		if cursor_y < inner.bottom() {
 			for i in inner.x..inner.right() {
 				let cell = buf.get_mut(i, cursor_y);
-				if cell.symbol != " " {
+				if cell.symbol == " " {
+					cell.set_bg(self.colorscheme.proc_cursor);
+				} else {
 					cell.set_modifier(Modifier::REVERSED);
 					cell.set_fg(self.colorscheme.proc_cursor);
-				} else {
-					cell.set_bg(self.colorscheme.proc_cursor);
 				}
 			}
 		}
