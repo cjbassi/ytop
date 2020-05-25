@@ -17,10 +17,11 @@
 - macOS is missing disk io counters and process commandline
 - Process filtering isn't implemented
 - Mouse usage isn't implemented
+- FreeBSD is currently unsupported
 
 ## Installation
 
-Currently works on Linux and macOS with support planned for all major platforms.
+ytop currently works on Linux and macOS with support planned for all major platforms.
 
 ### Package managers
 
@@ -30,9 +31,9 @@ Currently works on Linux and macOS with support planned for all major platforms.
 
 ytop is available in three different AUR packages: `ytop`, `ytop-bin`, and `ytop-git`.
 
-#### Fedora/CentOS
+#### COPR
 
-Updates in official Fedora/EPEL repositories may lag at this moment. As an alternative you can install from [COPR](https://copr.fedorainfracloud.org/coprs/atim/ytop/):
+ytop is also available in [COPR](https://copr.fedorainfracloud.org/coprs/atim/ytop/):
 
 ```bash
 sudo dnf copr enable atim/ytop -y
