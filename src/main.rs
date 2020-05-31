@@ -244,8 +244,6 @@ fn main() {
 									if show_help_menu {
 										show_help_menu = false;
 										draw(&mut terminal, &mut app);
-									} else {
-										app.widgets.proc.no_follow_proc();
 									}
 								}
 								KeyCode::Tab => {
@@ -266,6 +264,10 @@ fn main() {
 								},
 								KeyCode::Char('m') => {
 									app.widgets.proc.sort_by_mem();
+									proc_modified = true;
+								},
+								KeyCode::Char('f') => {
+									app.widgets.proc.toggle_follow_proc();
 									proc_modified = true;
 								},
 								_ => {}

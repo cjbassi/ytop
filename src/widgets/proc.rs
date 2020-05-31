@@ -151,7 +151,6 @@ impl ProcWidget<'_> {
 
 	pub fn scroll_top(&mut self) {
 		self.scroll_to(0);
-		self.follow_proc = false;
 	}
 
 	pub fn scroll_bottom(&mut self) {
@@ -216,8 +215,8 @@ impl ProcWidget<'_> {
 		self.sort(SortMethod::Mem);
 	}
 
-	pub fn no_follow_proc(&mut self) {
-		self.follow_proc = false;
+	pub fn toggle_follow_proc(&mut self) {
+		self.follow_proc = !self.follow_proc;
 	}
 }
 
@@ -395,11 +394,12 @@ impl Widget for &mut ProcWidget<'_> {
 		.block(block::new(
 			self.colorscheme,
 			&format!(
-				" {} ({}-{} of {}) ",
+				" {} ({}-{} of {}) {}",
 				self.title,
 				self.view_offset + 1,
 				self.view_offset + self.view_height,
-				procs_count
+				procs_count,
+				if self.follow_proc { "F " } else { "" }
 			),
 		))
 		.header_style(self.colorscheme.text.modifier(Modifier::BOLD))
