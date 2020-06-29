@@ -155,12 +155,11 @@ impl Widget for &NetWidget<'_, '_> {
 					.iter()
 					.cloned()
 					.rev()
-					.collect::<Vec<u64>>()
-					.as_slice(),
+					.take(top_sparkline.width as usize)
+					.collect::<Vec<_>>(),
 			)
 			.direction(RenderDirection::RTL)
 			.show_baseline(true)
-			.max(*self.bytes_recv.iter().max().unwrap())
 			.style(self.colorscheme.net_bars)
 			.render(top_sparkline, buf);
 
@@ -192,12 +191,11 @@ impl Widget for &NetWidget<'_, '_> {
 					.iter()
 					.cloned()
 					.rev()
-					.collect::<Vec<u64>>()
-					.as_slice(),
+					.take(bottom_sparkline.width as usize)
+					.collect::<Vec<_>>(),
 			)
 			.direction(RenderDirection::RTL)
 			.show_baseline(true)
-			.max(*self.bytes_sent.iter().max().unwrap())
 			.style(self.colorscheme.net_bars)
 			.render(bottom_sparkline, buf);
 	}
