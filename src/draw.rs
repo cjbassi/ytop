@@ -85,8 +85,10 @@ pub fn draw_bottom_row<B: Backend>(frame: &mut Frame<B>, widgets: &mut Widgets, 
 		.direction(Direction::Horizontal)
 		.constraints([Constraint::Ratio(1, 2), Constraint::Ratio(1, 2)].as_ref())
 		.split(area);
-	if let Some(net) = widgets.net.as_ref() {
-		frame.render_widget(net, horizontal_chunks[0]);
+	if let Some(net) = widgets.net.as_mut() {
+		net.update_max_width(horizontal_chunks[0].width);
+		// The weird `&*` is used to switch this from a mutable ref to an immutable ref
+		frame.render_widget(&*net, horizontal_chunks[0]);
 	} else {
 		frame.render_widget(&widgets.mem, horizontal_chunks[0]);
 	}

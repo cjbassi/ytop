@@ -28,6 +28,8 @@ pub struct NetWidget<'a, 'b> {
 	total_bytes_sent: u64,
 
 	collector: network::NetIoCountersCollector,
+
+	max_width: u16,
 }
 
 impl NetWidget<'_, '_> {
@@ -50,7 +52,16 @@ impl NetWidget<'_, '_> {
 			total_bytes_sent: 0,
 
 			collector: network::NetIoCountersCollector::default(),
+
+			// This is specifically non-zero since `update` is called before the `max_width` is
+			// updated, so starting with 0 would cause no sample to be stored. `render`: however,
+			// expects at least one sample (this could be fixed with some `.unwrap_or(0)`s)
+			max_width: 1,
 		}
+	}
+
+	pub fn update_max_width(&mut self, possible_max: u16) {
+		self.max_width = std::cmp::max(self.max_width, possible_max);
 	}
 }
 
@@ -77,6 +88,13 @@ impl UpdatableWidget for NetWidget<'_, '_> {
 				.push(io_counters.bytes_recv() - self.total_bytes_recv);
 			self.bytes_sent
 				.push(io_counters.bytes_sent() - self.total_bytes_sent);
+		}
+
+		while self.bytes_recv.len() > self.max_width as usize {
+			self.bytes_recv.remove(0);
+		}
+		while self.bytes_sent.len() > self.max_width as usize {
+			self.bytes_sent.remove(0);
 		}
 
 		self.total_bytes_recv = io_counters.bytes_recv();
