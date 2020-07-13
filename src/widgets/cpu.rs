@@ -17,6 +17,7 @@ pub struct CpuWidget<'a> {
 	colorscheme: &'a Colorscheme,
 
 	horizontal_scale: u64,
+	max_scale: u64,
 
 	update_count: u64,
 
@@ -39,13 +40,15 @@ impl CpuWidget<'_> {
 		show_percpu: bool,
 	) -> CpuWidget {
 		let update_count = 0;
+		let default_scale = 100;
 
 		let mut cpu_widget = CpuWidget {
 			title: " CPU Usage ".to_string(),
 			update_interval,
 			colorscheme,
 
-			horizontal_scale: 100,
+			horizontal_scale: default_scale,
+			max_scale: default_scale,
 
 			update_count,
 
@@ -87,6 +90,8 @@ impl CpuWidget<'_> {
 
 	pub fn scale_out(&mut self) {
 		self.horizontal_scale += HORIZONTAL_SCALE_DELTA;
+
+		self.max_scale = std::cmp::max(self.max_scale, self.horizontal_scale);
 	}
 }
 
@@ -98,14 +103,24 @@ impl UpdatableWidget for CpuWidget<'_> {
 			self.average_data
 				.push((self.update_count as f64, average_percent.into()));
 		}
+
+		// Get rid of old samples
+		while self.average_data.len() > self.max_scale as usize {
+			self.average_data.remove(0);
+		}
+
 		if self.show_percpu {
 			let percpu_percents = self.collector.cpu_percent_percpu().unwrap();
 			if percpu_percents.len() != self.cpu_count {
 				// TODO
 			} else {
-				#[allow(clippy::needless_range_loop)]
-				for i in 0..self.cpu_count {
-					self.percpu_data[i].push((self.update_count as f64, percpu_percents[i].into()));
+				for (cpu, cpu_percent) in self.percpu_data.iter_mut().zip(percpu_percents) {
+					cpu.push((self.update_count as f64, cpu_percent.into()));
+
+					// Get rid of old samples
+					while cpu.len() > self.max_scale as usize {
+						cpu.remove(0);
+					}
 				}
 			}
 		}
