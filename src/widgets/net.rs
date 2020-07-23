@@ -12,7 +12,7 @@ use crate::colorscheme::Colorscheme;
 use crate::update::UpdatableWidget;
 use crate::widgets::block;
 
-const BOND_INTERFACE_PRFIX: &str = "bond";
+const BOND_INTERFACE_PREFIX: &str = "bond";
 const TUN_INTERFACE_PREFIX: &str = "tun";
 
 pub struct NetWidget<'a, 'b> {
@@ -69,7 +69,7 @@ impl UpdatableWidget for NetWidget<'_, '_> {
 				//       hardcoding these cases
 				(self.interface == "all"
 					&& !name.starts_with(TUN_INTERFACE_PREFIX)
-					&& !name.starts_with(BOND_INTERFACE_PRFIX))
+					&& !name.starts_with(BOND_INTERFACE_PREFIX))
 					|| name == self.interface
 			})
 			.map(|(_name, counters)| counters)
