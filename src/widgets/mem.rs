@@ -135,7 +135,7 @@ impl Widget for &MemWidget<'_> {
 			area.y + 2,
 			format!(
 				"Main {:3.0}% {}/{}",
-				self.main.percents.last().unwrap().1,
+				self.main.percents.last().unwrap_or(&(0.0, 0.0)).1,
 				Size::Bytes(self.main.used),
 				Size::Bytes(self.main.total),
 			),
@@ -148,7 +148,7 @@ impl Widget for &MemWidget<'_> {
 				area.y + 3,
 				format!(
 					"Swap {:3.0}% {}/{}",
-					swap.percents.last().unwrap().1,
+					swap.percents.last().unwrap_or(&(0.0, 0.0)).1,
 					Size::Bytes(swap.used),
 					Size::Bytes(swap.total),
 				),

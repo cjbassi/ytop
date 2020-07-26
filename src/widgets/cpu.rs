@@ -158,7 +158,10 @@ impl Widget for &CpuWidget<'_> {
 			buf.set_string(
 				area.x + 3,
 				area.y + 2,
-				format!("AVRG {:3.0}%", self.average_data.last().unwrap().1),
+				format!(
+					"AVRG {:3.0}%",
+					self.average_data.last().unwrap_or(&(0.0, 0.0)).1
+				),
 				self.colorscheme.cpu_lines[0],
 			);
 		}
@@ -173,7 +176,11 @@ impl Widget for &CpuWidget<'_> {
 				buf.set_string(
 					area.x + 3,
 					y,
-					format!("CPU{} {:3.0}%", i, self.percpu_data[i].last().unwrap().1),
+					format!(
+						"CPU{} {:3.0}%",
+						i,
+						self.percpu_data[i].last().unwrap_or(&(0.0, 0.0)).1
+					),
 					self.colorscheme.cpu_lines
 						[(i + offset as usize) % self.colorscheme.cpu_lines.len()],
 				);

@@ -143,7 +143,7 @@ impl Widget for &NetWidget<'_, '_> {
 			top_half.y + 2,
 			format!(
 				"Rx/s:     {}/s",
-				Size::Bytes(self.bytes_recv.last().unwrap().to_owned())
+				Size::Bytes(self.bytes_recv.last().unwrap_or(&0).to_owned())
 			),
 			self.colorscheme.text.modifier(Modifier::BOLD),
 		);
@@ -160,7 +160,7 @@ impl Widget for &NetWidget<'_, '_> {
 			)
 			.direction(RenderDirection::RTL)
 			.show_baseline(true)
-			.max(*self.bytes_recv.iter().max().unwrap())
+			.max(*self.bytes_recv.iter().max().unwrap_or(&0))
 			.style(self.colorscheme.net_bars)
 			.render(top_sparkline, buf);
 
@@ -180,7 +180,7 @@ impl Widget for &NetWidget<'_, '_> {
 			bottom_half.y + 2,
 			format!(
 				"Tx/s:     {}/s",
-				Size::Bytes(self.bytes_sent.last().unwrap().to_owned())
+				Size::Bytes(self.bytes_sent.last().unwrap_or(&0).to_owned())
 			),
 			self.colorscheme.text.modifier(Modifier::BOLD),
 		);
@@ -197,7 +197,7 @@ impl Widget for &NetWidget<'_, '_> {
 			)
 			.direction(RenderDirection::RTL)
 			.show_baseline(true)
-			.max(*self.bytes_sent.iter().max().unwrap())
+			.max(*self.bytes_sent.iter().max().unwrap_or(&0))
 			.style(self.colorscheme.net_bars)
 			.render(bottom_sparkline, buf);
 	}

@@ -99,7 +99,7 @@ impl Widget for &BatteryWidget<'_> {
 			buf.set_string(
 				area.x + 3,
 				area.y + 2 + i as u16,
-				format!("{} {:3.0}%", data.0, data.1.last().unwrap().1),
+				format!("{} {:3.0}%", data.0, data.1.last().unwrap_or(&(0.0, 0.0)).1),
 				self.colorscheme.battery_lines[i % self.colorscheme.battery_lines.len()],
 			);
 		}
