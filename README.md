@@ -1,3 +1,5 @@
+### **NO LONGER MAINTAINED.** For a similar program, check out https://github.com/ClementTsang/bottom.
+
 # ytop
 
 ![Minimum rustc version](https://img.shields.io/badge/rustc-1.39+-green.svg)
