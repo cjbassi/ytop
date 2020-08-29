@@ -69,7 +69,7 @@ impl UpdatableWidget for MemWidget<'_> {
 		self.update_count += 1;
 
 		let main = memory::virtual_memory().unwrap();
-		let swap = memory::swap_memory().unwrap();
+		let swap = memory::swap_memory().ok();
 
 		self.main.total = main.total();
 		self.main.used = main.used();
@@ -77,24 +77,30 @@ impl UpdatableWidget for MemWidget<'_> {
 			.percents
 			.push((self.update_count as f64, main.percent().into()));
 
-		if swap.total() == 0 {
-			self.swap = None;
-		} else {
-			if self.swap.is_none() {
-				self.swap = Some(MemData::default());
+		match swap {
+			None => {
+				self.swap = None;
+			}
+			Some(swap) if swap.total() == 0 => {
+				self.swap = None;
+			}
+			Some(swap) => {
+				if self.swap.is_none() {
+					self.swap = Some(MemData::default());
+					self.swap
+						.as_mut()
+						.unwrap()
+						.percents
+						.push((self.update_count as f64 - 1.0, 0.0));
+				}
+				self.swap.as_mut().unwrap().total = swap.total();
+				self.swap.as_mut().unwrap().used = swap.used();
 				self.swap
 					.as_mut()
 					.unwrap()
 					.percents
-					.push((self.update_count as f64 - 1.0, 0.0));
+					.push((self.update_count as f64, swap.percent().into()));
 			}
-			self.swap.as_mut().unwrap().total = swap.total();
-			self.swap.as_mut().unwrap().used = swap.used();
-			self.swap
-				.as_mut()
-				.unwrap()
-				.percents
-				.push((self.update_count as f64, swap.percent().into()));
 		}
 	}
 
