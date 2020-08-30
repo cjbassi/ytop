@@ -15,7 +15,9 @@ use std::time::Duration;
 
 use crossbeam_channel::{select, tick, unbounded, Receiver};
 use crossterm::cursor;
-use crossterm::event::{Event, KeyCode, KeyEvent, KeyModifiers, MouseEvent};
+use crossterm::event::{
+	DisableMouseCapture, EnableMouseCapture, Event, KeyCode, KeyEvent, KeyModifiers, MouseEvent,
+};
 use crossterm::execute;
 use crossterm::terminal;
 use num_rational::Ratio;
@@ -35,6 +37,7 @@ const PROGRAM_NAME: &str = env!("CARGO_PKG_NAME");
 fn setup_terminal() {
 	let mut stdout = io::stdout();
 
+	execute!(stdout, EnableMouseCapture).unwrap();
 	execute!(stdout, terminal::EnterAlternateScreen).unwrap();
 	execute!(stdout, cursor::Hide).unwrap();
 
@@ -51,6 +54,7 @@ fn setup_terminal() {
 fn cleanup_terminal() {
 	let mut stdout = io::stdout();
 
+	execute!(stdout, DisableMouseCapture).unwrap();
 	// Needed for when ytop is run in a TTY since TTYs don't actually have an alternate screen.
 	// Must be executed before attempting to leave the alternate screen so that it only modifies the
 	// 		primary screen if we are running in a TTY.
@@ -299,7 +303,6 @@ fn main() {
 							Some(key_event)
 						};
 					}
-					// TODO: figure out why these aren't working
 					Event::Mouse(mouse_event) => match mouse_event {
 						MouseEvent::ScrollUp(_, _, _) => {
 							app.widgets.proc.scroll_up();
