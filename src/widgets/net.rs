@@ -134,7 +134,7 @@ impl Widget for &NetWidget<'_, '_> {
 		buf.set_string(
 			top_half.x + 1,
 			top_half.y + 1,
-			format!("Total Rx: {}", Size::Bytes(self.total_bytes_recv)),
+			format!("Total RX: {}", Size::Bytes(self.total_bytes_recv)),
 			self.colorscheme.text.modifier(Modifier::BOLD),
 		);
 
@@ -142,7 +142,7 @@ impl Widget for &NetWidget<'_, '_> {
 			top_half.x + 1,
 			top_half.y + 2,
 			format!(
-				"Rx/s:     {}/s",
+				"RX/s:     {}/s",
 				Size::Bytes(self.bytes_recv.last().unwrap().to_owned())
 			),
 			self.colorscheme.text.modifier(Modifier::BOLD),
@@ -171,7 +171,7 @@ impl Widget for &NetWidget<'_, '_> {
 		buf.set_string(
 			bottom_half.x + 1,
 			bottom_half.y + 1,
-			format!("Total Tx: {}", Size::Bytes(self.total_bytes_sent)),
+			format!("Total TX: {}", Size::Bytes(self.total_bytes_sent)),
 			self.colorscheme.text.modifier(Modifier::BOLD),
 		);
 
@@ -179,7 +179,7 @@ impl Widget for &NetWidget<'_, '_> {
 			bottom_half.x + 1,
 			bottom_half.y + 2,
 			format!(
-				"Tx/s:     {}/s",
+				"TX/s:     {}/s",
 				Size::Bytes(self.bytes_sent.last().unwrap().to_owned())
 			),
 			self.colorscheme.text.modifier(Modifier::BOLD),
