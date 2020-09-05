@@ -20,6 +20,7 @@ pub struct NetWidget<'a, 'b> {
 	colorscheme: &'a Colorscheme,
 
 	interface: &'b str,
+	show_bits: bool,
 
 	bytes_recv: Vec<u64>,
 	bytes_sent: Vec<u64>,
@@ -31,7 +32,11 @@ pub struct NetWidget<'a, 'b> {
 }
 
 impl NetWidget<'_, '_> {
-	pub fn new<'a, 'b>(colorscheme: &'a Colorscheme, interface: &'b str) -> NetWidget<'a, 'b> {
+	pub fn new<'a, 'b>(
+		colorscheme: &'a Colorscheme,
+		interface: &'b str,
+		show_bits: bool,
+	) -> NetWidget<'a, 'b> {
 		NetWidget {
 			title: if interface == "all" {
 				" Network Usage ".to_string()
@@ -50,6 +55,7 @@ impl NetWidget<'_, '_> {
 			total_bytes_sent: 0,
 
 			collector: network::NetIoCountersCollector::default(),
+			show_bits,
 		}
 	}
 }
@@ -141,10 +147,17 @@ impl Widget for &NetWidget<'_, '_> {
 		buf.set_string(
 			top_half.x + 1,
 			top_half.y + 2,
-			format!(
-				"Rx/s:     {}/s",
-				Size::Bytes(self.bytes_recv.last().unwrap().to_owned())
-			),
+			if self.show_bits {
+				format!(
+					"Rx/s:     {} bits/s",
+					self.bytes_recv.last().unwrap().to_owned() * 8
+				)
+			} else {
+				format!(
+					"Rx/s:     {}/s",
+					Size::Bytes(self.bytes_recv.last().unwrap().to_owned())
+				)
+			},
 			self.colorscheme.text.modifier(Modifier::BOLD),
 		);
 
@@ -178,10 +191,17 @@ impl Widget for &NetWidget<'_, '_> {
 		buf.set_string(
 			bottom_half.x + 1,
 			bottom_half.y + 2,
-			format!(
-				"Tx/s:     {}/s",
-				Size::Bytes(self.bytes_sent.last().unwrap().to_owned())
-			),
+			if self.show_bits {
+				format!(
+					"Tx/s:     {} bits/s",
+					self.bytes_sent.last().unwrap().to_owned() * 8
+				)
+			} else {
+				format!(
+					"Rx/s:     {}/s",
+					Size::Bytes(self.bytes_sent.last().unwrap().to_owned())
+				)
+			},
 			self.colorscheme.text.modifier(Modifier::BOLD),
 		);
 
