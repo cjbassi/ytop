@@ -12,7 +12,8 @@ use crate::colorscheme::Colorscheme;
 use crate::update::UpdatableWidget;
 use crate::widgets::block;
 
-const VPN_INTERFACE: &str = "tun0";
+const BOND_INTERFACE_PREFIX: &str = "bond";
+const TUN_INTERFACE_PREFIX: &str = "tun";
 
 pub struct NetWidget<'a, 'b> {
 	title: String,
@@ -62,9 +63,14 @@ impl UpdatableWidget for NetWidget<'_, '_> {
 			.unwrap()
 			.into_iter()
 			.filter(|(name, _counters)| {
-				// Filter out the VPN interface unless specified directly since it gets double
+				// Filter out tunnels and bonds unless specified directly since it gets double
 				// counted along with the hardware interfaces it is operating on.
-				(self.interface == "all" && name != VPN_INTERFACE) || name == self.interface
+				// TODO: Ideally it would be good to detect if the interface is virtual instead of
+				//       hardcoding these cases
+				(self.interface == "all"
+					&& !name.starts_with(TUN_INTERFACE_PREFIX)
+					&& !name.starts_with(BOND_INTERFACE_PREFIX))
+					|| name == self.interface
 			})
 			.map(|(_name, counters)| counters)
 			.sum();
