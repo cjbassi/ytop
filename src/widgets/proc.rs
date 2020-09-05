@@ -83,6 +83,7 @@ pub struct ProcWidget<'a> {
 	sort_direction: SortDirection,
 	view_offset: usize,
 	scrolled: bool,
+	follow_proc: bool,
 	view_height: usize,
 
 	cpu_count: u64,
@@ -107,6 +108,7 @@ impl ProcWidget<'_> {
 			sort_direction: SortDirection::default(),
 			view_offset: 0,
 			scrolled: false,
+			follow_proc: false,
 			view_height: 0,
 
 			cpu_count: cpu::cpu_count(),
@@ -122,6 +124,7 @@ impl ProcWidget<'_> {
 		self.selected_row = isize::max(0, self.selected_row as isize + count) as usize;
 		self.selected_proc = None;
 		self.scrolled = true;
+		self.follow_proc = true;
 	}
 
 	fn scroll_to(&mut self, count: usize) {
@@ -135,6 +138,7 @@ impl ProcWidget<'_> {
 		);
 		self.selected_proc = None;
 		self.scrolled = true;
+		self.follow_proc = true;
 	}
 
 	pub fn scroll_up(&mut self) {
@@ -209,6 +213,10 @@ impl ProcWidget<'_> {
 
 	pub fn sort_by_mem(&mut self) {
 		self.sort(SortMethod::Mem);
+	}
+
+	pub fn toggle_follow_proc(&mut self) {
+		self.follow_proc = !self.follow_proc;
 	}
 }
 
@@ -330,17 +338,22 @@ impl Widget for &mut ProcWidget<'_> {
 		let updated_header = format!("{}{}", header[header_index], arrow);
 		header[header_index] = &updated_header;
 
-		self.selected_row = match &self.selected_proc {
-			Some(selected_proc) => {
-				match selected_proc {
-					SelectedProc::Pid(pid) => procs.iter().position(|proc| proc.num == *pid),
-					SelectedProc::Name(name) => procs.iter().position(|proc| proc.name == *name),
+		if self.follow_proc {
+			self.selected_row = match &self.selected_proc {
+				Some(selected_proc) => {
+					match selected_proc {
+						SelectedProc::Pid(pid) => procs.iter().position(|proc| proc.num == *pid),
+						SelectedProc::Name(name) => {
+							procs.iter().position(|proc| proc.name == *name)
+						}
+					}
 				}
-			}
-			.unwrap_or(self.selected_row),
-			None => self.selected_row,
-		};
-		self.scroll_to(self.selected_row);
+				.unwrap_or(self.selected_row),
+				None => self.selected_row,
+			};
+			self.scroll_to(self.selected_row);
+		}
+
 		self.selected_proc = if self.grouping {
 			Some(SelectedProc::Name(
 				procs[self.selected_row].name.to_string(),
@@ -381,11 +394,12 @@ impl Widget for &mut ProcWidget<'_> {
 		.block(block::new(
 			self.colorscheme,
 			&format!(
-				" {} ({}-{} of {}) ",
+				" {} ({}-{} of {}) {}",
 				self.title,
 				self.view_offset + 1,
 				self.view_offset + self.view_height,
-				procs_count
+				procs_count,
+				if self.follow_proc { "F " } else { "" }
 			),
 		))
 		.header_style(self.colorscheme.text.modifier(Modifier::BOLD))

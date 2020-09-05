@@ -22,6 +22,7 @@ Process navigation:
 Process actions:
   - <Tab>: toggle process grouping
   - dd: kill selected process or process group
+  - f: toggle process following
 Process sorting:
   - p: PID/Count
   - n: Command

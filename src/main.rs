@@ -266,6 +266,10 @@ fn main() {
 									app.widgets.proc.sort_by_mem();
 									proc_modified = true;
 								},
+								KeyCode::Char('f') => {
+									app.widgets.proc.toggle_follow_proc();
+									proc_modified = true;
+								},
 								_ => {}
 							}
 						} else if key_event.modifiers == KeyModifiers::CONTROL {
