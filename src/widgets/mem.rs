@@ -25,6 +25,7 @@ pub struct MemWidget<'a> {
 	colorscheme: &'a Colorscheme,
 
 	horizontal_scale: u64,
+	max_scale: u64,
 
 	update_count: u64,
 
@@ -35,6 +36,7 @@ pub struct MemWidget<'a> {
 impl MemWidget<'_> {
 	pub fn new(colorscheme: &Colorscheme, update_interval: Ratio<u64>) -> MemWidget {
 		let update_count = 0;
+		let default_scale = 100;
 
 		let mut main = MemData::default();
 		main.percents.push((update_count as f64, 0.0));
@@ -44,7 +46,8 @@ impl MemWidget<'_> {
 			update_interval,
 			colorscheme,
 
-			horizontal_scale: 100,
+			horizontal_scale: default_scale,
+			max_scale: default_scale,
 
 			update_count,
 
@@ -61,6 +64,8 @@ impl MemWidget<'_> {
 
 	pub fn scale_out(&mut self) {
 		self.horizontal_scale += HORIZONTAL_SCALE_DELTA;
+
+		self.max_scale = std::cmp::max(self.max_scale, self.horizontal_scale);
 	}
 }
 
@@ -77,24 +82,36 @@ impl UpdatableWidget for MemWidget<'_> {
 			.percents
 			.push((self.update_count as f64, main.percent().into()));
 
+		// Get rid of old samples
+		while self.main.percents.len() > self.max_scale as usize {
+			self.main.percents.remove(0);
+		}
+
 		if swap.total() == 0 {
 			self.swap = None;
 		} else {
 			if self.swap.is_none() {
-				self.swap = Some(MemData::default());
-				self.swap
-					.as_mut()
-					.unwrap()
-					.percents
-					.push((self.update_count as f64 - 1.0, 0.0));
+				self.swap = Some({
+					let mut default = MemData::default();
+					default.percents.push((self.update_count as f64 - 1.0, 0.0));
+					default
+				});
 			}
-			self.swap.as_mut().unwrap().total = swap.total();
-			self.swap.as_mut().unwrap().used = swap.used();
-			self.swap
-				.as_mut()
-				.unwrap()
-				.percents
-				.push((self.update_count as f64, swap.percent().into()));
+
+			// Scope to avoid all having to unwrap `self.swap` all the time
+			{
+				let mut some_swap = self.swap.as_mut().unwrap();
+				some_swap.total = swap.total();
+				some_swap.used = swap.used();
+				some_swap
+					.percents
+					.push((self.update_count as f64, swap.percent().into()));
+
+				// Get rid of old samples
+				while some_swap.percents.len() > self.max_scale as usize {
+					some_swap.percents.remove(0);
+				}
+			}
 		}
 	}
 

@@ -17,6 +17,7 @@ pub struct BatteryWidget<'a> {
 	colorscheme: &'a Colorscheme,
 
 	horizontal_scale: u64,
+	max_scale: u64,
 
 	update_count: u64,
 	battery_data: HashMap<String, Vec<(f64, f64)>>,
@@ -25,12 +26,15 @@ pub struct BatteryWidget<'a> {
 
 impl BatteryWidget<'_> {
 	pub fn new(colorscheme: &Colorscheme) -> BatteryWidget {
+		let default_scale = 50;
+
 		BatteryWidget {
 			title: " Batteries ".to_string(),
 			update_interval: Ratio::from_integer(60),
 			colorscheme,
 
-			horizontal_scale: 50,
+			horizontal_scale: default_scale,
+			max_scale: default_scale,
 
 			update_count: 0,
 			battery_data: HashMap::new(),
@@ -47,13 +51,16 @@ impl UpdatableWidget for BatteryWidget<'_> {
 		for battery in self.manager.batteries().unwrap() {
 			let battery = battery.unwrap();
 			let model = battery.model().unwrap();
-			self.battery_data
-				.entry(model.to_string())
-				.or_default()
-				.push((
-					self.update_count as f64,
-					battery.state_of_charge().value as f64 * 100.0,
-				));
+
+			let current_battery = self.battery_data.entry(model.to_string()).or_default();
+			current_battery.push((
+				self.update_count as f64,
+				battery.state_of_charge().value as f64 * 100.0,
+			));
+			// Get rid of old samples
+			while current_battery.len() > self.max_scale as usize {
+				current_battery.remove(0);
+			}
 			current_batteries.push(model.to_string());
 		}
 
