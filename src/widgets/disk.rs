@@ -67,7 +67,7 @@ impl UpdatableWidget for DiskWidget<'_> {
 					.file_name()
 					.unwrap()
 					.to_string_lossy()
-					.to_string();
+					.into_owned();
 				let mountpoint = partition.mountpoint().to_path_buf();
 
 				// We use `unwrap_or_default` since the function may return an error if there is
