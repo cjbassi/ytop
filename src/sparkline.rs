@@ -64,6 +64,7 @@ impl<'a> Sparkline<'a> {
 		self
 	}
 
+	#[allow(dead_code)]
 	pub fn max(mut self, max: u64) -> Sparkline<'a> {
 		self.max = Some(max);
 		self
