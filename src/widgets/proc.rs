@@ -127,11 +127,13 @@ impl ProcWidget<'_> {
 	fn scroll_to(&mut self, count: usize) {
 		self.selected_row = usize::min(
 			count,
-			if self.grouping {
-				self.grouped_procs.len()
+			if self.procs.is_empty() {
+				0
+			} else if self.grouping {
+				self.grouped_procs.len() - 1
 			} else {
-				self.procs.len()
-			} - 1,
+				self.procs.len() - 1
+			},
 		);
 		self.selected_proc = None;
 		self.scrolled = true;
@@ -341,12 +343,14 @@ impl Widget for &mut ProcWidget<'_> {
 			None => self.selected_row,
 		};
 		self.scroll_to(self.selected_row);
-		self.selected_proc = if self.grouping {
-			Some(SelectedProc::Name(
-				procs[self.selected_row].name.to_string(),
-			))
+		self.selected_proc = if self.procs.is_empty() {
+			None
 		} else {
-			Some(SelectedProc::Pid(procs[self.selected_row].num))
+			Some(if self.grouping {
+				SelectedProc::Name(procs[self.selected_row].name.clone())
+			} else {
+				SelectedProc::Pid(procs[self.selected_row].num)
+			})
 		};
 
 		if self.scrolled {
